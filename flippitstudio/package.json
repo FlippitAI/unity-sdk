@@ -1,0 +1,29 @@
+{
+  "name": "com.flippit.flippitstudio",
+  "version": "1.0.0",
+  "displayName": "Flippit Studio",
+  "description": "This plugin uses Flippit's technology to upload or convert existing NPC into smart AI characters in a click.",
+  "unity": "2021.3",
+  "dependencies": {
+    "com.unity.cinemachine": "2.8.9",
+    "com.unity.textmeshpro": "3.0.6"
+  },
+  "keywords": [
+    "openai",
+    "chatgpt",
+    "ai",
+    "whisper",
+    "speech",
+    "vocal",
+    "websocket"
+  ],
+  "author": {
+    "Name": "Anthony Magdelaine",
+    "email": "Tony@blackantmaster.com",
+    "url": "https://blackantmaster.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  }
+}

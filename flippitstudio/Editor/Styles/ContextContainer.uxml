@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <ui:Template name="Connexion" src="project://database/Packages/com.flippit.flippitstudio/Editor/Styles/Connexion.uxml?fileID=9197481963319205126&amp;guid=cec4f4b25a780a446a0a0045ec0856a4&amp;type=3#Connexion" />
+    <ui:Template name="Library" src="project://database/Packages/com.flippit.flippitstudio/Editor/Styles/Library.uxml?fileID=9197481963319205126&amp;guid=bbfaafd1de485054d895e15015d27ce4&amp;type=3#Library" />
+    <ui:VisualElement name="ContextContainer" style="align-items: center; justify-content: space-around;">
+        <ui:Instance template="Connexion" name="Connexion" />
+        <ui:Instance template="Library" name="Library" />
+    </ui:VisualElement>
+</ui:UXML>

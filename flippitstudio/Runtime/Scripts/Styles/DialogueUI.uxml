@@ -1,0 +1,6 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/Plugins/Flippit/Scripts/DialogueUI.uss?fileID=7433441132597879392&amp;guid=34b77c946e774394c9385cb77b33d11a&amp;type=3#DialogueUI" />
+    <ui:VisualElement style="justify-content: space-around; flex-grow: 1;">
+        <ui:Label text="..." display-tooltip-when-elided="true" name="Speech" style="justify-content: space-around; align-items: stretch; -unity-text-align: middle-center;" />
+    </ui:VisualElement>
+</ui:UXML>

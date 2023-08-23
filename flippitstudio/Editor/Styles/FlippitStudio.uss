@@ -1,0 +1,77 @@
+Label {
+    font-size: 20px;
+    -unity-font-style: bold;
+    color: rgb(255, 255, 255);
+    -unity-text-align: upper-right;
+    transition-duration: 1s;
+    -unity-font: resource('Fonts/CALIBRI');
+    -unity-font-definition: resource('Fonts/CALIBRI SDF 1');
+}
+
+.unity-button {
+    font-size: 22px;
+    border-left-color: rgb(90, 85, 90);
+    border-right-color: rgb(90, 85, 90);
+    border-top-color: rgb(90, 85, 90);
+    border-bottom-color: rgb(90, 85, 90);
+    transform-origin: center;
+    translate: 0 0;
+    scale: 1 1;
+    background-color: rgb(68, 74, 85);
+    -unity-background-scale-mode: stretch-to-fill;
+    -unity-text-outline-width: 0.2px;
+    -unity-text-outline-color: rgb(61, 44, 53);
+    -unity-font: resource('Fonts/CALIBRI');
+    -unity-font-definition: resource('Fonts/CALIBRI SDF 1');
+}
+
+.unity-label {
+    font-size: 12px;
+    justify-content: center;
+    -unity-text-align: middle-right;
+    align-items: stretch;
+    padding-right: 10px;
+    min-width: 100px;
+    -unity-font: resource('Fonts/CALIBRI');
+    -unity-font-definition: resource('Fonts/CALIBRI SDF 1');
+}
+
+.unity-base-field__input {
+    align-items: stretch;
+    flex-grow: 1;
+    width: auto;
+    justify-content: flex-start;
+    font-size: 14px;
+    white-space: nowrap;
+    min-width: 350px;
+    -unity-font-definition: resource('Fonts/CALIBRI SDF 1');
+    -unity-font: resource('Fonts/CALIBRI');
+}
+
+.unity-scroll-view__container {
+    white-space: normal;
+    -unity-text-align: upper-left;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    flex-grow: 1;
+    align-items: auto;
+    justify-content: space-around;
+    width: auto;
+    -unity-font-definition: resource('Fonts/CALIBRI SDF 1');
+    -unity-font: resource('Fonts/CALIBRI');
+}
+
+#CharacterBackStory {
+    height: 110px;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    justify-content: flex-start;
+    -unity-font-definition: resource('Fonts/CALIBRI SDF 1');
+    -unity-font: resource('Fonts/CALIBRI');
+}
+
+.unity-object-field {
+    width: auto;
+    -unity-font-definition: resource('Fonts/CALIBRI SDF 1');
+    -unity-font: resource('Fonts/CALIBRI');
+}

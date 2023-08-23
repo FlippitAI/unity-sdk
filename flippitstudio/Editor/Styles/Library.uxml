@@ -1,0 +1,11 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <ui:Template name="LibraryOptions" src="project://database/Packages/com.flippit.flippitstudio/Editor/Styles/LibraryOptions.uxml?fileID=9197481963319205126&amp;guid=8fbd33cefa2f803429cec2d44b1cc43d&amp;type=3#LibraryOptions" />
+    <Style src="project://database/Packages/com.flippit.flippitstudio/Editor/Styles/FlippitStudio.uss?fileID=7433441132597879392&amp;guid=cb97141ed7f79ae43b02ea36022a34e5&amp;type=3#FlippitStudio" />
+    <ui:VisualElement name="Library" style="justify-content: flex-end; flex-grow: 1; width: 100%; display: flex; flex-direction: row; align-items: flex-start;">
+        <ui:VisualElement style="justify-content: flex-start; flex-grow: 1; align-items: flex-start;">
+            <ui:Instance template="LibraryOptions" name="LibraryOptions" style="display: none; visibility: hidden; overflow: hidden;" />
+            <ui:ScrollView scroll-deceleration-rate="0,135" elasticity="0,1" mode="Vertical" nested-interaction-kind="ForwardScrolling" horizontal-scroller-visibility="Hidden" touch-scroll-type="Elastic" focusable="false" name="ScrollView-Container" style="flex-direction: column; height: auto; width: 100%; max-width: none; max-height: none; min-height: auto; min-width: 100%; justify-content: flex-start; align-items: auto; flex-wrap: wrap; padding-left: 1px; padding-right: 1px; padding-top: 1px; padding-bottom: 1px; margin-left: 1px; margin-right: 1px; margin-top: 1px; margin-bottom: 1px; flex-grow: 1; flex-basis: auto; flex-shrink: 1; opacity: 1; display: flex; visibility: visible; overflow: visible;" />
+        </ui:VisualElement>
+        <ui:Button display-tooltip-when-elided="true" name="Download" style="align-items: flex-end; width: 20px; height: 20px; background-image: resource(&apos;Download&apos;);" />
+    </ui:VisualElement>
+</ui:UXML>

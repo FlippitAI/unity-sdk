@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <ui:Template name="Header" src="project://database/Packages/com.flippit.flippitstudio/Editor/Styles/Header.uxml?fileID=9197481963319205126&amp;guid=c2fd130b0f6dcc241ba9758b935968a8&amp;type=3#Header" />
+    <ui:Template name="ConvertionInterface" src="project://database/Packages/com.flippit.flippitstudio/Editor/Styles/ConvertionInterface.uxml?fileID=9197481963319205126&amp;guid=94b5041b1738fba408827aa95b90be45&amp;type=3#ConvertionInterface" />
+    <ui:IMGUIContainer style="width: 460px; -unity-font-definition: url(&apos;project://database/Packages/com.flippit.flippitstudio/Runtime/Resources/Fonts/CALIBRI%20SDF%201.asset?fileID=11400000&amp;guid=181e4c8da231d254180e5df41afbef40&amp;type=2#CALIBRI SDF 1&apos;); -unity-font: resource(&apos;Fonts/CALIBRI&apos;);">
+        <ui:Instance template="Header" name="Header" style="display: flex; visibility: visible; overflow: visible;" />
+        <ui:Instance template="ConvertionInterface" name="ConvertionInterface" />
+    </ui:IMGUIContainer>
+</ui:UXML>

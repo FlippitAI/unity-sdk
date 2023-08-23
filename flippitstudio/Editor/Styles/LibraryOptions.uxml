@@ -1,0 +1,15 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement name="LibraryOptions" style="flex-direction: row; justify-content: space-around;">
+        <uie:ToolbarMenu display-tooltip-when-elided="true" />
+        <uie:ToolbarSpacer />
+        <uie:ToolbarSearchField focusable="true" style="height: 20px; width: 150px;" />
+        <uie:ToolbarSpacer />
+        <uie:Toolbar />
+        <uie:ToolbarSpacer />
+        <uie:ToolbarToggle focusable="false" label="Toggle" />
+        <uie:ToolbarSpacer />
+        <uie:ToolbarButton text="Button" display-tooltip-when-elided="true" />
+        <uie:ToolbarSpacer />
+        <uie:PropertyField style="width: 100px;" />
+    </ui:VisualElement>
+</ui:UXML>

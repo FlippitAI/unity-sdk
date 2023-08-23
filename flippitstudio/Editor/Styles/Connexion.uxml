@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Packages/com.flippit.flippitstudio/Editor/Styles/FlippitStudio.uss?fileID=7433441132597879392&amp;guid=cb97141ed7f79ae43b02ea36022a34e5&amp;type=3#FlippitStudio" />
+    <ui:VisualElement name="Connexion" style="align-items: stretch; justify-content: flex-start; flex-direction: column; flex-wrap: nowrap; flex-grow: 1; visibility: visible; overflow: visible; display: flex;">
+        <ui:TextField picking-mode="Ignore" label="Login" value="Enter your Login" text="Enter your Login" name="login" style="height: auto; width: auto; white-space: nowrap; -unity-text-align: middle-left;" />
+        <ui:TextField picking-mode="Ignore" label="Password" value="filler text" text="filler text" name="Password" password="true" style="overflow: hidden;" />
+        <ui:Button text="Connect" display-tooltip-when-elided="true" name="Connect" style="-unity-font-definition: resource(&apos;Fonts/CALIBRI SDF 1&apos;); -unity-font: none; overflow: hidden; align-items: auto;" />
+    </ui:VisualElement>
+</ui:UXML>

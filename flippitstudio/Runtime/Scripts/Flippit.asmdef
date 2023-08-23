@@ -1,0 +1,20 @@
+{
+    "name": "Flippit",
+    "rootNamespace": "",
+    "references": [
+        "OpenAI.Runtime",
+        "Cinemachine",
+        "endel.nativewebsocket",
+        "Unity.TextMeshPro",
+        "UnityEngine.UI"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

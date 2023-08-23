@@ -1,0 +1,24 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <Style src="project://database/Packages/com.flippit.flippitstudio/Editor/Styles/FlippitStudio.uss?fileID=7433441132597879392&amp;guid=cb97141ed7f79ae43b02ea36022a34e5&amp;type=3#FlippitStudio" />
+    <ui:VisualElement name="ConvertionInterface" style="-unity-font-definition: resource(&apos;Fonts/CALIBRI SDF 1&apos;); -unity-font: resource(&apos;Fonts/CALIBRI&apos;);">
+        <ui:TextField picking-mode="Ignore" label="Character Name" text="Give me a Name" name="CharacterName" />
+        <ui:TextField picking-mode="Ignore" label="Back Story" text="Write my Story Here..." name="CharacterBackStory" multiline="true" style="white-space: normal; -unity-text-align: upper-left;" />
+        <ui:TextField picking-mode="Ignore" label="Primary Goal" value="filler text" text="Primary Goal" name="primaryGoal" />
+        <ui:TextField picking-mode="Ignore" label="Role" value="filler text" name="Role" />
+        <ui:TextField picking-mode="Ignore" label="Hobbies" value="filler text" name="Hobbies" />
+        <ui:DropdownField label="Age" index="0" choices="Young Adult,child,Middle Aged,Old" name="Age" />
+        <ui:DropdownField label="Main Personality " index="0" choices="Extroverted,Agreeable,Optimistic,Empathetic,Adventurous,Introverted,Disagreeable,Pessimistic,Coldhearted,Shy" name="CharacterPersonality" />
+        <ui:TextField picking-mode="Ignore" label="Catch Phrases" text="ex : She Greets with &quot;what&apos;s up love ?&quot;" name="CatchPhrases" />
+        <ui:DropdownField label="Voice" index="0" choices="None,Male - English (UK),Female - English (UK),Male - English (US),Female - English (US),Female - English (Autralia),Female - English (New Zealand),Female - English (India),Female - English (Irish),Female - English (South Africa),Male - French,Female - French,Male - Italian,Female - Italian" name="CharacterVoice" />
+        <ui:Toggle label="Use Quest Objects ?" name="QuestObjects" style="-unity-text-align: upper-left; justify-content: center; flex-direction: row; display: none;" />
+        <ui:IMGUIContainer style="padding-left: 10px; padding-right: 10px; padding-top: 10px; padding-bottom: 10px; margin-bottom: 5px; margin-top: 5px; display: none; visibility: visible; overflow: visible;">
+            <uie:ObjectField label="Quest Object 1" type="UnityEngine.GameObject, UnityEngine.CoreModule" name="QuestObj1" style="display: flex; visibility: visible; overflow: visible;" />
+            <uie:ObjectField label="Quest Object 2" type="UnityEngine.GameObject, UnityEngine.CoreModule" name="QuestObj2" />
+            <uie:ObjectField label="Quest Object 3" type="UnityEngine.GameObject, UnityEngine.CoreModule" name="QuestObj3" />
+        </ui:IMGUIContainer>
+        <ui:IMGUIContainer style="padding-top: 0; padding-bottom: 0; padding-left: 0; padding-right: 0;">
+            <ui:Button text="Convert to Smart NPC" display-tooltip-when-elided="true" name="ConvertNpc" style="padding-top: 4px; padding-bottom: 4px;" />
+            <ui:Button text="Convert to Player" display-tooltip-when-elided="true" name="ConvertPlayer" style="padding-top: 4px; padding-bottom: 4px;" />
+        </ui:IMGUIContainer>
+    </ui:VisualElement>
+</ui:UXML>

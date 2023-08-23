@@ -1,0 +1,25 @@
+{
+    "name": "FlippitEditor",
+    "rootNamespace": "Flippit.Editor",
+    "references": [
+        "GUID:218fac9039e63f846be4ebe6fe24b09c",
+        "GUID:4307f53044263cf4b835bd812fc161a4",
+        "GUID:c134bcc78e9319b46bca7777d9422c2a",
+        "GUID:343deaaf83e0cee4ca978e7df0b80d21",
+        "GUID:96af4ea235d92d245a095007c6ca3701",
+        "GUID:69ab3f10cf42d0b42a6cd1353c374377",
+        "GUID:3767bd2fcc2929d49adf67951df41fd4",
+        "GUID:36f486ff968bbf4439cd840e8fca87ea"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
