@@ -55,12 +55,14 @@ MonoBehaviour:
   DiscussionPanel: {fileID: 4328322860179508478}
   inputField: {fileID: 4328322858182225337}
   UseMicrophone: 1
-  displayInputFieldPanel: 0
+  displayInputFieldPanel: 1
   pushToTalkButton: 9
   ExitDiscussion: 27
   recordingMaxDuration: 10
-  ShowDiscussion: 0
-  useVoices: 0
+  ShowDiscussion: 1
+  windowMaxWidth: 300
+  windowMaxHeight: 200
+  useVoices: 1
   CameraOffsettargetX: 2
   CameraOffsettransitionDuration: 2
   FadeDuration: 0.3
@@ -945,7 +947,7 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4328322860179508478}
   m_Enabled: 1
-  m_Alpha: 1
+  m_Alpha: 0
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0

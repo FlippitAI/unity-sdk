@@ -1,3 +1,5 @@
+using System;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -54,7 +56,7 @@ namespace Flippit.Editor
             }
             else
             {
-                //Debug.LogError("Request failed. Error: " + webRequest.error);
+                Debug.LogError("Request failed. Error: " + webRequest.error);
                 return null;
             }
         }

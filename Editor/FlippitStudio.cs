@@ -1,16 +1,33 @@
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
+using UnityEditor.UIElements;
 using System;
 using System.IO;
+using System.Text;
+using System.Security.Cryptography;
+using UnityEngine.Networking;
+using UnityEditor.VersionControl;
+using System.Net;
+using System.Collections;
+using UnityEditor.MemoryProfiler;
 using System.Linq;
+using UnityEngine.SocialPlatforms.GameCenter;
+using UnityEditor.Experimental.GraphView;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Amazon.Auth.AccessControlPolicy.ActionIdentifiers;
+using Amazon.Polly.Model;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using UnityEngine.Assertions.Must;
 using ReadyPlayerMe.Core;
 using ReadyPlayerMe.Core.Editor;
 using static Flippit.EnumLists;
 using UnityEngine.AI;
+using System.Dynamic;
 
 namespace Flippit.Editor
 {
@@ -83,7 +100,7 @@ namespace Flippit.Editor
             connexionPanel = root.Q("Connexion");
             libraryPanel = root.Q("Library");
             ScrollViewContainer = root.Q("unity-content-container");
-            
+
             loginInput = root.Q("login") as TextField;
             passwordInput = root.Q("Password") as TextField;
 
@@ -103,7 +120,6 @@ namespace Flippit.Editor
             libraryPanel.style.display = DisplayStyle.None;
             if (EditorPrefs.GetString("login") != null) userlogin = EditorPrefs.GetString("login");
             if (EditorPrefs.GetString("Password") != null) userPass = EditorPrefs.GetString("Password");
-            Debug.Log("login = : " + userlogin + " // userpass = : "+ userPass);
             if (userlogin != null && userPass != null)
             {
                 LoginData logData = new()
@@ -111,9 +127,12 @@ namespace Flippit.Editor
                     username = userlogin,
                     password = userPass
                 };
+                
                 TreatData(logData);
+                initialized = true;
             }
-            initialized = true;
+            else initialized = false;
+            
         }
         public void OnConnect(ClickEvent evt)
         {
@@ -130,23 +149,43 @@ namespace Flippit.Editor
         {
             string JSstr = JsonUtility.ToJson(logData);
             string credentialsJson = ApiManager.PostRequest("api/v1/auth/login", JSstr);
+            
             if (credentialsJson != null)
             {
                 string accessToken = Regex.Match(credentialsJson, @"""access_token"":""([^""]+)""").Groups[1].Value;
                 string refreshToken = Regex.Match(credentialsJson, @"""refresh_token"":""([^""]+)""").Groups[1].Value;
                 string allCharacters = ApiManager.GetRequest("api/v1/characters", accessToken: accessToken, refreshToken: refreshToken);
+
                 EditorPrefs.SetString("login", logData.username);
                 EditorPrefs.SetString("Password", logData.password);
                 EditorPrefs.SetString("AccessToken", accessToken);
                 EditorPrefs.SetString("RefreshToken", refreshToken);
+                SetAPIKey();
                 EditorPrefs.SetBool("registered", true);
                 LoadLibraryContent(allCharacters);
+
             }
             else
             {
                 // Handle request failure
                 ConfirmationMessage("Verify your login and password");
             }
+        }
+        private void SetAPIKey()
+        {
+           
+            string apiKeyResponse = ApiManager.GetRequest("api/v1/integrations/get_integration_token", EditorPrefs.GetString("AccessToken"), EditorPrefs.GetString("RefreshToken"));
+            if (apiKeyResponse != null)
+            {
+                string apiKey = Regex.Match(apiKeyResponse, @"""access_key"":""([^""]+)""").Groups[1].Value;
+
+                // Store the API key as an asset
+                ApiKeyManager apiKeyManager = CreateInstance<ApiKeyManager>();
+                apiKeyManager.apiKey = apiKey;
+                string assetPath = "Assets/Flippit/Resources/FlippitApiKey.asset"; // Specify the asset path as needed
+                AssetDatabase.CreateAsset(apiKeyManager, assetPath);
+            }
+
         }
         private void OnDisable()
         {
@@ -178,8 +217,8 @@ namespace Flippit.Editor
         }
         public void DrawLocalLibrary(string All)
         {
-            Texture2D[] thumbnails = new Texture2D[0];
-            thumbnails = Resources.LoadAll<Texture2D>(thumbnailsPath);
+            //_ = new Texture2D[0];
+            Texture2D[] thumbnails = Resources.LoadAll<Texture2D>(thumbnailsPath);
             if (thumbnails != null && thumbnails.Length > 0)
             {
                 VisualElement rowContainer = null;
@@ -195,16 +234,16 @@ namespace Flippit.Editor
                     }
                     CreateNPCPanel(t2D, rowContainer, "", null);
                 }
-                LoadStudioLibrary(thumbnails,rowContainer,All);
+                LoadStudioLibrary(thumbnails, rowContainer, All);
             }
             else
             {
                 VisualElement rowContainer = null;
-                LoadStudioLibrary(thumbnails,rowContainer,All);
+                LoadStudioLibrary(thumbnails, rowContainer, All);
             }
             Repaint();
         }
-        private void LoadStudioLibrary(Texture2D[] thumbnails,VisualElement rowContainer,string All)
+        private void LoadStudioLibrary(Texture2D[] thumbnails, VisualElement rowContainer, string All)
         {
             List<CharacterWrapper> characterWrappers = JsonConvert.DeserializeObject<List<CharacterWrapper>>(All);
             if (characterWrappers.Count == 0)
@@ -212,7 +251,7 @@ namespace Flippit.Editor
                 VisualElement textpanel = new()
                 {
                     name = "messagePanel",
-                    
+
                     style =
                     {
                         flexDirection=FlexDirection.Row
@@ -258,9 +297,9 @@ namespace Flippit.Editor
         }
         private int GetMaxElementsPerRow()
         {
-            maxWidth = position.width - 4; 
+            maxWidth = position.width - 4;
 
-            int maxElements = Mathf.FloorToInt(maxWidth / 150); 
+            int maxElements = Mathf.FloorToInt(maxWidth / 150);
             return maxElements;
         }
         void CreateNPCPanel(Texture2D texture, VisualElement rowContainer, string glbUrl, Character character)
@@ -388,15 +427,15 @@ namespace Flippit.Editor
                 }
             };
             elementBG.Add(NPCName);
-            Texture2D UpdateImg = Resources.Load<Texture2D>("Update");
+            Texture2D UpdateImg = Resources.Load<Texture2D>("Upload");
             Button Update = new()
             {
                 name = "ButtonUpdate",
                 style =
                 {
-                    width = 60,
-                    minHeight= 10,
-                    minWidth= 10,
+                    width = 20,
+                    minHeight= 20,
+                    minWidth= 20,
                     marginBottom=0,
                     marginLeft=0,
                     marginRight=0,
@@ -411,10 +450,10 @@ namespace Flippit.Editor
                     borderBottomWidth=0,
                     borderLeftWidth=0,
                     borderTopWidth=0,
-                    borderBottomLeftRadius=10,
-                    borderBottomRightRadius=10,
-                    borderTopLeftRadius=10,
-                    borderTopRightRadius=10
+                    borderBottomLeftRadius=0,
+                    borderBottomRightRadius=0,
+                    borderTopLeftRadius=0,
+                    borderTopRightRadius=0
                 }
             };
             Update.clickable.clicked += () =>
@@ -431,7 +470,7 @@ namespace Flippit.Editor
                     GameObject prefab = Resources.Load("Prefabs/" + oldName) as GameObject;
                     AssetDatabase.RenameAsset(prefabPath + "/" + oldName + ".prefab", UpdatePersonality.characterName);
                 }
-                EnumLists lists= new();
+                EnumLists lists = new();
                 Age[] allAges = (Age[])Enum.GetValues(typeof(Age));
                 int ageIndex = Array.IndexOf(allAges, UpdatePersonality.characterAge);
                 UpdatePersonality.ageId = lists.AgeID[ageIndex];
@@ -446,7 +485,7 @@ namespace Flippit.Editor
                 UpdatePersonality.moodId = null;
 
                 string dataCharacter = converter.GetFormatedJsonPayload(UpdatePersonality);
-                Debug.Log("api/v1/characters/update: " + dataCharacter );
+                Debug.Log("api/v1/characters/update: " + dataCharacter);
                 ApiManager.PostRequest("api/v1/characters/update", dataCharacter, EditorPrefs.GetString("AccessToken"), EditorPrefs.GetString("RefreshToken"));
                 RefreshLibrary();
             };
@@ -457,9 +496,9 @@ namespace Flippit.Editor
                 name = "ButtonDelete",
                 style =
                 {
-                    width = 60,
-                    minHeight= 10,
-                    minWidth= 10,
+                    width = 20,
+                    minHeight= 20,
+                    minWidth= 20,
                     marginBottom=0,
                     marginLeft=0,
                     marginRight=0,
@@ -474,10 +513,10 @@ namespace Flippit.Editor
                     borderBottomWidth=0,
                     borderLeftWidth=0,
                     borderTopWidth=0,
-                    borderBottomLeftRadius=10,
-                    borderBottomRightRadius=10,
-                    borderTopLeftRadius=10,
-                    borderTopRightRadius=10
+                    borderBottomLeftRadius=0,
+                    borderBottomRightRadius=0,
+                    borderTopLeftRadius=0,
+                    borderTopRightRadius=0
                 }
             };
             Delete.clickable.clicked += () =>
@@ -513,7 +552,7 @@ namespace Flippit.Editor
             {
                 ConfirmationMessage(npcPrefab + " has not been created");
             }
-            
+
         }
         private void Failed(object sender, FailureEventArgs args)
         {
@@ -521,13 +560,11 @@ namespace Flippit.Editor
         }
         private void OnOperationCompleted(object sender, IOperation<AvatarContext> e)
         {
-            // Traitez les opÃ©rations supplÃ©mentaires aprÃ¨s le chargement de l'avatar, si nÃ©cessaire
+            // Traitez les opérations supplémentaires après le chargement de l'avatar, si nécessaire
         }
         private void Completed(CompletionEventArgs args, Character character)
         {
             GameObject avatar = args.Avatar;
-            // avatar.AddComponent<EyeRotationHandler>();
-            // avatar.AddComponent<VoiceHandler>();
             EditorUtilities.CreatePrefab(avatar, $"{DirectoryUtility.GetRelativeProjectPath(avatar.name)}/{avatar.name}.prefab");
             Selection.activeObject = args.Avatar;
             ConvertToNPC(character);
@@ -553,7 +590,6 @@ namespace Flippit.Editor
             public string urls { get; set; }
             public string asset_file_path { get; set; }
         }
-
         void ConvertToNPC(Character character)
         {
             if (Selection.activeGameObject != null)
@@ -633,7 +669,7 @@ namespace Flippit.Editor
                 }
                 if (!AssetDatabase.IsValidFolder("Assets/Flippit/Resources"))
                 {
-                    AssetDatabase.CreateFolder("Assets/Flippit", "Resources");
+                    AssetDatabase.CreateFolder("Flippit", "Ressources");
                 }
                 if (!AssetDatabase.IsValidFolder(personalityPath))
                 {
@@ -660,7 +696,6 @@ namespace Flippit.Editor
                 ConfirmationMessage("Please, select the Ia Character First.");
             }
         }
-
         private int GetIndex(string[] array, string chain)
         {
             for (int i = 0; i < array.Length; i++)
@@ -673,15 +708,12 @@ namespace Flippit.Editor
         {
             isLoadingLibrary = false;
             ScrollViewContainer.Clear();
-            string allCharacters = ApiManager.GetRequest("api/v1/characters", EditorPrefs.GetString("AccessToken"),EditorPrefs.GetString("RefreshToken"));
+            string allCharacters = ApiManager.GetRequest("api/v1/characters", EditorPrefs.GetString("AccessToken"), EditorPrefs.GetString("RefreshToken"));
             LoadLibraryContent(allCharacters);
         }
         public void ConfirmationMessage(string message)
         {
             Debug.Log(message);
         }
-
     }
-
-
 }

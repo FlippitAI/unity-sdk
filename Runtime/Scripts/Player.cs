@@ -19,7 +19,6 @@ namespace Flippit
         [HideInInspector]
         public bool isRunning;
         public float rotateSpeed = 100f;
-        public string tagT = "Player";
         #endregion
         #region
         private Rigidbody rb;
@@ -32,7 +31,7 @@ namespace Flippit
         // Start is called before the first frame update
         void Start()
         {
-            //gameObject.tag = "Player";
+            gameObject.tag = "Player";
             if(FPS)
             {
                 avatar.SetActive(false);
@@ -56,8 +55,8 @@ namespace Flippit
             InteractionDialogue = true;
             if (DialogueWithIa != null && !DialogueInterface.activeInHierarchy)
             {
-                 DialogueInterface.GetComponent<DialogueWindow>().IaActive = DialogueWithIa;
-                 DialogueInterface.GetComponent<DialogueWindow>().IaPersona = DialogueWithIa.GetComponent<IACharacter>().personality;
+                DialogueInterface.GetComponent<DialogueWindow>().IaActive = DialogueWithIa;
+                DialogueInterface.GetComponent<DialogueWindow>().IaPersona = DialogueWithIa.GetComponent<IACharacter>().personality;
             }
             DialogueInterface.SetActive(true);
         }

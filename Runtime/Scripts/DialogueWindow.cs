@@ -1,5 +1,6 @@
 using Cinemachine;
 using OpenAI;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -7,6 +8,9 @@ using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UI;
+
+using static Flippit.EnumLists;
 
 
 namespace Flippit
@@ -30,7 +34,7 @@ namespace Flippit
         public string ageID;
         public string prompt;
     }
- 
+
     public class DialogueWindow : MonoBehaviour
     {
         #region public var
@@ -45,16 +49,16 @@ namespace Flippit
         public KeyCode pushToTalkButton = KeyCode.Tab;
         public KeyCode ExitDiscussion = KeyCode.Escape;
         public int recordingMaxDuration = 10;
-        
+
         [Header("Output Options")]
         public bool ShowDiscussion;
-        public float windowMaxWidth=300f, windowMaxHeight=200f;
+        public float windowMaxWidth = 300f, windowMaxHeight = 200f;
         public bool useVoices;
-        
+
         [Header("Camera Options")]
-        public float CameraOffsettargetX = -2;
+        public float CameraOffsettargetX = -1;
         public float CameraOffsettransitionDuration = 2;
-        [HideInInspector] 
+        [HideInInspector]
         public float FadeDuration = .1f;
 
         [HideInInspector]
@@ -71,7 +75,7 @@ namespace Flippit
         #region private var
         private TextMeshProUGUI inputText;
         private TextMeshProUGUI chatAreaText;
-        private float currentTime=0;
+        private float currentTime = 0;
         private IACharacter iaSc;
         private GameObject playerGO;
         private CinemachineVirtualCamera VCam;
@@ -86,7 +90,7 @@ namespace Flippit
         private AudioClip clip;
         private float time;
         private readonly string fileName = "recording.wav";
-        private readonly OpenAIApi openai = new("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");
+        private readonly OpenAIApi openai = new("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");
         private bool isTalkingToCharacter = false;
         #endregion
         WebSocketManager manager;
@@ -112,13 +116,13 @@ namespace Flippit
                     time = 0;
                     isRecording = false;
                     EndRecording();
-                    Debug.Log("End of recording");
+                    Debug.Log("Enregistrement fini");
                 }
             }
 
-            if (Input.GetKeyDown(ExitDiscussion)&& isTalkingToCharacter)
+            if (Input.GetKeyDown(ExitDiscussion) && isTalkingToCharacter)
             {
-                FinishDiscussion(resetIA: true);
+                FinishDiscussion();
             }
 
             if (isRecording)
@@ -129,21 +133,21 @@ namespace Flippit
                     time = 0;
                     isRecording = false;
                     EndRecording();
-                    Debug.Log("Forced End of recording (exceeding max duration of recording)");
+                    Debug.Log("Enregistrement stoppé de force (duration)");
                 }
             }
         }
         private void OnEnable()
         {
-            ChatContainer.SetActive(displayInputFieldPanel);    
-            inputField.SetActive(displayInputFieldPanel);   
+            ChatContainer.SetActive(displayInputFieldPanel);
+            inputField.SetActive(displayInputFieldPanel);
             DiscussionPanel.SetActive(ShowDiscussion);
 
             VCam = FindObjectOfType<CinemachineVirtualCamera>();
             iaSc = IaActive.GetComponent<IACharacter>();
-            playerGO = GameObject.Find("Player");
+            playerGO = GameObject.FindGameObjectWithTag("Player");
             discussion = iaSc.Discussion;
-            
+
             PositionVCam(true);
             dialogueCanvasGroup = DiscussionPanel.GetComponent<CanvasGroup>();
 
@@ -158,19 +162,19 @@ namespace Flippit
         public void SaySomething()
         {
             firstSentence = true;
-            if(inputText.text.Length>1 && IaPersona!=null)
+            if (inputText.text.Length > 1 && IaPersona != null)
             {
                 IaPersona.prompt = inputText.text;
                 CharacterInfos promptMessage = new() { action = "chat", prompt = inputText.text };
                 manager.SendWebSocketMessage(JsonUtility.ToJson(promptMessage));
-                inputText.text="";
+                inputText.text = "";
             }
         }
         public void SpeechSomething(string speech)
         {
             discussion = "";
             firstSentence = true;
-            if (speech.Length > 1&& IaPersona!=null)
+            if (speech.Length > 1 && IaPersona != null)
             {
                 IaPersona.prompt = speech;
                 CharacterInfos promptMessage = new() { action = "chat", prompt = IaPersona.prompt };
@@ -178,7 +182,7 @@ namespace Flippit
             }
         }
 
-        public void FinishDiscussion(bool resetIA = true)
+        public void FinishDiscussion()
         {
             // Reset variables and components
             if (iaSc != null) iaSc.Discussion = discussion;
@@ -191,28 +195,19 @@ namespace Flippit
             clip = null;
             InputMessage.text = string.Empty;
             if (IaActive != null)
-            { 
+            {
                 Animator animator = IaActive.GetComponentInChildren<Animator>();
                 if (animator != null)
                 {
-                    animator.SetBool("Talking", false); 
-                    if(playerGO!=null)playerGO.GetComponent<Player>().CloseDialogueBox();
-
-                    manager.CloseWebsocket();
-                    manager = null;
-                    IaPersona = null;
-
+                    animator.SetBool("Talking", false);
                 }
             }
-            if (resetIA)
-            {
-                IaActive = null;
-            }
-
+            IaActive = null;
+            IaPersona = null;
+            if (playerGO != null) playerGO.GetComponent<Player>().CloseDialogueBox();
             PositionVCam(false);
-
-
-
+            manager.closeWebsocket();
+            manager = null;
 
         }
 
@@ -246,7 +241,7 @@ namespace Flippit
                     Vector2 newSize = new(Mathf.Min(preferredSize.x, maxWidth), Mathf.Min(preferredSize.y, maxHeight));
                     DiscussionPanel.GetComponent<RectTransform>().sizeDelta = newSize;
                 }
-                
+
                 else
                 {
                     chatAreaText.text = discussion;
@@ -273,7 +268,7 @@ namespace Flippit
 
         private void PositionVCam(bool dialOuPa)
         {
-            
+
             if (dialOuPa)
             {
                 VCam.LookAt = IaActive.transform;
@@ -301,7 +296,7 @@ namespace Flippit
             }
             isTalkingToCharacter = true;
         }
-        
+
         private IEnumerator AnimatePositionXReverse()
         {
             elapsedTime = 0;
@@ -322,7 +317,7 @@ namespace Flippit
             gameObject.SetActive(false);
             isTalkingToCharacter = false;
         }
-       
+
         private async void ReadSentences()
         {
             if (currentSentenceIndex >= 0 && currentSentenceIndex < sentences.Count)
@@ -331,7 +326,7 @@ namespace Flippit
                 int index = (int)IaPersona.voice;
                 lists = new EnumLists();
                 string voiceID = lists.voiceNames[index];
-                Task speechTask = IaActive.GetComponent<TTS>().SpeechMe(sentenceToRead,voiceID);
+                Task speechTask = IaActive.GetComponent<TTS>().SpeechMe(sentenceToRead, voiceID);
                 await speechTask;
                 currentSentenceIndex++;
                 ReadSentences();
@@ -343,16 +338,12 @@ namespace Flippit
                 dialogueCanvasGroup.alpha = 0;
             }
         }
-        
-        public void PlayAnimation(string animName, string objectName = null)
+
+        public async void PlayAnimation(string animName)
         {
             Animator animator = IaActive.GetComponentInChildren<Animator>();
-            if (IaActive == null)
-            {
-                Debug.Log("IaActive GameObject not assigned. Make sure it is assigned in the Unity Editor.");
-            }
 
-            if (animName == "Talking" || animName == "Walk" || animName == "Jogging" || animName == "Grab")
+            if (animName == "Talking" || animName == "Walk")
             {
                 animator.SetBool("Talking", true);
             }
@@ -362,122 +353,33 @@ namespace Flippit
                 animator.SetBool("Talking", true);
             }
 
-            if (animName == "Walk" || animName == "Jogging" || animName == "Grab")
+            if (animName == "Walk")
             {
-                StartCoroutine(PerformActionAnimation(animator, animName, objectName));
-            }
-        }
+                GameObject[] questObj = IaActive.GetComponent<IACharacter>().QuestObjects;
 
-        private IEnumerator PerformActionAnimation(Animator animator, string animName, string objectName)
-        {
-            while (animator.GetBool("Talking"))
-            {
-                // Wait for Talking to be set to false (from external piece of code)
-                yield return new WaitForSeconds(0.5f);
-            }
-
-            GameObject[] questObjs = IaActive.GetComponent<IACharacter>().QuestObjects;
-            GameObject unityObject = null;
-
-            if (questObjs.Length > 0)
-            {
-                int matchedObjectIndex = -1;
-
-                for (int i = 0; i < questObjs.Length; i++)
+                if (questObj.Length > 0)
                 {
-                    unityObject = questObjs[i];
-
-                    if (unityObject != null && (unityObject.name.ToLower().Contains(objectName.ToLower()) || objectName.ToLower().Contains(unityObject.name.ToLower())))
+                    while (animator.GetBool("Talking"))
                     {
-                        // Object name matches, select it or perform any desired action
-                        matchedObjectIndex = i;
-                        break;
+                        // Wait for Talking to be set to true (from external piece of code)
+                        await Task.Delay(500);
                     }
-                }
-
-                if (matchedObjectIndex != -1)
-                {
-                    // FinishDiscussion(resetIA: false);
-
                     NavMeshAgent agent = IaActive.GetComponent<NavMeshAgent>();
+                    agent.destination = questObj[0].transform.position; // to change to dynamically update the object -- need to be linked to the db
+                    agent.stoppingDistance = 2.0f; // Set the stopping distance to 2.0 units
 
-                    // Go to the object
-                    agent.destination = questObjs[matchedObjectIndex].transform.position;
-                    agent.stoppingDistance = 3.0f;
-
-                    while (agent.pathPending || agent.remainingDistance > agent.stoppingDistance)
-                    {
-
-                        yield return null;
-                    }
-
-                    Debug.Log("Agent has arrived at the destination!");
-
-                    if (animName == "Grab")
-                    {
-                        Vector3 handOffset = new Vector3(0f, 1.0f, 1.0f); // Adjust the offset as needed
-
-                        // Pick the object
-                        if (unityObject != null)
-                        {
-                            // Store the original position of the object
-                            Vector3 objectOriginalPosition = unityObject.transform.position;
-
-                            // Calculate the offset from the avatar's hand position
-                            Vector3 handPosition = IaActive.transform.position + IaActive.transform.TransformDirection(handOffset);
-                            Vector3 objectOffset = objectOriginalPosition - handPosition;
-
-                            unityObject.transform.position = handPosition;
-                            unityObject.transform.rotation = IaActive.transform.rotation;
-
-                            yield return new WaitForSeconds(10.0f); // Delay for the physics engine to stabilize the object
-
-                            // Return to the player
-                            // agent.destination = playerGO.transform.position;
-                            // agent.stoppingDistance = 3.0f;
-
-                            // while (agent.remainingDistance > agent.stoppingDistance)
-                            // {
-                            //     // Update the position of the grabbed object relative to the avatar's hand
-                            //     unityObject.transform.position = IaActive.transform.position + objectOffset;
-
-                            //     yield return null;
-                            // }
-
-                            // Release the object on the ground
-                            RaycastHit hit;
-                            if (Physics.Raycast(unityObject.transform.position, Vector3.down, out hit))
-                            {
-                                unityObject.transform.position = hit.point;
-                            }
-                        }
-                    }
-
-
-
+                    FinishDiscussion();
                 }
             }
         }
-
         private void StartRecording()
         {
             isRecording = true;
-            #if !UNITY_WEBGL
-                clip = Microphone.Start(Microphone.devices[0], false, recordingMaxDuration, 44100);
-            #else
-                // clip
-            #endif
-
+            clip = Microphone.Start(Microphone.devices[0], false, recordingMaxDuration, 44100);
         }
         private async void EndRecording()
         {
-            #if !UNITY_WEBGL
-                 Microphone.End(Microphone.devices[0]);
-            #endif
-            #if UNITY_WEBGL
-                
-            #endif
-
+            Microphone.End(Microphone.devices[0]);
             byte[] data = SaveWav.Save(fileName, clip);
 
             var req = new CreateAudioTranscriptionsRequest
@@ -492,6 +394,5 @@ namespace Flippit
             InputMessage.text = res.Text;
             SpeechSomething(res.Text);
         }
-
     }
 }

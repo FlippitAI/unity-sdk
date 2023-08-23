@@ -1,7 +1,9 @@
 using NativeWebSocket;
+using System.Collections.Generic;
 using UnityEngine;
 using System.Text;
 using System;
+using UnityEditor;
 
 namespace Flippit
 {
@@ -14,9 +16,9 @@ namespace Flippit
     public class WebSocketManager : MonoBehaviour
     {
         private WebSocket socket;
-        //private readonly string cleApi = "PpbKR5SR445RnhhNJvzYyvd44DMvUqbX";
-        private readonly string urlA = "wss://lyp2td10ke.execute-api.eu-west-1.amazonaws.com/prod?key=3Ga4B25zs3H8RgJy&characterId=";//Id=[ID du perso test]
-        //private readonly string urlB = "&characterId=";
+        private string apiKey;
+        private readonly string urlWebsocket = "wss://gzemwuzrtk.execute-api.eu-west-1.amazonaws.com/staging?Authorizer=";
+        private readonly string urlCharacterId = "&characterId=";
         private string characterId = ""; 
         
         private string lastState = "";
@@ -24,7 +26,8 @@ namespace Flippit
         [HideInInspector]
         public string characterInfos;
         DialogueWindow dialSc;
-        
+        private ApiKeyManager apiKeyManager;
+
         public void StartWebSocket(string characterId) 
         {
             this.characterId = characterId;
@@ -33,9 +36,24 @@ namespace Flippit
 
         private void Start()
         {
-            dialSc = GetComponent<DialogueWindow>();
-            socket = new WebSocket(urlA + characterId);
-            Open();
+            apiKeyManager = Resources.Load<ApiKeyManager>("FlippitApiKey");
+            if (apiKeyManager != null && !string.IsNullOrEmpty(apiKeyManager.apiKey))
+            {
+                apiKey = apiKeyManager.apiKey;
+                Debug.Log("API Key retrieved: " + apiKey);
+
+                Dictionary<string, string> headers = new Dictionary<string, string>
+                {
+                    { "Origin", "Unity" },
+                };
+                dialSc = GetComponent<DialogueWindow>();
+                socket = new WebSocket(url: urlWebsocket + apiKey + urlCharacterId + characterId, headers: headers);
+                Open();
+            }
+            else
+            {
+                Debug.LogError("API Key is not set. Please log in to Flippit");
+            }
         }
 
         public async void Open()
@@ -62,20 +80,8 @@ namespace Flippit
                     if (message.Contains("animation_key"))
                     {
                         ChatChunkMessage newChunk = JsonUtility.FromJson<ChatChunkMessage>(message);
-
-                        string[] animationSplit = newChunk.value.Split(':');
-                        string animationName = animationSplit[0].Trim();
-                        // Debug.Log(animationName);
-
-                        string objectName = null;
-                        if (animationSplit.Length > 1)
-                        {
-                            objectName = animationSplit[1].Trim();
-                            // Debug.Log(objectName);
-
-                        }
-
-                        GetComponent<DialogueWindow>().PlayAnimation(animationName, objectName);
+                        GetComponent<DialogueWindow>().PlayAnimation(newChunk.value);
+                        //Debug.Log("Chunk envoyé : " + newChunk.value);
                     }
                     else if (message.Contains("chat_chunk"))
                     {
@@ -115,7 +121,7 @@ namespace Flippit
             set;
         }
 
-        public void CloseWebsocket()
+        public void closeWebsocket()
         {
             if (socket.State == WebSocketState.Open && socket != null) socket.Close();
         }

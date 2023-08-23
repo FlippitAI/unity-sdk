@@ -1,9 +1,9 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
-    <ui:Template name="Header" src="project://database/Assets/Plugins/Flippit/Scripts/Editor/Styles/Header.uxml?fileID=9197481963319205126&amp;guid=c2fd130b0f6dcc241ba9758b935968a8&amp;type=3#Header" />
-    <ui:Template name="ContextContainer" src="project://database/Assets/Plugins/Flippit/Scripts/Editor/Styles/ContextContainer.uxml?fileID=9197481963319205126&amp;guid=d5ec82ba52934a34a8b85b7933f3a4f2&amp;type=3#ContextContainer" />
-    <Style src="project://database/Assets/Plugins/Flippit/Scripts/Editor/Styles/FlippitStudio.uss?fileID=7433441132597879392&amp;guid=cb97141ed7f79ae43b02ea36022a34e5&amp;type=3#FlippitStudio" />
-    <ui:VisualElement name="FlippitContainer" style="align-items: center; width: auto; justify-content: flex-start; flex-direction: column; flex-grow: 1; height: auto; flex-shrink: 1; flex-basis: auto;">
-        <ui:Instance template="Header" name="Header" style="align-items: center; flex-direction: column; width: 460px; height: 440px; flex-shrink: initial; flex-grow: initial;" />
+    <ui:Template name="Header" src="project://database/Packages/com.flippit.flippitstudio/Editor/Styles/Header.uxml?fileID=9197481963319205126&amp;guid=c2fd130b0f6dcc241ba9758b935968a8&amp;type=3#Header" />
+    <ui:Template name="ContextContainer" src="project://database/Packages/com.flippit.flippitstudio/Editor/Styles/ContextContainer.uxml?fileID=9197481963319205126&amp;guid=d5ec82ba52934a34a8b85b7933f3a4f2&amp;type=3#ContextContainer" />
+    <Style src="project://database/Packages/com.flippit.flippitstudio/Editor/Styles/FlippitStudio.uss?fileID=7433441132597879392&amp;guid=cb97141ed7f79ae43b02ea36022a34e5&amp;type=3#FlippitStudio" />
+    <ui:VisualElement name="FlippitContainer" focusable="false" style="align-items: center; width: auto; justify-content: flex-start; flex-direction: column; flex-grow: 1; height: auto; flex-shrink: 1; flex-basis: auto; flex-wrap: nowrap; position: relative; top: auto; -unity-background-scale-mode: stretch-to-fill;">
+        <ui:Instance template="Header" name="Header" style="align-items: center; flex-direction: column; width: 460px; height: 440px; flex-shrink: 1; flex-grow: 0; flex-basis: 250px;" />
         <ui:Instance template="ContextContainer" name="ContextContainer" />
     </ui:VisualElement>
 </ui:UXML>

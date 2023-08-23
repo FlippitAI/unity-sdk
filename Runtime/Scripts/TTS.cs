@@ -33,14 +33,14 @@ namespace Flippit
 
             WriteIntoFile(response.AudioStream);
 
-            // using var www = UnityWebRequestMultimedia.GetAudioClip($"file://{Application.persistentDataPath}/audio.mp3", AudioType.MPEG);
-            // var op = www.SendWebRequest();
-            // while (!op.isDone) await Task.Yield();
+            using var www = UnityWebRequestMultimedia.GetAudioClip($"file://{Application.persistentDataPath}/audio.mp3", AudioType.MPEG);
+            var op = www.SendWebRequest();
+            while (!op.isDone) await Task.Yield();
 
-            // var clip = DownloadHandlerAudioClip.GetContent(www);
-            // audioSource.clip = clip;
-            // audioSource.Play();
-            // await Task.Delay((int)(clip.length * 1000));
+            var clip = DownloadHandlerAudioClip.GetContent(www);
+            audioSource.clip = clip;
+            audioSource.Play();
+            await Task.Delay((int)(clip.length * 1000));
         }
 
 

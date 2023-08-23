@@ -8,3 +8,5 @@
 
 *Flippit* enables use of Flippit asset files in [Unity][unity].
 
+It focuses on speed, bla bla bla:
+

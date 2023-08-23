@@ -73,7 +73,7 @@ namespace Flippit.Editor
             RenderTexture.active = null;
             camera.targetTexture = null;
 
-            // Destroy camera and rendertexture once thumbnail retrieved
+            // Détruire la caméra et le rendertexture après avoir récupéré le thumbnail
             Object.DestroyImmediate(camera.gameObject);
             Object.DestroyImmediate(renderTexture);
             foreach (SkinnedMeshRenderer renderer in skinnedRenderers)

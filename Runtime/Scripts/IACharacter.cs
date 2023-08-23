@@ -35,19 +35,14 @@ namespace Flippit
 
         private void OnTriggerEnter(Collider other)
         {
-            var plyComp = other.GetComponent<Player>();
-            if (plyComp != null)
+            if (other.CompareTag("Player"))
             {
-                if (plyComp.tagT == "Player")
-                {
-                    playerGO = other.gameObject;
-                    iSeeYou = true;
-                    playerScript = playerGO.GetComponent<Player>();
-                    playerScript.DialogueWithIa = gameObject;
-                    playerScript.OpenDialogueBox();
-                }
+                playerGO= other.gameObject;
+                iSeeYou = true;
+                playerScript = playerGO.GetComponent<Player>();
+                playerScript.DialogueWithIa = gameObject;
+                playerScript.OpenDialogueBox();
             }
-            
         }
         private void OnTriggerExit(Collider other)
         {

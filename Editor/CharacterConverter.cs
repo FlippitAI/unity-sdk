@@ -1,12 +1,17 @@
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
+using UnityEditor.UIElements;
 using UnityEngine.AI;
 using Cinemachine;
+using System.Linq;
 using static Flippit.EnumLists;
+using System.Text.RegularExpressions;
 using System;
+using Amazon.Polly;
+using UnityEngine.Rendering;
 using Newtonsoft.Json;
-using System.IO.Pipes;
+using System.Runtime.InteropServices;
 
 namespace Flippit.Editor
 {
@@ -68,7 +73,6 @@ namespace Flippit.Editor
         private const string siteUrl = "https://www.flippit.ai/";
         private const string DiscordSupport = "https://discord.gg/MPMxDgKVrm";
         private const string Documentation = "https://flippit.notion.site/Unity-SDK-732f20e3837245cfbdb5b85d0636fa3b";
-        private const string tag = "NPC";
         #endregion
         #region private
         private GameObject canvas;
@@ -161,6 +165,7 @@ namespace Flippit.Editor
                     GameObject emptyGameObject = new()
                     {
                         name = characName.value,
+                        tag = "Flippit/NPC"
                     };
 
                     #region physic 
@@ -286,9 +291,9 @@ namespace Flippit.Editor
                 GameObject emptyGameObject = new()
                 {
                     name = "Player",
-                    
+                    tag = "Player"
                 };
-                // Ajouter les composants souhaitÃ©s Ã  l'objet sÃ©lectionnÃ©
+                // Ajouter les composants souhaités à l'objet sélectionné
 
                 # region Physic Elements
                 CapsuleCollider ColliderParameters = emptyGameObject.AddComponent<CapsuleCollider>();
@@ -309,8 +314,8 @@ namespace Flippit.Editor
                 {
                     canvas = canvaComp.gameObject;
                     Transform[] childTransforms = canvas.GetComponentsInChildren<Transform>(true);
-                    int childCount = childTransforms.Length; // Stocker la longueur du tableau Ã  l'extÃ©rieur de la boucle
-                    bool dialoguePanelFound = false; // BoolÃ©en pour marquer si l'objet DialoguePanel a Ã©tÃ© trouvÃ©
+                    int childCount = childTransforms.Length; // Stocker la longueur du tableau à l'extérieur de la boucle
+                    bool dialoguePanelFound = false; // Booléen pour marquer si l'objet DialoguePanel a été trouvé
                     for (int i = 0; i < childCount; i++)
                     {
                         Transform childTransform = childTransforms[i];
@@ -368,18 +373,6 @@ namespace Flippit.Editor
                 #endregion
                 SetupCamera();
                 Debug.Log("Your Player Prefab has been Created, Check Your Prefab Folder.");
-                // turn off the dialogue panel
-                GameObject dialoguePanel = GameObject.Find("DialoguePanel");
-                if (dialoguePanel != null)
-                {
-                    dialoguePanel.SetActive(false);
-                }
-                else
-                {
-                    // Object not found
-                    Debug.LogWarning("No Dialogue panel found");
-                }
-
             }
             else
             {

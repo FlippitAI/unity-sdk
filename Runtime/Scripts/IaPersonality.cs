@@ -10,11 +10,11 @@ namespace Flippit
     {
         #region public variables
         public string characterName;
-        [TextArea(3,10)]
+        [TextArea(3, 10)]
         public string backstory;
         public string primaryGoal;
         public string role = "";
-        public string hobbies="";
+        public string hobbies = "";
         public string catchPhrases;
         public EnumLists.Personality personality;
         public EnumLists.Age characterAge;
@@ -25,7 +25,7 @@ namespace Flippit
         [HideInInspector]
         public string moodId = null;
         [HideInInspector]
-        public string urls= null;
+        public string urls = null;
         [HideInInspector]
         public string assetFilePath;
         #endregion
