@@ -25,42 +25,5 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/FlippitAI/unity-sdk.git"
-  },
-  "scopedRegistries": [
-    {
-      "name": "GltFast",
-      "url": "https://github.com/atteneder/glTFast.git",
-      "scopes": [
-        "com.atteneder.gltfast"
-      ]
-    },
-    {
-      "name": "NativeWebSocket",
-      "url": "https://github.com/endel/NativeWebSocket.git",
-      "scopes": [
-        "com.endel.nativewebsocket"
-      ]
-    },
-    {
-      "name": "RpmCore",
-      "url": "https://github.com/readyplayerme/rpm-unity-sdk-core.git",
-      "scopes": [
-        "com.readyplayerme.core"
-      ]
-    },
-    {
-      "name": "RpmWebView",
-      "url": "https://github.com/readyplayerme/rpm-unity-sdk-webview.git",
-      "scopes": [
-        "com.readyplayerme.webview"
-      ]
-    },
-    {
-      "name": "OpenAI",
-      "url": "https://github.com/srcnalt/OpenAI-Unity.git",
-      "scopes": [
-        "com.srcnalt.openai-unity"
-      ]
-    }
-  ]
+  }
 }
