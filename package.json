@@ -6,12 +6,7 @@
   "unity": "2021.3",
   "dependencies": {
     "com.unity.cinemachine": "2.8.9",
-    "com.unity.textmeshpro": "3.0.6",
-    "com.atteneder.gltfast": "5.0.4",
-    "com.endel.nativewebsocket": "1.1.4",
-    "com.readyplayerme.core": "3.1.1",
-    "com.readyplayerme.webview": "1.2.1",
-    "com.srcnalt.openai-unity": "0.1.15"  
+    "com.unity.textmeshpro": "3.0.6"
   },
   "keywords": [
     "openai",
