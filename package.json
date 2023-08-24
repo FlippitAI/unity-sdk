@@ -6,7 +6,12 @@
   "unity": "2021.3",
   "dependencies": {
     "com.unity.cinemachine": "2.8.9",
-    "com.unity.textmeshpro": "3.0.6"
+    "com.unity.textmeshpro": "3.0.6",
+    "com.atteneder.gltfast": "3.0.6",
+    "com.endel.nativewebsocket": "1.1.4",
+    "com.readyplayerme.core": "3.1.1",
+    "com.readyplayerme.webview": "1.2.1",
+    "com.srcnalt.openai-unity": "0.1.15"
   },
   "keywords": [
     "openai",
@@ -25,5 +30,42 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/FlippitAI/unity-sdk.git"
-  }
+  },
+  "scopedRegistries": [
+    {
+      "name": "GltFast",
+      "url": "https://github.com/atteneder/glTFast.git",
+      "scopes": [
+        "com.atteneder.gltfast"
+      ]
+    },
+    {
+      "name": "NativeWebSocket",
+      "url": "https://github.com/endel/NativeWebSocket.git",
+      "scopes": [
+        "com.endel.nativewebsocket"
+      ]
+    },
+    {
+      "name": "RpmCore",
+      "url": "https://github.com/readyplayerme/rpm-unity-sdk-core.git",
+      "scopes": [
+        "com.readyplayerme.core"
+      ]
+    },
+    {
+      "name": "RpmWebView",
+      "url": "https://github.com/readyplayerme/rpm-unity-sdk-webview.git",
+      "scopes": [
+        "com.readyplayerme.webview"
+      ]
+    },
+    {
+      "name": "OpenAI",
+      "url": "https://github.com/srcnalt/OpenAI-Unity.git",
+      "scopes": [
+        "com.srcnalt.openai-unity"
+      ]
+    }
+  ]
 }
