@@ -1,0 +1,25 @@
+{
+    "scopedRegistries": [
+        {
+            "name": "General",
+            "url": "https://example.com/registry",
+            "scopes": [
+                "com.example", "com.example.tools.physics"
+            ]
+        },
+        {
+            "name": "Tools",
+            "url": "https://mycompany.example.com/tools-registry",
+            "scopes": [
+                "com.example.mycompany.tools"
+            ]
+        }
+    ],
+    "dependencies": {
+        "com.atteneder.gltfast": "5.0.4",
+    	"com.endel.nativewebsocket": "1.1.4",
+    	"com.readyplayerme.core": "3.1.1",
+    	"com.readyplayerme.webview": "1.2.1",
+    	"com.srcnalt.openai-unity": "0.1.15"  
+    }
+}
