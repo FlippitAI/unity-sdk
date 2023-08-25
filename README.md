@@ -35,7 +35,7 @@ Flippit
    
    https://github.com/readyplayerme/rpm-unity-sdk-core.git
    
-   https://github.com/endel/NativeWebSocket.git
+   https://github.com/endel/NativeWebSocket.git#upm
    
    https://github.com/srcnalt/OpenAI-Unity.git
 
