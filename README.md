@@ -21,17 +21,18 @@ Git needs to be installed to fetch the Unity package. [Download here](https://gi
 
 3. In the Package Manager window click on the + icon in the top left corner and select Add Package From Git URL.
 
+![Screen2023-08-25 15 00 11](https://github.com/FlippitAI/unity-sdk/assets/1887378/0401e12a-253e-4e3e-9188-bc641bef40ee)
+
 4. Paste in this url
 
 https://github.com/FlippitAI/unity-sdk.git
 
+![Screen2023-08-25 15 00 23](https://github.com/FlippitAI/unity-sdk/assets/1887378/811166a7-7a9e-46fe-915a-52bff5a9bba0)
+
 5. Click add and wait for the import process to finish.
 
-After the process is complete you project will have imported this package:
-
-Flippit
-
-6. Flippit has dependencies to work in unity, Add these following packages:
+After the process is complete you project will Show errors, it is because Flippit has dependencies to work in unity,
+Reapeat the operation by adding these following packages:
    
    https://github.com/readyplayerme/rpm-unity-sdk-core.git
    
