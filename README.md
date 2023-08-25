@@ -40,3 +40,10 @@ Flippit
    https://github.com/srcnalt/OpenAI-Unity.git
 
    https://github.com/atteneder/glTFast.git
+   
+7. Once installed, create additionnal Tag for NPC : "Flippit/NPC"
+   
+![Screen2023-08-25 13 44 03](https://github.com/FlippitAI/unity-sdk/assets/1887378/f8b730d2-ad73-4e3c-a111-bbd9c2159589)
+
+![Screen2023-08-25 13 45 45](https://github.com/FlippitAI/unity-sdk/assets/1887378/5e5db71e-b64b-4a56-9b84-8cdc0be12464)
+
