@@ -38,3 +38,5 @@ Flippit
    https://github.com/endel/NativeWebSocket.git
    
    https://github.com/srcnalt/OpenAI-Unity.git
+
+   https://github.com/atteneder/glTFast.git
