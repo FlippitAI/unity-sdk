@@ -183,6 +183,11 @@ namespace Flippit.Editor
                 ApiKeyManager apiKeyManager = CreateInstance<ApiKeyManager>();
                 apiKeyManager.apiKey = apiKey;
                 string assetPath = "Assets/Flippit/Resources/FlippitApiKey.asset"; // Specify the asset path as needed
+                if (!AssetDatabase.IsValidFolder("Assets/Flippit/Resources"))
+                {
+                    AssetDatabase.CreateFolder("Assets", "Flippit");
+                    AssetDatabase.CreateFolder("Assets/Flippit", "Resources");
+                }
                 AssetDatabase.CreateAsset(apiKeyManager, assetPath);
             }
 
