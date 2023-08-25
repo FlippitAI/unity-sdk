@@ -32,6 +32,9 @@ After the process is complete you project will have imported this package:
 Flippit
 
 6. Flippit has dependencies to work in unity, Add these following packages:
+   
    https://github.com/readyplayerme/rpm-unity-sdk-core.git
+   
    https://github.com/endel/NativeWebSocket.git
+   
    https://github.com/srcnalt/OpenAI-Unity.git
