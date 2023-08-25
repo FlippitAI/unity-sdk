@@ -104,11 +104,11 @@ Here are the different steps:
 
 1. In Unity, go to Window> Package Manager
 
-![Capture d’écran 2023-07-13 à 14.20.44.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/8d998b6d-aa4b-45a3-9456-b273b2ae9a9b/Capture_decran_2023-07-13_a_14.20.44.png)
+![image](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/8d998b6d-aa4b-45a3-9456-b273b2ae9a9b/Capture_decran_2023-07-13_a_14.20.44.png)
 
 1. In the Package Manager, Click on the “+” icon in the top left and select “Add package from disk”. 
 
-![Capture d’écran 2023-07-13 à 14.18.13.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/7f61954e-8f30-4227-aea6-08bb5a55a575/Capture_decran_2023-07-13_a_14.18.13.png)
+![image](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/7f61954e-8f30-4227-aea6-08bb5a55a575/Capture_decran_2023-07-13_a_14.18.13.png)
 
 1. Select the package.json file
 
@@ -131,11 +131,11 @@ https://lh3.googleusercontent.com/4JYV4K-gq6AEEPlP4xL0rov2RKvwwFK-P_2xzlkUVjLZQM
 
 1. First, enter your credentials to connect to your Flippit Studio account.
 
-![Capture d’écran 2023-07-13 à 16.02.03.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/a5d50294-c8bc-415e-bd4c-674169dd40aa/Capture_decran_2023-07-13_a_16.02.03.png)
+![image](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/a5d50294-c8bc-415e-bd4c-674169dd40aa/Capture_decran_2023-07-13_a_16.02.03.png)
 
 1. Once connected, all the characters from your Flippit Studio account are displayed as follows:
 
-![Capture d’écran 2023-07-13 à 16.10.23.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/db8ffd79-613a-49c9-ab57-6fc0d9c439a1/Capture_decran_2023-07-13_a_16.10.23.png)
+![image](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/db8ffd79-613a-49c9-ab57-6fc0d9c439a1/Capture_decran_2023-07-13_a_16.10.23.png)
 
 For each character you can:
 
@@ -154,7 +154,7 @@ If you already have existing characters in your Unity scene, this menu allows yo
 2. Open the Character Converter Menu
 3. Fill in all the relevant information
 
-![Capture d’écran 2023-07-13 à 15.34.47.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/6d9e5300-9e91-4418-8a2b-cb9a8c82bd6b/Capture_decran_2023-07-13_a_15.34.47.png)
+![image](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/6d9e5300-9e91-4418-8a2b-cb9a8c82bd6b/Capture_decran_2023-07-13_a_15.34.47.png)
 
 1. Click on the “Convert to Smart NPC”
 
@@ -177,7 +177,7 @@ Creating this Player implies that the following are created:
 
 The player Script has its own dependencies to work with Flippit.
 
-![Capture d’écran 2023-07-13 à 15.20.09.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/917a9492-287d-4734-826e-28cc2498dc90/Capture_decran_2023-07-13_a_15.20.09.png)
+![image](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/917a9492-287d-4734-826e-28cc2498dc90/Capture_decran_2023-07-13_a_15.20.09.png)
 
 # Interacting with your AI characters
 
@@ -187,11 +187,11 @@ Before starting, you may want to adjust settings to change the way you will inte
 
 These settings can be changed through the Dialogue Panel object in your hierarchy:
 
-![Capture d’écran 2023-07-13 à 16.25.48.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/8c5c3bb3-6080-4d81-9e0f-dfb76f69a3fd/Capture_decran_2023-07-13_a_16.25.48.png)
+![image](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/8c5c3bb3-6080-4d81-9e0f-dfb76f69a3fd/Capture_decran_2023-07-13_a_16.25.48.png)
 
 Once selected, you can modify the following options in the inspector. 
 
-![Capture d’écran 2023-07-13 à 15.28.13.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/1fdb8742-cf93-43dc-9b6c-5cdee07fc13a/Capture_decran_2023-07-13_a_15.28.13.png)
+![image](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/1fdb8742-cf93-43dc-9b6c-5cdee07fc13a/Capture_decran_2023-07-13_a_15.28.13.png)
 
 1. The player can engage (see input options) in the discussion using:
     1. Text
@@ -212,7 +212,7 @@ You can also set the different objects in the scene which should be reachable by
 1. Click on your AI character object in the hierarchy
 2. Drag and drop the object into the “Quest object” field in the inspector
 
-![Capture d’écran 2023-07-13 à 16.24.26.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/02930313-6291-4483-9012-5f7b2479e621/Capture_decran_2023-07-13_a_16.24.26.png)
+![image](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/02930313-6291-4483-9012-5f7b2479e621/Capture_decran_2023-07-13_a_16.24.26.png)
 
 Finally, you may change the camera options.
 
@@ -237,7 +237,7 @@ https://lh6.googleusercontent.com/iktWN4l7epGPGvTYwC9QklKR0mQKYQJyF0xTVvoyEQFQ6K
 
 - Flippit components: these ones are useful to make sure your character is able to interact
 
-![Capture d’écran 2023-07-13 à 16.27.47.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/468226ae-4b1d-46b0-aae9-7839fe18b12d/Capture_decran_2023-07-13_a_16.27.47.png)
+![image](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/468226ae-4b1d-46b0-aae9-7839fe18b12d/Capture_decran_2023-07-13_a_16.27.47.png)
 
 - AI Character script: it refers to the personality of the character, which is editable.
     - If edited, make sure to [update](https://www.notion.so/659d18b45f40468eb13a922cc2d7f2a7?pvs=21) Flippit Studio for these changes to be taken into account
