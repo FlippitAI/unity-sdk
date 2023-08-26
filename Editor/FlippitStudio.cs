@@ -77,6 +77,10 @@ namespace Flippit.Editor
         private float maxWidth;
         private GameObject prefab;
         private CharacterConverter converter;
+        private AvatarLoaderSettings avatarLoaderSettings;
+        private bool useEyeAnimations;
+        private bool useVoiceToAnim;
+        private Character character;
         #endregion
         [MenuItem("Flippit/Studio", false, 0)]
         public static void ShowWindow()
@@ -222,7 +226,7 @@ namespace Flippit.Editor
         }
         public void DrawLocalLibrary(string All)
         {
-            //_ = new Texture2D[0];
+            
             Texture2D[] thumbnails = Resources.LoadAll<Texture2D>(thumbnailsPath);
             if (thumbnails != null && thumbnails.Length > 0)
             {
@@ -388,21 +392,24 @@ namespace Flippit.Editor
                 }
                 else
                 {
-                    AvatarLoaderSettings avatarLoaderSettings = AvatarLoaderSettings.LoadSettings();
-                    AvatarObjectLoader avatarLoader = new()
+                    this.character = character;
+                    if (avatarLoaderSettings == null)
                     {
-                        SaveInProjectFolder = true
-                    };
+                        avatarLoaderSettings = AvatarLoaderSettings.LoadSettings();
+                    }
+                    var avatarLoader = new AvatarObjectLoader();
+                    avatarLoader.SaveInProjectFolder = true;
                     avatarLoader.OnFailed += Failed;
-                    avatarLoader.OnCompleted += (sender, args) =>
-                    {
-                        Completed(args, character);
-                    };
+                    avatarLoader.OnCompleted += Completed;
                     avatarLoader.OperationCompleted += OnOperationCompleted;
                     avatarLoader.AvatarConfig = avatarLoaderSettings.AvatarConfig;
-                    if (avatarLoaderSettings.GLTFDeferAgent != null)
+                    if (avatarLoaderSettings != null)
                     {
-                        avatarLoader.GLTFDeferAgent = avatarLoaderSettings.GLTFDeferAgent;
+                        avatarLoader.AvatarConfig = avatarLoaderSettings.AvatarConfig;
+                        if (avatarLoaderSettings.GLTFDeferAgent != null)
+                        {
+                            avatarLoader.GLTFDeferAgent = avatarLoaderSettings.GLTFDeferAgent;
+                        }
                     }
                     avatarLoader.LoadAvatar(glbUrl);
                 }
@@ -565,15 +572,26 @@ namespace Flippit.Editor
         }
         private void OnOperationCompleted(object sender, IOperation<AvatarContext> e)
         {
-            // Traitez les opérations supplémentaires après le chargement de l'avatar, si nécessaire
+            //rien
         }
-        private void Completed(CompletionEventArgs args, Character character)
+        private void Completed(object sender, CompletionEventArgs args)
         {
             GameObject avatar = args.Avatar;
-            EditorUtilities.CreatePrefab(avatar, $"{DirectoryUtility.GetRelativeProjectPath(avatar.name)}/{avatar.name}.prefab");
-            Selection.activeObject = args.Avatar;
-            ConvertToNPC(character);
+
+            if (useEyeAnimations) avatar.AddComponent<EyeAnimationHandler>();
+            if (useVoiceToAnim) avatar.AddComponent<VoiceHandler>();
+            if (avatarLoaderSettings == null)
+            {
+                avatarLoaderSettings = AvatarLoaderSettings.LoadSettings();
+            }
+            var paramHash = AvatarCache.GetAvatarConfigurationHash(avatarLoaderSettings.AvatarConfig);
+            EditorUtilities.CreatePrefab(avatar, $"{DirectoryUtility.GetRelativeProjectPath(avatar.name, paramHash)}/{avatar.name}.prefab");
+            Debug.Log(args.Avatar);
+            Selection.activeGameObject = args.Avatar;
+            // Character fake = new Character();
+            ConvertToNPC(this.character);
         }
+
         class CharacterWrapper
         {
             public Character character { get; set; }
@@ -636,9 +654,12 @@ namespace Flippit.Editor
                 #endregion
                 #region set Script parameters
                 IACharacter iaSc = emptyGameObject.AddComponent<IACharacter>();
-                iaSc.Avatar = selectedObject;
-                iaSc.Detector = Detector;
                 #endregion
+            
+                iaSc.Avatar = selectedObject;
+                Debug.Log(iaSc.Avatar);
+                iaSc.Detector = Detector;
+                
                 #region Set personality
                 IaPersonality perso = CreateInstance<IaPersonality>();
                 iaSc.personality = perso;
@@ -658,10 +679,8 @@ namespace Flippit.Editor
                 perso.primaryGoal = character.primary_goal;
                 perso.role = character.role;
                 perso.assetFilePath = character.asset_file_path;
-                /*if(QuestOb1.value)perso.QuestObjects.SetValue(QuestOb1.value,0);
-                if(QuestOb2.value)perso.QuestObjects.SetValue(QuestOb2.value,1);
-                if(QuestOb3.value)perso.QuestObjects.SetValue(QuestOb3.value,2);*/
                 #endregion
+            
                 #region TextToSpeech
                 var TTS = emptyGameObject.AddComponent<TTS>();
                 TTS.audioSource = emptyGameObject.AddComponent<AudioSource>();
@@ -685,11 +704,11 @@ namespace Flippit.Editor
                     AssetDatabase.CreateFolder("Assets/Flippit/Resources", "Prefabs");
                 }
                 AssetDatabase.CreateAsset(perso, personalityPath + "/" + character.name + ".asset");
-                prefab = PrefabUtility.SaveAsPrefabAsset(emptyGameObject, prefabPath + "/" + character.name + ".prefab");
+                //prefab = PrefabUtility.SaveAsPrefabAsset(emptyGameObject, prefabPath + "/" + character.name + ".prefab");
                 AssetDatabase.SaveAssets();
-                DestroyImmediate(emptyGameObject);
-                GameObject newPrefabInstance = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
-                ThumbnailGenerator.GenerateThumbnail(newPrefabInstance, character.name, 128, 128);
+                //DestroyImmediate(emptyGameObject);
+                //GameObject newPrefabInstance = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
+                //ThumbnailGenerator.GenerateThumbnail(newPrefabInstance, character.name, 128, 128);
                 AssetDatabase.Refresh();
                 #endregion
 
