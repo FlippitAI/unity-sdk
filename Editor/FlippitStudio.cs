@@ -131,12 +131,12 @@ namespace Flippit.Editor
                     username = userlogin,
                     password = userPass
                 };
-                
+
                 TreatData(logData);
                 initialized = true;
             }
             else initialized = false;
-            
+
         }
         public void OnConnect(ClickEvent evt)
         {
@@ -177,7 +177,7 @@ namespace Flippit.Editor
         }
         private void SetAPIKey()
         {
-           
+
             string apiKeyResponse = ApiManager.GetRequest("api/v1/integrations/get_integration_token", EditorPrefs.GetString("AccessToken"), EditorPrefs.GetString("RefreshToken"));
             if (apiKeyResponse != null)
             {
@@ -226,7 +226,7 @@ namespace Flippit.Editor
         }
         public void DrawLocalLibrary(string All)
         {
-            
+
             Texture2D[] thumbnails = Resources.LoadAll<Texture2D>(thumbnailsPath);
             if (thumbnails != null && thumbnails.Length > 0)
             {
@@ -576,20 +576,18 @@ namespace Flippit.Editor
         }
         private void Completed(object sender, CompletionEventArgs args)
         {
-            GameObject avatar = args.Avatar;
-
-            if (useEyeAnimations) avatar.AddComponent<EyeAnimationHandler>();
-            if (useVoiceToAnim) avatar.AddComponent<VoiceHandler>();
             if (avatarLoaderSettings == null)
             {
                 avatarLoaderSettings = AvatarLoaderSettings.LoadSettings();
             }
             var paramHash = AvatarCache.GetAvatarConfigurationHash(avatarLoaderSettings.AvatarConfig);
-            EditorUtilities.CreatePrefab(avatar, $"{DirectoryUtility.GetRelativeProjectPath(avatar.name, paramHash)}/{avatar.name}.prefab");
-            Debug.Log(args.Avatar);
-            Selection.activeGameObject = args.Avatar;
-            // Character fake = new Character();
-            ConvertToNPC(this.character);
+            var path = $"{DirectoryUtility.GetRelativeProjectPath(args.Avatar.name, paramHash)}/{args.Avatar.name}";
+            GameObject avatar = EditorUtilities.CreateAvatarPrefab(args.Metadata, path);
+            if (useEyeAnimations) avatar.AddComponent<EyeAnimationHandler>();
+            if (useVoiceToAnim) avatar.AddComponent<VoiceHandler>();
+            DestroyImmediate(args.Avatar, true);
+            Selection.activeGameObject = avatar;
+            ConvertToNPC(character);
         }
 
         class CharacterWrapper
@@ -655,11 +653,11 @@ namespace Flippit.Editor
                 #region set Script parameters
                 IACharacter iaSc = emptyGameObject.AddComponent<IACharacter>();
                 #endregion
-            
+
                 iaSc.Avatar = selectedObject;
                 Debug.Log(iaSc.Avatar);
                 iaSc.Detector = Detector;
-                
+
                 #region Set personality
                 IaPersonality perso = CreateInstance<IaPersonality>();
                 iaSc.personality = perso;
@@ -680,7 +678,7 @@ namespace Flippit.Editor
                 perso.role = character.role;
                 perso.assetFilePath = character.asset_file_path;
                 #endregion
-            
+
                 #region TextToSpeech
                 var TTS = emptyGameObject.AddComponent<TTS>();
                 TTS.audioSource = emptyGameObject.AddComponent<AudioSource>();

@@ -82,7 +82,7 @@ namespace Flippit.Editor
         private GameObject prefab;
         #endregion
 
-        [MenuItem("Flippit/Character Converter",false,1)]
+        [MenuItem("Flippit/Character Converter", false, 1)]
         public static void ShowConverterWindow()
         {
             CharacterConverter wnd = GetWindow<CharacterConverter>();
@@ -103,7 +103,7 @@ namespace Flippit.Editor
             documentation = root.Q("Documentation") as Button;
             discord = root.Q("Discord") as Button;
             webSite = root.Q("Website") as Button;
-            characName = root.Q("CharacterName")as TextField;
+            characName = root.Q("CharacterName") as TextField;
             characStory = root.Q("CharacterBackStory") as TextField;
             characPersonality = root.Q("CharacterPersonality") as DropdownField;
             characVoice = root.Q("CharacterVoice") as DropdownField;
@@ -112,7 +112,7 @@ namespace Flippit.Editor
             catchPhrases = root.Q("CatchPhrases") as TextField;
             age = root.Q("Age") as DropdownField;
             hobbies = root.Q("Hobbies") as TextField;
-            
+
             convertToIa.RegisterCallback<ClickEvent>(OnConvertToNPC);
             convertToPlayer.RegisterCallback<ClickEvent>(OnConvertToPlayer);
             documentation.RegisterCallback<ClickEvent>(OnDocumentation);
@@ -123,15 +123,15 @@ namespace Flippit.Editor
         {
             PayloadData payloadData = new()
             {
-                character_id = personality.characterId, 
+                character_id = personality.characterId,
                 owner_id = personality.ownerId,
-                name =personality.characterName,
-                backstory =personality.backstory,
+                name = personality.characterName,
+                backstory = personality.backstory,
                 personality_id = personality.personalityId,
                 voice_id = personality.voiceId,
                 role = personality.role,
                 age_id = personality.ageId,
-                hobbies =personality.hobbies,
+                hobbies = personality.hobbies,
                 mood_id = personality.moodId,
                 catch_phrases = personality.catchPhrases,
                 primary_goal = personality.primaryGoal,
@@ -188,7 +188,7 @@ namespace Flippit.Editor
                     RuntimeAnimatorController iaCtrl = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>(controllerPath); ;
                     Animator animatorComp = selectedObject.GetComponent<Animator>();
                     animatorComp.runtimeAnimatorController = iaCtrl;
-                    animatorComp.applyRootMotion= false;
+                    animatorComp.applyRootMotion = false;
                     #endregion
                     #region Navmesh
                     emptyGameObject.AddComponent<NavMeshAgent>();
@@ -281,7 +281,7 @@ namespace Flippit.Editor
         }
         public void OnConvertToPlayer(ClickEvent evt)
         {
-            
+
             if (Selection.activeGameObject != null)
             {
                 GameObject selectedObject = Selection.activeGameObject;
@@ -362,7 +362,7 @@ namespace Flippit.Editor
                 animatorComp.applyRootMotion = false;
                 #endregion
                 #region save prefab
-                GameObject prefab = PrefabUtility.SaveAsPrefabAsset(emptyGameObject, prefabPath +"/"+ emptyGameObject.name + ".prefab");
+                GameObject prefab = PrefabUtility.SaveAsPrefabAsset(emptyGameObject, prefabPath + "/" + emptyGameObject.name + ".prefab");
                 DestroyImmediate(emptyGameObject);
                 PlayerObject = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
                 PlayerObject.GetComponent<Player>().DialogueInterface = UIpanel;
@@ -410,7 +410,7 @@ namespace Flippit.Editor
             if (MainCamera != null)
             {
                 CinemachineBrain brain = MainCamera.gameObject.GetComponent<CinemachineBrain>();
-                if(brain== null)
+                if (brain == null)
                 {
                     MainCamera.gameObject.AddComponent<CinemachineBrain>();
                 }
@@ -428,7 +428,7 @@ namespace Flippit.Editor
                     transposer.m_FollowOffset = new(0, 1.8f, -2);
                 }
                 CinemachineComposer composer = virtualCamera.GetCinemachineComponent<CinemachineComposer>();
-                if(composer!= null)composer.m_TrackedObjectOffset = new(0, 1.3f, 0);
+                if (composer != null) composer.m_TrackedObjectOffset = new(0, 1.3f, 0);
             }
             else
             {
@@ -438,7 +438,7 @@ namespace Flippit.Editor
         void CreateCinemachineCamera()
         {
             Camera MainCamera = Camera.main;
-            if(MainCamera == null)
+            if (MainCamera == null)
             {
                 GameObject Cam = new()
                 {
@@ -460,7 +460,7 @@ namespace Flippit.Editor
             GameObject newVCam = Instantiate(CMVCam);
             CinemachineVirtualCamera virtualCam = newVCam.GetComponent<CinemachineVirtualCamera>();
             virtualCam.m_Follow = PlayerObject.transform;
-            virtualCam.m_LookAt= PlayerObject.transform;
+            virtualCam.m_LookAt = PlayerObject.transform;
         }
     }
 }
