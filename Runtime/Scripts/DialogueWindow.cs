@@ -90,7 +90,8 @@ namespace Flippit
         private AudioClip clip;
         private float time;
         private readonly string fileName = "recording.wav";
-        private readonly OpenAIApi openai = new("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");
+        private OpenAIApi openai;
+        private ApiKeyManager apiKeyManager;
         private bool isTalkingToCharacter = false;
         #endregion
         WebSocketManager manager;
@@ -99,6 +100,8 @@ namespace Flippit
         // Start is called before the first frame update
         void Start()
         {
+            apiKeyManager = Resources.Load<ApiKeyManager>("Apikeys");
+            openai= new(apiKeyManager.OpenAI);
             InputMessage = DiscussionPanel.GetComponentInChildren<TextMeshProUGUI>();
             inputText = inputField.GetComponent<TextMeshProUGUI>();
             chatAreaText = DiscussionPanel.GetComponentInChildren<TextMeshProUGUI>();
@@ -324,6 +327,10 @@ namespace Flippit
             {
                 string sentenceToRead = sentences[currentSentenceIndex];
                 int index = (int)IaPersona.voice;
+                if(index ==0)
+                {
+                    index = 1;
+                }
                 lists = new EnumLists();
                 string voiceID = lists.voiceNames[index];
                 Task speechTask = IaActive.GetComponent<TTS>().SpeechMe(sentenceToRead, voiceID);

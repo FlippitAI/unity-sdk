@@ -1,11 +1,14 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-namespace Flippit
+
+public class ApiKeyManager : ScriptableObject
 {
-    public class ApiKeyManager : ScriptableObject
-    {
-        public string apiKey;
-    }
+    [HideInInspector]
+    public string Flippit;
+    [HideInInspector]
+    public string OpenAI;
+    [HideInInspector]
+    public string AWSKey;
+    [HideInInspector]
+    public string AWSSecret;
 }

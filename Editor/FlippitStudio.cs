@@ -164,7 +164,7 @@ namespace Flippit.Editor
                 EditorPrefs.SetString("Password", logData.password);
                 EditorPrefs.SetString("AccessToken", accessToken);
                 EditorPrefs.SetString("RefreshToken", refreshToken);
-                SetAPIKey();
+                SetAPIKeys();
                 EditorPrefs.SetBool("registered", true);
                 LoadLibraryContent(allCharacters);
 
@@ -175,25 +175,34 @@ namespace Flippit.Editor
                 ConfirmationMessage("Verify your login and password");
             }
         }
-        private void SetAPIKey()
+        private void SetAPIKeys()
         {
+            string FlippitApiKeyResponse = ApiManager.GetRequest("api/v1/integrations/get_integration_token", EditorPrefs.GetString("AccessToken"), EditorPrefs.GetString("RefreshToken"));
+            string FlippitApiKey = Regex.Match(FlippitApiKeyResponse, @"""access_key"":""([^""]+)""").Groups[1].Value;
+            // string SystemApiKeysResponse = ApiManager.GetRequest("unity/creds", EditorPrefs.GetString("AccessToken"), EditorPrefs.GetString("RefreshToken"));
+            // string OpenAiApiKey = Regex.Match(SystemApiKeysResponse, @"""open_ai"":""([^""]+)""").Groups[1].Value;
+            // string AWSApiKey = Regex.Match(SystemApiKeysResponse, @"""aws_access_key"":""([^""]+)""").Groups[1].Value;
+            // string AWSSecret = Regex.Match(SystemApiKeysResponse, @"""aws_secret"":""([^""]+)""").Groups[1].Value; 
 
-            string apiKeyResponse = ApiManager.GetRequest("api/v1/integrations/get_integration_token", EditorPrefs.GetString("AccessToken"), EditorPrefs.GetString("RefreshToken"));
-            if (apiKeyResponse != null)
+            ApiKeyManager apiKeys = Resources.Load<ApiKeyManager>("ApiKeys");
+
+            if (apiKeys == null)
             {
-                string apiKey = Regex.Match(apiKeyResponse, @"""access_key"":""([^""]+)""").Groups[1].Value;
-
-                // Store the API key as an asset
-                ApiKeyManager apiKeyManager = CreateInstance<ApiKeyManager>();
-                apiKeyManager.apiKey = apiKey;
-                string assetPath = "Assets/Flippit/Resources/FlippitApiKey.asset"; // Specify the asset path as needed
-                if (!AssetDatabase.IsValidFolder("Assets/Flippit/Resources"))
-                {
-                    AssetDatabase.CreateFolder("Assets", "Flippit");
-                    AssetDatabase.CreateFolder("Assets/Flippit", "Resources");
-                }
-                AssetDatabase.CreateAsset(apiKeyManager, assetPath);
+                apiKeys = CreateInstance<ApiKeyManager>();
+                AssetDatabase.CreateAsset(apiKeys, "Assets/Flippit/Resources/ApiKeys.asset");
             }
+            // Update the fields
+            // apiKeys.Flippit = FlippitApiKey; // Set the Flippit API key
+            // apiKeys.OpenAI = OpenAiApiKey; // Set the OpenAI API key
+            // apiKeys.AWSKey = AWSApiKey; // Set the AWS API key
+            // apiKeys.AWSSecret = AWSSecret
+            apiKeys.Flippit = FlippitApiKey;
+            apiKeys.OpenAI = "12345"; 
+            apiKeys.AWSKey = "12345"; 
+            apiKeys.AWSSecret = "12345";
+
+            EditorUtility.SetDirty(apiKeys); 
+            AssetDatabase.SaveAssets(); 
 
         }
         private void OnDisable()

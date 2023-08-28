@@ -15,10 +15,12 @@ namespace Flippit
     public class TTS : MonoBehaviour
     {
         public AudioSource audioSource;
+        private ApiKeyManager apiKeyManager;
 
         public async Task SpeechMe(string text,string VoiceId)
         {
-            var credentials = new BasicAWSCredentials("AKIASXOKCHRGP2BBORMZ","8bsQ3czQ87tBmwL0JJgAGxIhoh7tnhR9r+Hcbph+");
+            apiKeyManager = Resources.Load<ApiKeyManager>("Apikeys");
+            var credentials = new BasicAWSCredentials(apiKeyManager.AWSKey,apiKeyManager.AWSSecret);
             var client = new AmazonPollyClient(credentials, RegionEndpoint.EUWest1);
 
             var request = new SynthesizeSpeechRequest()

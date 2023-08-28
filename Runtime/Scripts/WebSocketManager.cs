@@ -17,7 +17,7 @@ namespace Flippit
     {
         private WebSocket socket;
         private string apiKey;
-        private readonly string urlWebsocket = "wss://gzemwuzrtk.execute-api.eu-west-1.amazonaws.com/staging?Authorizer=";
+        private readonly string urlWebsocket = "wss://ozmcki0ooj.execute-api.eu-west-1.amazonaws.com/production?Authorizer=";
         private readonly string urlCharacterId = "&characterId=";
         private string characterId = ""; 
         
@@ -36,23 +36,25 @@ namespace Flippit
 
         private void Start()
         {
-            apiKeyManager = Resources.Load<ApiKeyManager>("FlippitApiKey");
-            if (apiKeyManager != null && !string.IsNullOrEmpty(apiKeyManager.apiKey))
-            {
-                apiKey = apiKeyManager.apiKey;
-                Debug.Log("API Key retrieved: " + apiKey);
+            apiKeyManager = Resources.Load<ApiKeyManager>("ApiKeys");
 
-                Dictionary<string, string> headers = new Dictionary<string, string>
+            if (apiKeyManager != null && !string.IsNullOrEmpty(apiKeyManager.Flippit))
+            {
+                apiKey = apiKeyManager.Flippit;
+                dialSc = GetComponent<DialogueWindow>();
+
+                Dictionary<string, string> headers = new()
                 {
                     { "Origin", "Unity" },
                 };
-                dialSc = GetComponent<DialogueWindow>();
+
                 socket = new WebSocket(url: urlWebsocket + apiKey + urlCharacterId + characterId, headers: headers);
                 Open();
+
             }
             else
             {
-                Debug.LogError("API Key is not set. Please log in to Flippit");
+                Debug.LogError("API Key is not set. Please try log out from Flippit Studio on the web, log back in and refresh the page without cache");
             }
         }
 

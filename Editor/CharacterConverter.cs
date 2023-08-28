@@ -12,6 +12,7 @@ using Amazon.Polly;
 using UnityEngine.Rendering;
 using Newtonsoft.Json;
 using System.Runtime.InteropServices;
+using UnityEngine.EventSystems;
 
 namespace Flippit.Editor
 {
@@ -51,9 +52,6 @@ namespace Flippit.Editor
         DropdownField age;
         DropdownField characPersonality;
         DropdownField characVoice;
-        /*ObjectField QuestOb1;
-        ObjectField QuestOb2;
-        ObjectField QuestOb3;*/
         #endregion
         #region public
         public Personality Personalities;
@@ -225,9 +223,6 @@ namespace Flippit.Editor
                     string dataCharacter = GetFormatedJsonPayload(perso);
                     Debug.Log(dataCharacter);
                     ApiManager.PostRequest("api/v1/characters/update", dataCharacter, tokenAccess, tokenRefresh);
-                    /*if(QuestOb1.value)perso.QuestObjects.SetValue(QuestOb1.value,0);
-                    if(QuestOb2.value)perso.QuestObjects.SetValue(QuestOb2.value,1);
-                    if(QuestOb3.value)perso.QuestObjects.SetValue(QuestOb3.value,2);*/
                     #endregion
                     #region TextToSpeech
                     var TTS = emptyGameObject.AddComponent<TTS>();
@@ -351,6 +346,13 @@ namespace Flippit.Editor
                     CreatePanel();
                 }
                 #endregion
+                #region EventSystem
+                EventSystem eventsystem = FindObjectOfType<EventSystem>();
+                if(eventsystem == null)
+                {
+                    CreateEventSystem();
+                }
+                #endregion
                 #region parenting
                 selectedObject.transform.parent = emptyGameObject.transform;
                 selectedObject.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
@@ -396,6 +398,15 @@ namespace Flippit.Editor
             canvasComponent.renderMode = RenderMode.ScreenSpaceOverlay;
             canvas.AddComponent<UnityEngine.UI.GraphicRaycaster>();
             canvas.AddComponent<UnityEngine.UI.CanvasScaler>();
+        }
+        void CreateEventSystem()
+        {
+            GameObject eventSystemGO = new()
+            {
+                name = "EventSystem"
+            };
+            eventSystemGO.AddComponent<EventSystem>();
+            eventSystemGO.AddComponent<StandaloneInputModule>();
         }
         void CreatePanel()
         {
