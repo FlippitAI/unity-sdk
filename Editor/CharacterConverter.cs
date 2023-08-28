@@ -112,9 +112,6 @@ namespace Flippit.Editor
             catchPhrases = root.Q("CatchPhrases") as TextField;
             age = root.Q("Age") as DropdownField;
             hobbies = root.Q("Hobbies") as TextField;
-            /*QuestOb1 = root.Q("QuestObj1") as ObjectField;
-            QuestOb2 = root.Q("QuestObj2") as ObjectField;
-            QuestOb3 = root.Q("QuestObj3") as ObjectField;*/
             
             convertToIa.RegisterCallback<ClickEvent>(OnConvertToNPC);
             convertToPlayer.RegisterCallback<ClickEvent>(OnConvertToPlayer);
@@ -257,9 +254,9 @@ namespace Flippit.Editor
                     AssetDatabase.CreateAsset(perso, personalityPath + "/" + characName.value + ".asset");
                     prefab = PrefabUtility.SaveAsPrefabAsset(emptyGameObject, prefabPath + "/" + characName.value + ".prefab");
                     AssetDatabase.SaveAssets();
-                   // DestroyImmediate(emptyGameObject);
-                    //GameObject newPrefabInstance = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
-                   // ThumbnailGenerator.GenerateThumbnail(newPrefabInstance, characName.value, 128, 128);
+                    DestroyImmediate(emptyGameObject);
+                    GameObject newPrefabInstance = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
+                    ThumbnailGenerator.GenerateThumbnail(newPrefabInstance, characName.value, 128, 128);
                     AssetDatabase.Refresh();
                     #endregion
 
@@ -366,10 +363,8 @@ namespace Flippit.Editor
                 #endregion
                 #region save prefab
                 GameObject prefab = PrefabUtility.SaveAsPrefabAsset(emptyGameObject, prefabPath +"/"+ emptyGameObject.name + ".prefab");
-            // Temporary code
-                PlayerObject = emptyGameObject;
-                //DestroyImmediate(emptyGameObject);
-                //PlayerObject = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
+                DestroyImmediate(emptyGameObject);
+                PlayerObject = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
                 PlayerObject.GetComponent<Player>().DialogueInterface = UIpanel;
                 Selection.activeGameObject = PlayerObject;
                 #endregion

@@ -704,11 +704,11 @@ namespace Flippit.Editor
                     AssetDatabase.CreateFolder("Assets/Flippit/Resources", "Prefabs");
                 }
                 AssetDatabase.CreateAsset(perso, personalityPath + "/" + character.name + ".asset");
-                //prefab = PrefabUtility.SaveAsPrefabAsset(emptyGameObject, prefabPath + "/" + character.name + ".prefab");
+                prefab = PrefabUtility.SaveAsPrefabAsset(emptyGameObject, prefabPath + "/" + character.name + ".prefab");
                 AssetDatabase.SaveAssets();
-                //DestroyImmediate(emptyGameObject);
-                //GameObject newPrefabInstance = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
-                //ThumbnailGenerator.GenerateThumbnail(newPrefabInstance, character.name, 128, 128);
+                DestroyImmediate(emptyGameObject);
+                GameObject newPrefabInstance = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
+                ThumbnailGenerator.GenerateThumbnail(newPrefabInstance, character.name, 128, 128);
                 AssetDatabase.Refresh();
                 #endregion
 
