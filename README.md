@@ -39,7 +39,8 @@ Repeat the procedure to add the following packages through the Package Manager w
 
    https://github.com/atteneder/glTFast.git --> This installs the glTFast plugin for Unity.
    
-7. Once installed, the last step is to create an additional Tag named "Flippit/NPC". It will be used by all your characters. You only need to do it once at the first character creation (see screenshots).
+7. Create the following folder structure: Assets/Flippit/Resources
+8. (Only if needed) Once installed, the last step is to create an additional Tag named "Flippit/NPC". It will be used by all your characters. You only need to do it once at the first character creation (see screenshots).
    
 ![Screen2023-08-25 13 44 03](https://github.com/FlippitAI/unity-sdk/assets/1887378/f8b730d2-ad73-4e3c-a111-bbd9c2159589)
 
