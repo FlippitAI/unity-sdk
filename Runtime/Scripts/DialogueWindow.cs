@@ -346,11 +346,16 @@ namespace Flippit
             }
         }
 
-        public async void PlayAnimation(string animName)
+
+        public void PlayAnimation(string animName, string objectName = null)
         {
             Animator animator = IaActive.GetComponentInChildren<Animator>();
+            if (IaActive == null)
+            {
+                Debug.Log("IaActive GameObject not assigned. Make sure it is assigned in the Unity Editor.");
+            }
 
-            if (animName == "Talking" || animName == "Walk")
+            if (animName == "Talking" || animName == "Walk" || animName == "Jogging" || animName == "Grab")
             {
                 animator.SetBool("Talking", true);
             }
@@ -360,25 +365,104 @@ namespace Flippit
                 animator.SetBool("Talking", true);
             }
 
-            if (animName == "Walk")
+            if (animName == "Walk" || animName == "Jogging" || animName == "Grab")
             {
-                GameObject[] questObj = IaActive.GetComponent<IACharacter>().QuestObjects;
+                StartCoroutine(PerformActionAnimation(animator, animName, objectName));
+            }
+        }
 
-                if (questObj.Length > 0)
+        private IEnumerator PerformActionAnimation(Animator animator, string animName, string objectName)
+        {
+            while (animator.GetBool("Talking"))
+            {
+                // Wait for Talking to be set to false (from external piece of code)
+                yield return new WaitForSeconds(0.5f);
+            }
+
+            GameObject[] questObjs = IaActive.GetComponent<IACharacter>().QuestObjects;
+            GameObject unityObject = null;
+
+            if (questObjs.Length > 0)
+            {
+                int matchedObjectIndex = -1;
+
+                for (int i = 0; i < questObjs.Length; i++)
                 {
-                    while (animator.GetBool("Talking"))
-                    {
-                        // Wait for Talking to be set to true (from external piece of code)
-                        await Task.Delay(500);
-                    }
-                    NavMeshAgent agent = IaActive.GetComponent<NavMeshAgent>();
-                    agent.destination = questObj[0].transform.position; // to change to dynamically update the object -- need to be linked to the db
-                    agent.stoppingDistance = 2.0f; // Set the stopping distance to 2.0 units
+                    unityObject = questObjs[i];
 
-                    FinishDiscussion();
+                    if (unityObject != null && (unityObject.name.ToLower().Contains(objectName.ToLower()) || objectName.ToLower().Contains(unityObject.name.ToLower())))
+                    {
+                        // Object name matches, select it or perform any desired action
+                        matchedObjectIndex = i;
+                        break;
+                    }
+                }
+
+                if (matchedObjectIndex != -1)
+                {
+                    // FinishDiscussion(resetIA: false);
+
+                    NavMeshAgent agent = IaActive.GetComponent<NavMeshAgent>();
+
+                    // Go to the object
+                    agent.destination = questObjs[matchedObjectIndex].transform.position;
+                    agent.stoppingDistance = 3.0f;
+
+                    while (agent.pathPending || agent.remainingDistance > agent.stoppingDistance)
+                    {
+
+                        yield return null;
+                    }
+
+                    Debug.Log("Agent has arrived at the destination!");
+
+                    if (animName == "Grab")
+                    {
+                        Vector3 handOffset = new Vector3(0f, 1.0f, 1.0f); // Adjust the offset as needed
+
+                        // Pick the object
+                        if (unityObject != null)
+                        {
+                            // Store the original position of the object
+                            Vector3 objectOriginalPosition = unityObject.transform.position;
+
+                            // Calculate the offset from the avatar's hand position
+                            Vector3 handPosition = IaActive.transform.position + IaActive.transform.TransformDirection(handOffset);
+                            Vector3 objectOffset = objectOriginalPosition - handPosition;
+
+                            unityObject.transform.position = handPosition;
+                            unityObject.transform.rotation = IaActive.transform.rotation;
+
+                            yield return new WaitForSeconds(10.0f); // Delay for the physics engine to stabilize the object
+
+                            // Return to the player
+                            // agent.destination = playerGO.transform.position;
+                            // agent.stoppingDistance = 3.0f;
+
+                            // while (agent.remainingDistance > agent.stoppingDistance)
+                            // {
+                            //     // Update the position of the grabbed object relative to the avatar's hand
+                            //     unityObject.transform.position = IaActive.transform.position + objectOffset;
+
+                            //     yield return null;
+                            // }
+
+                            // Release the object on the ground
+                            RaycastHit hit;
+                            if (Physics.Raycast(unityObject.transform.position, Vector3.down, out hit))
+                            {
+                                unityObject.transform.position = hit.point;
+                            }
+                        }
+                    }
+
+
+
                 }
             }
         }
+
+
         private void StartRecording()
         {
             isRecording = true;

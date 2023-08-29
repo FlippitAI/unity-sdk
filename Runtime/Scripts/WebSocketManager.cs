@@ -82,8 +82,20 @@ namespace Flippit
                     if (message.Contains("animation_key"))
                     {
                         ChatChunkMessage newChunk = JsonUtility.FromJson<ChatChunkMessage>(message);
-                        GetComponent<DialogueWindow>().PlayAnimation(newChunk.value);
-                        //Debug.Log("Chunk envoyé : " + newChunk.value);
+
+                        string[] animationSplit = newChunk.value.Split(':');
+                        string animationName = animationSplit[0].Trim();
+                        // Debug.Log(animationName);
+
+                        string objectName = null;
+                        if (animationSplit.Length > 1)
+                        {
+                            objectName = animationSplit[1].Trim();
+                            // Debug.Log(objectName);
+
+                        }
+
+                        GetComponent<DialogueWindow>().PlayAnimation(animationName, objectName);
                     }
                     else if (message.Contains("chat_chunk"))
                     {
