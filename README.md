@@ -28,7 +28,7 @@ https://github.com/FlippitAI/unity-sdk.git
 
 5. Click add and wait for the import process to finish.
 
-After completing the process, your project will likely show errors because of some missing dependencies.
+6. After completing the process, your project will likely show errors because of some missing dependencies.
 Repeat the procedure to add the following packages through the Package Manager with git URLs:
    
    https://github.com/readyplayerme/rpm-unity-sdk-core.git --> This installs the Ready Player Me package. It is necessary to download your characters from Flippit Studio
