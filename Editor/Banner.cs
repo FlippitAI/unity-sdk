@@ -5,7 +5,7 @@ namespace Flippit.Editor
 {
     public class Banner
     {
-        private const string BANNER_PATH = "Assets/Plugins/Flippit/Editor/Banniere.png";
+        private const string BANNER_PATH = "Packages/flippitstudio/Editor/Banniere.png";
 
         private readonly Texture2D banner;
         private readonly GUIStyle versionTextStyle;
