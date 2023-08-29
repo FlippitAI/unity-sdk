@@ -179,30 +179,31 @@ namespace Flippit.Editor
         {
             string FlippitApiKeyResponse = ApiManager.GetRequest("api/v1/integrations/get_integration_token", EditorPrefs.GetString("AccessToken"), EditorPrefs.GetString("RefreshToken"));
             string FlippitApiKey = Regex.Match(FlippitApiKeyResponse, @"""access_key"":""([^""]+)""").Groups[1].Value;
-            // string SystemApiKeysResponse = ApiManager.GetRequest("unity/creds", EditorPrefs.GetString("AccessToken"), EditorPrefs.GetString("RefreshToken"));
-            // string OpenAiApiKey = Regex.Match(SystemApiKeysResponse, @"""open_ai"":""([^""]+)""").Groups[1].Value;
-            // string AWSApiKey = Regex.Match(SystemApiKeysResponse, @"""aws_access_key"":""([^""]+)""").Groups[1].Value;
-            // string AWSSecret = Regex.Match(SystemApiKeysResponse, @"""aws_secret"":""([^""]+)""").Groups[1].Value; 
 
+            string SystemApiKeysResponse = ApiManager.GetRequest("api/v1/unity/creds", EditorPrefs.GetString("AccessToken"), EditorPrefs.GetString("RefreshToken"));
+            string OpenAiApiKey = Regex.Match(SystemApiKeysResponse, @"""open_ai"":""([^""]+)""").Groups[1].Value;
+            string AWSApiKey = Regex.Match(SystemApiKeysResponse, @"""aws_access_key"":""([^""]+)""").Groups[1].Value;
+            string AWSSecret = Regex.Match(SystemApiKeysResponse, @"""aws_secret"":""([^""]+)""").Groups[1].Value; 
+
+            // Try to load the existing ScriptableObject asset
             ApiKeyManager apiKeys = Resources.Load<ApiKeyManager>("ApiKeys");
 
             if (apiKeys == null)
             {
-                apiKeys = CreateInstance<ApiKeyManager>();
-                AssetDatabase.CreateAsset(apiKeys, "Assets/Flippit/Resources/ApiKeys.asset");
+                // If asset doesn't exist, create a new instance
+                apiKeys = ScriptableObject.CreateInstance<ApiKeyManager>();
+                UnityEditor.AssetDatabase.CreateAsset(apiKeys, "Assets/Flippit/Resources/ApiKeys.asset");
             }
-            // Update the fields
-            // apiKeys.Flippit = FlippitApiKey; // Set the Flippit API key
-            // apiKeys.OpenAI = OpenAiApiKey; // Set the OpenAI API key
-            // apiKeys.AWSKey = AWSApiKey; // Set the AWS API key
-            // apiKeys.AWSSecret = AWSSecret
-            apiKeys.Flippit = FlippitApiKey;
-            apiKeys.OpenAI = "12345"; 
-            apiKeys.AWSKey = "12345"; 
-            apiKeys.AWSSecret = "12345";
 
-            EditorUtility.SetDirty(apiKeys); 
-            AssetDatabase.SaveAssets(); 
+            // Update the fields
+            apiKeys.Flippit = FlippitApiKey; // Set the Flippit API key
+            apiKeys.OpenAI = OpenAiApiKey; // Set the OpenAI API key
+            apiKeys.AWSKey = AWSApiKey; // Set the AWS API key
+            apiKeys.AWSSecret = AWSSecret; // Set the AWS secret
+
+
+            UnityEditor.EditorUtility.SetDirty(apiKeys); // Mark the asset as dirty
+            UnityEditor.AssetDatabase.SaveAssets(); // Save the changes
 
         }
         private void OnDisable()
