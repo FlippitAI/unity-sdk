@@ -6,24 +6,21 @@ Please visit the online documentation and join our public `discord` community.
 ![](https://i.imgur.com/zGamwPM.png) **[Online Documentation](https://flippitai.notion.site/Unity-SDK-fb1a3d5acfbb433e9334ffb124b8800c )**
 </p>
 
-[![openupm](https://img.shields.io/npm/v/com.flippit.flippitstudio?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.flippit.flippitstudio/)
-
-[![openupm](https://img.shields.io/badge/dynamic/json?color=brightgreen&label=downloads&query=%24.downloads&suffix=%2Fmonth&url=https%3A%2F%2Fpackage.openupm.com%2Fdownloads%2Fpoint%2Flast-month%2Fcom.flippit.flippitstudio)](https://openupm.com/packages/com.flippit.flippitstudio/)
-
 ## Quick Install
 ### Requirements
 Unity Version 2020.3 or higher
+
 Git needs to be installed to fetch the Unity package. [Download here](https://git-scm.com/downloads)
 
-1. To add the new Flippit Unity SDK to your project you can use the Unity Package Manager to import the package directly from the Git URL.
+1. To add the Flippit Unity SDK to your project please use the Unity Package Manager to import the package directly from the Git URL.
 
-2. With your Unity Project open open up the Package Manager window by going to Window > Package Manager.
+2. Within your Unity Project, open up the Package Manager window by going to Window > Package Manager.
 
-3. In the Package Manager window click on the + icon in the top left corner and select Add Package From Git URL.
+3. In the Package Manager window click on the + icon on the top left corner and select Add Package From Git URL.
 
 ![Screen2023-08-25 15 00 11](https://github.com/FlippitAI/unity-sdk/assets/1887378/0401e12a-253e-4e3e-9188-bc641bef40ee)
 
-4. Paste in this url
+4. Paste the following URL:
 
 https://github.com/FlippitAI/unity-sdk.git
 
@@ -31,18 +28,18 @@ https://github.com/FlippitAI/unity-sdk.git
 
 5. Click add and wait for the import process to finish.
 
-After the process is complete you project will Show errors, it is because Flippit has dependencies to work in unity,
-Reapeat the operation by adding these following packages:
+After completing the process, your project will likely show errors because of some missing dependencies.
+Repeat the procedure to add the following packages through the Package Manager with git URLs:
    
-   https://github.com/readyplayerme/rpm-unity-sdk-core.git
+   https://github.com/readyplayerme/rpm-unity-sdk-core.git --> This installs the Ready Player Me package. It is necessary to download your characters from Flippit Studio
    
-   https://github.com/endel/NativeWebSocket.git#upm
+   https://github.com/endel/NativeWebSocket.git#upm --> This installs a package to handle WebSocket connections. It is necessary to interact with our technology.
    
-   https://github.com/srcnalt/OpenAI-Unity.git
+   https://github.com/srcnalt/OpenAI-Unity.git --> This installs a plugin to handle communication with OpenAI. It is necessary to use Speech-To-Text (Whisper model)
 
-   https://github.com/atteneder/glTFast.git
+   https://github.com/atteneder/glTFast.git --> This installs the glTFast plugin for Unity.
    
-7. Once installed, create additionnal Tag for NPC : "Flippit/NPC"
+7. Once installed, the last step is to create an additional Tag named "Flippit/NPC". It will be used by all your characters. You only need to do it once at the first character creation (see screenshots).
    
 ![Screen2023-08-25 13 44 03](https://github.com/FlippitAI/unity-sdk/assets/1887378/f8b730d2-ad73-4e3c-a111-bbd9c2159589)
 
