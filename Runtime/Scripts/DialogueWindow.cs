@@ -97,6 +97,8 @@ namespace Flippit
         WebSocketManager manager;
         EnumLists lists;
 
+        public List<List<Viseme>> visemeSets = new List<List<Viseme>>();
+
         // Start is called before the first frame update
         void Start()
         {
@@ -119,7 +121,7 @@ namespace Flippit
                     time = 0;
                     isRecording = false;
                     EndRecording();
-                    Debug.Log("Enregistrement fini");
+                    Debug.Log("End of recording");
                 }
             }
 
@@ -136,7 +138,7 @@ namespace Flippit
                     time = 0;
                     isRecording = false;
                     EndRecording();
-                    Debug.Log("Enregistrement stoppé de force (duration)");
+                    Debug.Log("Recording stopped");
                 }
             }
         }
@@ -321,6 +323,11 @@ namespace Flippit
             isTalkingToCharacter = false;
         }
 
+        public void ReceiveVisemes(List<Viseme> visemesSentence)
+        {
+            visemeSets.Add(visemesSentence);
+        }
+
         private async void ReadSentences()
         {
             if (currentSentenceIndex >= 0 && currentSentenceIndex < sentences.Count)
@@ -333,8 +340,9 @@ namespace Flippit
                 }
                 lists = new EnumLists();
                 string voiceID = lists.voiceNames[index];
-                Task speechTask = IaActive.GetComponent<TTS>().SpeechMe(sentenceToRead, voiceID);
+                Task speechTask = IaActive.GetComponent<TTS>().SpeechMe(sentenceToRead, voiceID,visemeSets[0]);
                 await speechTask;
+                visemeSets.RemoveAt(0);
                 currentSentenceIndex++;
                 ReadSentences();
             }

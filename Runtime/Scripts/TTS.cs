@@ -12,13 +12,49 @@ using UnityEngine.Networking;
 
 namespace Flippit
 {
+
     public class TTS : MonoBehaviour
     {
         public AudioSource audioSource;
         private ApiKeyManager apiKeyManager;
+        private int currentVisemeIndex = 0;
 
-        public async Task SpeechMe(string text,string VoiceId)
+        private List<Viseme> visemesList;
+        private SkinnedMeshRenderer skinnedMeshRenderer;
+
+        private bool isAudioPlaying = false;
+
+        private static readonly Dictionary<string, string> phonemeToVisemeMapping = new Dictionary<string, string>()
         {
+            {"sil", "viseme_sil"},
+            {"p", "viseme_PP"},
+            {"t", "viseme_DD"},
+            {"S", "viseme_CH"},
+            {"T", "viseme_TH"},
+            {"f", "viseme_FF"},
+            {"k", "viseme_kk"},
+            {"r", "viseme_RR"},
+            {"s", "viseme_SS"},
+            {"@", "viseme_aa"},
+            {"a", "viseme_aa"},
+            {"e", "viseme_E"},
+            {"E", "viseme_E"},
+            {"i", "viseme_I"},
+            {"o", "viseme_O"},
+            {"O", "viseme_O"},
+            {"u", "viseme_U"}
+        };
+
+        void Start()
+        {
+            //Get the mesh renderer to perform the viseme operations
+            skinnedMeshRenderer = GetComponent<IACharacter>().Avatar.transform.Find("Renderer_Avatar").GetComponent<SkinnedMeshRenderer>();            
+        }
+
+
+        public async Task SpeechMe(string text, string VoiceId, List<Viseme> visemes)
+        {
+            visemesList = visemes;
             apiKeyManager = Resources.Load<ApiKeyManager>("Apikeys");
             var credentials = new BasicAWSCredentials(apiKeyManager.AWSKey,apiKeyManager.AWSSecret);
             var client = new AmazonPollyClient(credentials, RegionEndpoint.EUWest1);
@@ -41,10 +77,11 @@ namespace Flippit
 
             var clip = DownloadHandlerAudioClip.GetContent(www);
             audioSource.clip = clip;
+            isAudioPlaying = true;
             audioSource.Play();
             await Task.Delay((int)(clip.length * 1000));
+            isAudioPlaying = false;
         }
-
 
         private void WriteIntoFile(Stream stream)
         {
@@ -57,5 +94,49 @@ namespace Flippit
             }
         }
 
+        void Update()
+        {
+            if (isAudioPlaying && currentVisemeIndex < visemesList.Count)
+            {
+                float currentTime = audioSource.time * 1000;
+
+                // Check if the audio playback time is within the range of the current viseme data
+                if (currentTime >= visemesList[currentVisemeIndex].start &&
+                    currentTime <= visemesList[currentVisemeIndex].end)
+                {
+                    // Call the setViseme function with the appropriate values
+
+                    setViseme(phonemeToVisemeMapping[visemesList[currentVisemeIndex].value], 1);
+                }
+                else
+                {
+                    // Call the setViseme function with the appropriate values to deactivate the viseme
+                    setViseme(phonemeToVisemeMapping[visemesList[currentVisemeIndex].value], 0);
+                }
+
+                // Move to the next viseme data if the audio has passed its end time
+                if (currentTime > visemesList[currentVisemeIndex].end)
+                {
+                    currentVisemeIndex++;
+                }
+            }
+            else if (!isAudioPlaying && currentVisemeIndex != 0)
+            {
+                currentVisemeIndex = 0;
+            }
+        }
+
+        // Your setViseme function implementation
+        void setViseme(string viseme, float value)
+        {
+            skinnedMeshRenderer.SetBlendShapeWeight(skinnedMeshRenderer.sharedMesh.GetBlendShapeIndex(viseme), value);
+        }
+
     }
 }
+
+
+
+
+
+

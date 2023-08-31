@@ -12,6 +12,22 @@ namespace Flippit
         public string msg_type;
         public string value;
     }
+    [Serializable]
+    public class Viseme
+    {
+        public float start;
+        public float end;
+        public string type;
+        public string value;
+    }
+
+    [Serializable]
+    public class AudioMessage
+    {
+        public string msg_type;
+        public string audio_bytes;
+        public List<Viseme> viseme_bytes;
+    }
     
     public class WebSocketManager : MonoBehaviour
     {
@@ -78,21 +94,17 @@ namespace Flippit
                 {
                     var message = Encoding.UTF8.GetString(bytes);
                     OnChatChunkReceived?.Invoke(message);
-                    //Debug.Log(" message : " + message);
                     if (message.Contains("animation_key"))
                     {
                         ChatChunkMessage newChunk = JsonUtility.FromJson<ChatChunkMessage>(message);
 
                         string[] animationSplit = newChunk.value.Split(':');
                         string animationName = animationSplit[0].Trim();
-                        // Debug.Log(animationName);
 
                         string objectName = null;
                         if (animationSplit.Length > 1)
                         {
                             objectName = animationSplit[1].Trim();
-                            // Debug.Log(objectName);
-
                         }
 
                         GetComponent<DialogueWindow>().PlayAnimation(animationName, objectName);
@@ -101,6 +113,13 @@ namespace Flippit
                     {
                         ChatChunkMessage newChunk = JsonUtility.FromJson<ChatChunkMessage>(message);
                         GetComponent<DialogueWindow>().ReceiveMessage(newChunk.value);
+                    }
+                    else if (message.Contains("audio"))
+                    {
+                        AudioMessage audioMessage = JsonUtility.FromJson<AudioMessage>(message);
+                        //GetComponent<DialogueWindow>().ReceiveAudio(audioMessage.audio_bytes); // SEND THE ENCODED AUDIO RECEIVED BY FLIPPIT
+                        GetComponent<DialogueWindow>().ReceiveVisemes(audioMessage.viseme_bytes); // SEND THE VISEMES RECEIVED BY FLIPPIT
+
                     }
                 };
             }
