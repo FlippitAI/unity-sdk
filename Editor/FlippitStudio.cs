@@ -190,6 +190,14 @@ namespace Flippit.Editor
 
             if (apiKeys == null)
             {
+                if (!AssetDatabase.IsValidFolder("assets/Flippit"))
+                {
+                    AssetDatabase.CreateFolder("Assets", "Flippit");
+                }
+                if (!AssetDatabase.IsValidFolder("Assets/Flippit/Resources"))
+                {
+                    AssetDatabase.CreateFolder("Flippit", "Ressources");
+                }
                 // If asset doesn't exist, create a new instance
                 apiKeys = ScriptableObject.CreateInstance<ApiKeyManager>();
                 UnityEditor.AssetDatabase.CreateAsset(apiKeys, "Assets/Flippit/Resources/ApiKeys.asset");
