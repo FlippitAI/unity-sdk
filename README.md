@@ -71,3 +71,13 @@ and convert it as Player
 
 Once done, we have our Player character created with all usefull assets (camera, canvas with dialogue box, and controls)
 
+11. If we start the game and see errors, try to hit clear Button from console. walk to the NPC, and if you don't already have added Text Mesh Pro, a window will ask you to do so.
+
+![Screen2023-08-31 14 28 28](https://github.com/FlippitAI/unity-sdk/assets/1887378/ce5b4af7-c87f-4b53-b842-698465f0d4e1)
+
+12.Restart the game, and we are good to go !
+
+![Screen2023-08-31 14 31 45](https://github.com/FlippitAI/unity-sdk/assets/1887378/f1110873-32f8-412c-8236-6a666740a6ca)
+
+
+
