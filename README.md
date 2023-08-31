@@ -39,10 +39,28 @@ Repeat the procedure to add the following packages through the Package Manager w
 
    https://github.com/atteneder/glTFast.git --> This installs the glTFast plugin for Unity.
    
-7. Create the following folder structure: Assets/Flippit/Resources
-8. (Only if needed) Once installed, the last step is to create an additional Tag named "Flippit/NPC". It will be used by all your characters. You only need to do it once at the first character creation (see screenshots).
+7. Once installed, the last step is to create an additional Tag named "Flippit/NPC". It will be used by all your characters. You only need to do it once at the first character creation (see screenshots).
    
 ![Screen2023-08-25 13 44 03](https://github.com/FlippitAI/unity-sdk/assets/1887378/f8b730d2-ad73-4e3c-a111-bbd9c2159589)
 
 ![Screen2023-08-25 13 45 45](https://github.com/FlippitAI/unity-sdk/assets/1887378/5e5db71e-b64b-4a56-9b84-8cdc0be12464)
 
+8. To start your first test with smart NPCs, you need a small area for ground, create a simple plane, scale it by 10, and then, mark it as static
+
+![Screen2023-08-31 14 06 11](https://github.com/FlippitAI/unity-sdk/assets/1887378/36bf9c5d-b395-4cb3-a1da-51b6dc75f976)
+
+9. Open the menu Window>Ai> Navigation and then Bake the Navmesh.
+
+![Screen2023-08-31 14 09 50](https://github.com/FlippitAI/unity-sdk/assets/1887378/959818fc-c200-46d2-8bdb-d0c806f31a6d)
+
+![Screen2023-08-31 14 09 35](https://github.com/FlippitAI/unity-sdk/assets/1887378/887d3ee3-9a94-4a7e-8dc1-56baa3e4b7e4)
+
+10. are now ready to add the player character.
+
+
+
+
+   
+
+
+9.
