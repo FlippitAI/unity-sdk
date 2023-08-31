@@ -194,17 +194,15 @@ namespace Flippit.Editor
                 {
                     AssetDatabase.CreateFolder("Assets", "Flippit");
                     AssetDatabase.Refresh();
-
-                    if (!AssetDatabase.IsValidFolder("Assets/Flippit/Resources"))
-                    {
-                        AssetDatabase.CreateFolder("Flippit", "Ressources");
-                        AssetDatabase.Refresh();
-                        // If asset doesn't exist, create a new instance
-                        apiKeys = ScriptableObject.CreateInstance<ApiKeyManager>();
-                        AssetDatabase.CreateAsset(apiKeys, "Assets/Flippit/Resources/ApiKeys.asset");
-                    }
                 }
-                
+                if (!AssetDatabase.IsValidFolder("Assets/Flippit/Resources"))
+                {
+                    AssetDatabase.CreateFolder("Assets/Flippit", "Resources");
+                    AssetDatabase.Refresh();
+                    // If asset doesn't exist, create a new instance
+                    apiKeys = ScriptableObject.CreateInstance<ApiKeyManager>();
+                    AssetDatabase.CreateAsset(apiKeys, "Assets/Flippit/Resources/ApiKeys.asset");
+                }
             }
 
             // Update the fields
