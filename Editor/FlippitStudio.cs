@@ -193,14 +193,18 @@ namespace Flippit.Editor
                 if (!AssetDatabase.IsValidFolder("assets/Flippit"))
                 {
                     AssetDatabase.CreateFolder("Assets", "Flippit");
+                    AssetDatabase.Refresh();
+
+                    if (!AssetDatabase.IsValidFolder("Assets/Flippit/Resources"))
+                    {
+                        AssetDatabase.CreateFolder("Flippit", "Ressources");
+                        AssetDatabase.Refresh();
+                        // If asset doesn't exist, create a new instance
+                        apiKeys = ScriptableObject.CreateInstance<ApiKeyManager>();
+                        AssetDatabase.CreateAsset(apiKeys, "Assets/Flippit/Resources/ApiKeys.asset");
+                    }
                 }
-                if (!AssetDatabase.IsValidFolder("Assets/Flippit/Resources"))
-                {
-                    AssetDatabase.CreateFolder("Flippit", "Ressources");
-                }
-                // If asset doesn't exist, create a new instance
-                apiKeys = ScriptableObject.CreateInstance<ApiKeyManager>();
-                UnityEditor.AssetDatabase.CreateAsset(apiKeys, "Assets/Flippit/Resources/ApiKeys.asset");
+                
             }
 
             // Update the fields
