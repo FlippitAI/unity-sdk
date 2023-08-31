@@ -55,12 +55,18 @@ Repeat the procedure to add the following packages through the Package Manager w
 
 ![Screen2023-08-31 14 09 35](https://github.com/FlippitAI/unity-sdk/assets/1887378/887d3ee3-9a94-4a7e-8dc1-56baa3e4b7e4)
 
-10. are now ready to add the player character.
+10. are now ready to add the player character. You can use any kind of GameObject or animated character.
+
+For this exemple, we will use a flippit NPC, 
+![Screen2023-08-31 14 21 19](https://github.com/FlippitAI/unity-sdk/assets/1887378/577ce0b5-5ceb-45ca-aa57-617f86204323)
 
 
+Unpack the prefab,
+![Screen2023-08-31 14 21 36](https://github.com/FlippitAI/unity-sdk/assets/1887378/125ccb73-3ce2-4452-b8f7-06ed588ec2df)
 
 
-   
+and convert it as Player
+![Screen2023-08-31 14 22 07](https://github.com/FlippitAI/unity-sdk/assets/1887378/b82e9cc6-4b43-4575-94a0-2b595e94cf67)
 
+Once done, we have our Player character created with all usefull assets (camera, canvas with dialogue box, and controls)
 
-9.
