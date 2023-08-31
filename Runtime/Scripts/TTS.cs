@@ -129,7 +129,15 @@ namespace Flippit
         // Your setViseme function implementation
         void setViseme(string viseme, float value)
         {
-            skinnedMeshRenderer.SetBlendShapeWeight(skinnedMeshRenderer.sharedMesh.GetBlendShapeIndex(viseme), value);
+            int blendShapeIndex = skinnedMeshRenderer.sharedMesh.GetBlendShapeIndex(viseme);
+            if (blendShapeIndex >= 0)
+            {
+                skinnedMeshRenderer.SetBlendShapeWeight(blendShapeIndex, value);
+            }
+            else
+            {
+                Debug.LogWarning($"Blend shape '{viseme}' does not exist in the mesh.");
+            }
         }
 
     }
