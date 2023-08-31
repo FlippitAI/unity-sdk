@@ -39,10 +39,45 @@ Repeat the procedure to add the following packages through the Package Manager w
 
    https://github.com/atteneder/glTFast.git --> This installs the glTFast plugin for Unity.
    
-7. Create the following folder structure: Assets/Flippit/Resources
-8. (Only if needed) Once installed, the last step is to create an additional Tag named "Flippit/NPC". It will be used by all your characters. You only need to do it once at the first character creation (see screenshots).
+7. Once installed, the last step is to create an additional Tag named "Flippit/NPC". It will be used by all your characters. You only need to do it once at the first character creation (see screenshots).
    
 ![Screen2023-08-25 13 44 03](https://github.com/FlippitAI/unity-sdk/assets/1887378/f8b730d2-ad73-4e3c-a111-bbd9c2159589)
 
 ![Screen2023-08-25 13 45 45](https://github.com/FlippitAI/unity-sdk/assets/1887378/5e5db71e-b64b-4a56-9b84-8cdc0be12464)
+
+8. To start your first test with smart NPCs, you need a small area for ground, create a simple plane, scale it by 10, and then, mark it as static
+
+![Screen2023-08-31 14 06 11](https://github.com/FlippitAI/unity-sdk/assets/1887378/36bf9c5d-b395-4cb3-a1da-51b6dc75f976)
+
+9. Open the menu Window>Ai> Navigation and then Bake the Navmesh.
+
+![Screen2023-08-31 14 09 50](https://github.com/FlippitAI/unity-sdk/assets/1887378/959818fc-c200-46d2-8bdb-d0c806f31a6d)
+
+![Screen2023-08-31 14 09 35](https://github.com/FlippitAI/unity-sdk/assets/1887378/887d3ee3-9a94-4a7e-8dc1-56baa3e4b7e4)
+
+10. are now ready to add the player character. You can use any kind of GameObject or animated character.
+
+For this exemple, we will use a flippit NPC, 
+
+![Screen2023-08-31 14 21 19](https://github.com/FlippitAI/unity-sdk/assets/1887378/577ce0b5-5ceb-45ca-aa57-617f86204323)
+
+Unpack the prefab,
+
+![Screen2023-08-31 14 21 36](https://github.com/FlippitAI/unity-sdk/assets/1887378/125ccb73-3ce2-4452-b8f7-06ed588ec2df)
+
+and convert it as Player
+
+![Screen2023-08-31 14 22 07](https://github.com/FlippitAI/unity-sdk/assets/1887378/b82e9cc6-4b43-4575-94a0-2b595e94cf67)
+
+Once done, we have our Player character created with all usefull assets (camera, canvas with dialogue box, and controls)
+
+11. If we start the game and see errors, try to hit clear Button from console. walk to the NPC, and if you don't already have added Text Mesh Pro, a window will ask you to do so.
+
+![Screen2023-08-31 14 28 28](https://github.com/FlippitAI/unity-sdk/assets/1887378/ce5b4af7-c87f-4b53-b842-698465f0d4e1)
+
+12.Restart the game, and we are good to go !
+
+![Screen2023-08-31 14 31 45](https://github.com/FlippitAI/unity-sdk/assets/1887378/f1110873-32f8-412c-8236-6a666740a6ca)
+
+
 
