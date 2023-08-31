@@ -230,7 +230,7 @@ namespace Flippit.Editor
                     #endregion
                     #region store asset data
 
-                    if (!AssetDatabase.IsValidFolder("assets/Flippit"))
+                    if (!AssetDatabase.IsValidFolder("Assets/Flippit"))
                     {
                         AssetDatabase.CreateFolder("Assets", "Flippit");
                     }

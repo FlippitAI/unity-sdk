@@ -190,7 +190,7 @@ namespace Flippit.Editor
 
             if (apiKeys == null)
             {
-                if (!AssetDatabase.IsValidFolder("assets/Flippit"))
+                if (!AssetDatabase.IsValidFolder("Assets/Flippit"))
                 {
                     AssetDatabase.CreateFolder("Assets", "Flippit");
                     AssetDatabase.Refresh();
