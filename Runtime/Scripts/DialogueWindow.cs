@@ -538,6 +538,7 @@ namespace Flippit
         
         public static AudioClip StartRecording(string device, bool loop, int lengthSec, int frequency)
         {
+            GameObject dialogueWindowGO = GameObject.Find("DialoguePanel");
             DialogueWindow window = GetComponent<DialogueWindow>();
             window.isRecording = true;
             var key = device ?? "";
