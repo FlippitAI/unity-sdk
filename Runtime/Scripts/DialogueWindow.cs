@@ -541,5 +541,14 @@ namespace Flippit
             Debug.Log($"Started with {device}");
             return clip;
         }
+                public static int GetPosition(string device)
+        {
+            var key = device ?? "";
+#if USE_WEBGL
+            return WebGLMicrophone.MicrophoneWebGL_GetPosition(key);
+#else
+            return Microphone.GetPosition(device);
+#endif
+        }
     }
 }
