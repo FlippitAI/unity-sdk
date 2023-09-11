@@ -111,7 +111,7 @@ namespace Flippit
         private static readonly Dictionary<string, ClipData> Clips = new ();
         [SerializeField]
         private string device;
-        private DialogueWindow window;
+        private static DialogueWindow window;
         #endregion
         WebSocketManager manager;
         EnumLists lists;
