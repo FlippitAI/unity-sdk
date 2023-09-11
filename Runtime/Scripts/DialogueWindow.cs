@@ -39,6 +39,12 @@ namespace Flippit
         public string prompt;
     }
 
+    public class ClipData
+    {
+        public AudioClip clip;
+        public int last;
+    }
+
     public class DialogueWindow : MonoBehaviour
     {
         #region public var
