@@ -112,7 +112,7 @@ namespace Flippit
         WebSocketManager manager;
         EnumLists lists;
 
-        public List<List<Viseme>> visemeSets = new List<List<Viseme>>();
+        public List<List<Viseme>> visemeSets = new();
 
         // Start is called before the first frame update
         void Start()
