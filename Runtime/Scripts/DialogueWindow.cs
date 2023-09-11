@@ -171,7 +171,7 @@ namespace Flippit
             {
                 if (Input.GetKeyDown(pushToTalkButton) && !isRecording)
                 {
-                    StartRecording(devices[0], false, recordingMaxDuration, 44100);
+                    StartRecording(device, false, recordingMaxDuration, 44100);
                 }
                 else if (Input.GetKeyUp(pushToTalkButton))
                 {
