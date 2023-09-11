@@ -61,7 +61,7 @@ namespace Flippit
         public KeyCode pushToTalkButton = KeyCode.Tab;
         public KeyCode ExitDiscussion = KeyCode.Escape;
         public int recordingMaxDuration = 10;
-        public string[] devices;
+        public string[] MicrophoneOptions;
         public int selectedMicrophoneIndex = 0;
 
         [Header("Output Options")]
@@ -126,11 +126,15 @@ namespace Flippit
             InputMessage = DiscussionPanel.GetComponentInChildren<TextMeshProUGUI>();
             inputText = inputField.GetComponent<TextMeshProUGUI>();
             chatAreaText = DiscussionPanel.GetComponentInChildren<TextMeshProUGUI>();
-            devices = Microphone.devices;
+#if USE_WEBGL
+            RefreshDevicesWebGL(Callback);
+#else
+            MicrophoneOptions = Microphone.devices;
+#endif
             if (devices.Length > 0)
             {
-                selectedMicrophoneIndex = Mathf.Clamp(selectedMicrophoneIndex, 0, devices.Length - 1);
-                device = devices[selectedMicrophoneIndex].ToString();
+                selectedMicrophoneIndex = Mathf.Clamp(selectedMicrophoneIndex, 0, MicrophoneOptions.Length - 1);
+                device = MicrophoneOptions[selectedMicrophoneIndex].ToString();
             }
             else
             {
@@ -160,18 +164,18 @@ namespace Flippit
         public static void RefreshDevices(Action<string[]> Callback)
         {
 #if USE_WEBGL
-            this.RefreshDevicesWebGL(Callback);
+            RefreshDevicesWebGL(Callback);
 #else
-            this.devices = Microphone.devices;
+            devices = Microphone.devices;
             Callback(devices);
             OnDevicesLoaded?.Invoke(devices);
 #endif
         }
         private static async void RefreshDevicesWebGL(Action<string[]> Callback)
         {
-            this.devices = await WebGLMicrophone.MicrophoneWebGL_Devices();
-            this.Callback(devices);
-            this.OnDevicesLoaded?.Invoke(devices);
+            devices = await WebGLMicrophone.MicrophoneWebGL_Devices();
+            Callback(devices);
+            OnDevicesLoaded?.Invoke(devices);
         }
         
         public static void RefreshDevices()
