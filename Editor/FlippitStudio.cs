@@ -153,7 +153,7 @@ namespace Flippit.Editor
             }
             else
             {
-                Debug.LogWarning("Enter your Identifier and Password") 
+                Debug.LogWarning("Enter your Identifier and Password");
             }
         }
         private void TreatData(LoginData logData)
