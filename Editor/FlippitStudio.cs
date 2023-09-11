@@ -194,27 +194,31 @@ namespace Flippit.Editor
 
             // Try to load the existing ScriptableObject asset
             ApiKeyManager apiKeys = Resources.Load<ApiKeyManager>("ApiKeys");
-
+            
+            Debug.Log("Scriptable : " + apiKeys.ToString());
+            
             if (apiKeys == null)
             {
+            Debug.Log("Scriptable detecte comme null");
                 if (!AssetDatabase.IsValidFolder("Assets/Flippit"))
                 {
+                    Debug.Log("Dossier Flippit inValid, on le crée");
                     AssetDatabase.CreateFolder("Assets", "Flippit");
                     AssetDatabase.Refresh();
                 }
                 if (!AssetDatabase.IsValidFolder("Assets/Flippit/Resources"))
                 {
+                    Debug.Log("Dossier Resources inValid, on le crée");
                     AssetDatabase.CreateFolder("Assets/Flippit", "Resources");
                     AssetDatabase.Refresh();
+                }
+                 Debug.Log("Scriptable Inexistant, on le crée");
                     // If asset doesn't exist, create a new instance
                     apiKeys = ScriptableObject.CreateInstance<ApiKeyManager>();
                     AssetDatabase.CreateAsset(apiKeys, "Assets/Flippit/Resources/ApiKeys.asset");
-                }
             }
 
             // Update the fields 
-            Debug.Log(apiKeys.ToString());
-            Debug.Log(FlippitApiKey);
             if(FlippitApiKey != null)apiKeys.Flippit = FlippitApiKey; // Set the Flippit API key
             if(OpenAiApiKey != null)apiKeys.OpenAI = OpenAiApiKey; // Set the OpenAI API key
             if(AWSApiKey != null)apiKeys.AWSKey = AWSApiKey; // Set the AWS API key
