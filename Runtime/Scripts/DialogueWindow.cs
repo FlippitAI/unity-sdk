@@ -177,7 +177,7 @@ namespace Flippit
                 {
                     time = 0;
                     isRecording = false;
-                    EndRecording();
+                    EndRecording(device);
                     Debug.Log("End of recording");
                 }
             }
@@ -194,7 +194,7 @@ namespace Flippit
                 {
                     time = 0;
                     isRecording = false;
-                    EndRecording();
+                    EndRecording(device);
                     Debug.Log("Recording stopped");
                 }
             }
