@@ -132,7 +132,7 @@ namespace Flippit
 #else
             MicrophoneOptions = Microphone.devices;
 #endif
-            if (devices.Length > 0)
+            if (MicrophoneOptions.Length > 0)
             {
                 selectedMicrophoneIndex = Mathf.Clamp(selectedMicrophoneIndex, 0, MicrophoneOptions.Length - 1);
                 device = MicrophoneOptions[selectedMicrophoneIndex].ToString();
