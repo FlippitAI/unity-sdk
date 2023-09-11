@@ -192,7 +192,7 @@ namespace Flippit.Editor
             string AWSApiKey = Regex.Match(SystemApiKeysResponse, @"""aws_access_key"":""([^""]+)""").Groups[1].Value;
             string AWSSecret = Regex.Match(SystemApiKeysResponse, @"""aws_secret"":""([^""]+)""").Groups[1].Value; 
 
-            if(AssetDatabase.IsValidFile("Assets/Flippit/ApiKeys.asset"))
+            if(File.Exists("Assets/Flippit/Resources/ApiKeys.asset"))
             {
                 ApiKeyManager apiKeys = Resources.Load<ApiKeyManager>("ApiKeys");
             }
