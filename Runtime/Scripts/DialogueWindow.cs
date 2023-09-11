@@ -158,7 +158,7 @@ namespace Flippit
             {
                 if (Input.GetKeyDown(pushToTalkButton) && !isRecording)
                 {
-                    StartRecording();
+                    StartRecording(device, loop, (int)recordLength, _frequency);
                 }
                 else if (Input.GetKeyUp(pushToTalkButton))
                 {
