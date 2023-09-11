@@ -398,6 +398,7 @@ namespace Flippit.Editor
             UIpanel = PrefabUtility.LoadPrefabContents(DialogueUI);
             UIpanel.transform.SetParent(canvas.transform);
             UIpanel.GetComponent<RectTransform>().anchoredPosition = new Vector3(10, -10, 0);
+            UIpanel.SetActive(false);
         }
 
         void SetupCamera()
