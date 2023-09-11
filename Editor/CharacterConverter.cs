@@ -229,23 +229,7 @@ namespace Flippit.Editor
                     TTS.audioSource = emptyGameObject.AddComponent<AudioSource>();
                     #endregion
                     #region store asset data
-
-                    if (!AssetDatabase.IsValidFolder("Assets/Flippit"))
-                    {
-                        AssetDatabase.CreateFolder("Assets", "Flippit");
-                    }
-                    if (!AssetDatabase.IsValidFolder("Assets/Flippit/Resources"))
-                    {
-                        AssetDatabase.CreateFolder("Assets/Flippit", "Resources");
-                    }
-                    if (!AssetDatabase.IsValidFolder(personalityPath))
-                    {
-                        AssetDatabase.CreateFolder("Assets/Flippit/Resources", "Personalities");
-                    }
-                    if (!AssetDatabase.IsValidFolder(prefabPath))
-                    {
-                        AssetDatabase.CreateFolder("Assets/Flippit/Resources", "Prefabs");
-                    }
+                    CreateFolders();
                     AssetDatabase.CreateAsset(perso, personalityPath + "/" + characName.value + ".asset");
                     prefab = PrefabUtility.SaveAsPrefabAsset(emptyGameObject, prefabPath + "/" + characName.value + ".prefab");
                     AssetDatabase.SaveAssets();
@@ -285,7 +269,7 @@ namespace Flippit.Editor
                     name = "Player",
                     tag = "Player"
                 };
-                // Ajouter les composants souhaités à l'objet sélectionné
+                // Ajouter les composants souhaitÃ©s Ã  l'objet sÃ©lectionnÃ©
 
                 # region Physic Elements
                 CapsuleCollider ColliderParameters = emptyGameObject.AddComponent<CapsuleCollider>();
@@ -306,8 +290,8 @@ namespace Flippit.Editor
                 {
                     canvas = canvaComp.gameObject;
                     Transform[] childTransforms = canvas.GetComponentsInChildren<Transform>(true);
-                    int childCount = childTransforms.Length; // Stocker la longueur du tableau à l'extérieur de la boucle
-                    bool dialoguePanelFound = false; // Booléen pour marquer si l'objet DialoguePanel a été trouvé
+                    int childCount = childTransforms.Length; // Stocker la longueur du tableau Ã  l'extÃ©rieur de la boucle
+                    bool dialoguePanelFound = false; // BoolÃ©en pour marquer si l'objet DialoguePanel a Ã©tÃ© trouvÃ©
                     for (int i = 0; i < childCount; i++)
                     {
                         Transform childTransform = childTransforms[i];
@@ -364,6 +348,7 @@ namespace Flippit.Editor
                 animatorComp.applyRootMotion = false;
                 #endregion
                 #region save prefab
+                CreateFolders();
                 GameObject prefab = PrefabUtility.SaveAsPrefabAsset(emptyGameObject, prefabPath + "/" + emptyGameObject.name + ".prefab");
                 DestroyImmediate(emptyGameObject);
                 PlayerObject = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
@@ -413,6 +398,7 @@ namespace Flippit.Editor
             UIpanel = PrefabUtility.LoadPrefabContents(DialogueUI);
             UIpanel.transform.SetParent(canvas.transform);
             UIpanel.GetComponent<RectTransform>().anchoredPosition = new Vector3(10, -10, 0);
+            UIpanel.SetActive(false);
         }
 
         void SetupCamera()
@@ -472,6 +458,25 @@ namespace Flippit.Editor
             CinemachineVirtualCamera virtualCam = newVCam.GetComponent<CinemachineVirtualCamera>();
             virtualCam.m_Follow = PlayerObject.transform;
             virtualCam.m_LookAt = PlayerObject.transform;
+        }
+        void CreateFolders()
+        {
+            if (!AssetDatabase.IsValidFolder("assets/Flippit"))
+            {
+                AssetDatabase.CreateFolder("Assets", "Flippit");
+            }
+            if (!AssetDatabase.IsValidFolder("Assets/Flippit/Resources"))
+            {
+                AssetDatabase.CreateFolder("Assets/Flippit", "Resources");
+            }
+            if (!AssetDatabase.IsValidFolder(personalityPath))
+            {
+                AssetDatabase.CreateFolder("Assets/Flippit/Resources", "Personalities");
+            }
+            if (!AssetDatabase.IsValidFolder(prefabPath))
+            {
+                AssetDatabase.CreateFolder("Assets/Flippit/Resources", "Prefabs");
+            }
         }
     }
 }

@@ -81,6 +81,7 @@ namespace Flippit.Editor
         private bool useEyeAnimations;
         private bool useVoiceToAnim;
         private Character character;
+        private ApiKeyManager apiKeys;
         #endregion
         [MenuItem("Flippit/Studio", false, 0)]
         public static void ShowWindow()
@@ -140,14 +141,21 @@ namespace Flippit.Editor
         }
         public void OnConnect(ClickEvent evt)
         {
-            userlogin = loginInput.value;
-            userPass = passwordInput.value;
-            LoginData logData = new()
+            if (loginInput.value != null && passwordInput.value!=null)
             {
-                username = userlogin,
-                password = userPass
-            };
-            TreatData(logData);
+                userlogin = loginInput.value;
+                userPass = passwordInput.value;
+                LoginData logData = new()
+                {
+                    username = userlogin,
+                    password = userPass
+                };
+                TreatData(logData);
+            }
+            else
+            {
+                Debug.LogWarning("Enter your Identifier and Password");
+            }
         }
         private void TreatData(LoginData logData)
         {
@@ -185,10 +193,11 @@ namespace Flippit.Editor
             string AWSApiKey = Regex.Match(SystemApiKeysResponse, @"""aws_access_key"":""([^""]+)""").Groups[1].Value;
             string AWSSecret = Regex.Match(SystemApiKeysResponse, @"""aws_secret"":""([^""]+)""").Groups[1].Value; 
 
-            // Try to load the existing ScriptableObject asset
-            ApiKeyManager apiKeys = Resources.Load<ApiKeyManager>("ApiKeys");
-
-            if (apiKeys == null)
+            if(File.Exists("Assets/Flippit/Resources/ApiKeys.asset"))
+            {
+                apiKeys = Resources.Load<ApiKeyManager>("ApiKeys");
+            }
+            else
             {
                 if (!AssetDatabase.IsValidFolder("Assets/Flippit"))
                 {
@@ -199,18 +208,15 @@ namespace Flippit.Editor
                 {
                     AssetDatabase.CreateFolder("Assets/Flippit", "Resources");
                     AssetDatabase.Refresh();
-                    // If asset doesn't exist, create a new instance
+                }
                     apiKeys = ScriptableObject.CreateInstance<ApiKeyManager>();
                     AssetDatabase.CreateAsset(apiKeys, "Assets/Flippit/Resources/ApiKeys.asset");
-                }
             }
 
-            // Update the fields
-            apiKeys.Flippit = FlippitApiKey; // Set the Flippit API key
-            apiKeys.OpenAI = OpenAiApiKey; // Set the OpenAI API key
-            apiKeys.AWSKey = AWSApiKey; // Set the AWS API key
-            apiKeys.AWSSecret = AWSSecret; // Set the AWS secret
-
+            if(FlippitApiKey != null)apiKeys.Flippit = FlippitApiKey; // Set the Flippit API key
+            if(OpenAiApiKey != null)apiKeys.OpenAI = OpenAiApiKey; // Set the OpenAI API key
+            if(AWSApiKey != null)apiKeys.AWSKey = AWSApiKey; // Set the AWS API key
+            if(AWSSecret != null)apiKeys.AWSSecret = AWSSecret; // Set the AWS secret
 
             UnityEditor.EditorUtility.SetDirty(apiKeys); // Mark the asset as dirty
             UnityEditor.AssetDatabase.SaveAssets(); // Save the changes
@@ -218,9 +224,12 @@ namespace Flippit.Editor
         }
         private void OnDisable()
         {
-            EditorPrefs.SetString("login", userlogin);
-            EditorPrefs.SetString("Password", userPass);
-            EditorPrefs.SetBool("initialized", verified);
+            if (userlogin != null && userPass != null)
+                {
+                    EditorPrefs.SetString("login", userlogin);
+                    EditorPrefs.SetString("Password", userPass);
+                    EditorPrefs.SetBool("initialized", verified);
+                }
         }
         public void OnDocumentation(ClickEvent evt)
         {
