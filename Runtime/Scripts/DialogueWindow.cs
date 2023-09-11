@@ -140,6 +140,18 @@ namespace Flippit
             clipData.clip.SetData(samples, position);
             clipData.last = position;
         }
+        public static string[] devices { get; private set; }
+
+        public static void RefreshDevices(Action<string[]> Callback)
+        {
+#if USE_WEBGL
+            RefreshDevicesWebGL(Callback);
+#else
+            devices = Microphone.devices;
+            Callback(devices);
+            OnDevicesLoaded?.Invoke(devices);
+#endif
+        }
         private void Update()
         {
             if (Application.internetReachability != NetworkReachability.NotReachable && UseMicrophone)
