@@ -108,7 +108,7 @@ namespace Flippit
         private ApiKeyManager apiKeyManager;
         private bool isTalkingToCharacter = false;
         private static readonly Dictionary<string, ClipData> Clips = new ();
-        [SerializedField]
+        [SerializeField]
         private string device;
         #endregion
         WebSocketManager manager;
