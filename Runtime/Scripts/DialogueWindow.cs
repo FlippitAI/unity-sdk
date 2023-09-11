@@ -119,6 +119,8 @@ namespace Flippit
         // Start is called before the first frame update
         void Start()
         {
+            //GameObject dialogueWindowGO = GameObject.Find("DialoguePanel");
+            DialogueWindow window = this.GetComponent<DialogueWindow>();
             apiKeyManager = Resources.Load<ApiKeyManager>("Apikeys");
             openai= new(apiKeyManager.OpenAI);
             InputMessage = DiscussionPanel.GetComponentInChildren<TextMeshProUGUI>();
@@ -158,18 +160,18 @@ namespace Flippit
         public static void RefreshDevices(Action<string[]> Callback)
         {
 #if USE_WEBGL
-            RefreshDevicesWebGL(Callback);
+            this.RefreshDevicesWebGL(Callback);
 #else
-            devices = Microphone.devices;
+            this.devices = Microphone.devices;
             Callback(devices);
             OnDevicesLoaded?.Invoke(devices);
 #endif
         }
         private static async void RefreshDevicesWebGL(Action<string[]> Callback)
         {
-            devices = await WebGLMicrophone.MicrophoneWebGL_Devices();
-            Callback(devices);
-            OnDevicesLoaded?.Invoke(devices);
+            this.devices = await WebGLMicrophone.MicrophoneWebGL_Devices();
+            this.Callback(devices);
+            this.OnDevicesLoaded?.Invoke(devices);
         }
         
         public static void RefreshDevices()
@@ -550,8 +552,6 @@ namespace Flippit
         
         public static AudioClip StartRecording(string device, bool loop, int lengthSec, int frequency)
         {
-            GameObject dialogueWindowGO = GameObject.Find("DialoguePanel");
-            DialogueWindow window = dialogueWindowGO.GetComponent<DialogueWindow>();
             window.isRecording = true;
             var key = device ?? "";
 #if USE_WEBGL
