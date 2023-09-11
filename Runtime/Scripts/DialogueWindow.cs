@@ -539,7 +539,7 @@ namespace Flippit
         public static AudioClip StartRecording(string device, bool loop, int lengthSec, int frequency)
         {
             GameObject dialogueWindowGO = GameObject.Find("DialoguePanel");
-            DialogueWindow window = GetComponent<DialogueWindow>();
+            DialogueWindow window = dialogueWindowGO.GetComponent<DialogueWindow>();
             window.isRecording = true;
             var key = device ?? "";
 #if USE_WEBGL
