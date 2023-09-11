@@ -212,7 +212,9 @@ namespace Flippit.Editor
                 }
             }
 
-            // Update the fields
+            // Update the fields 
+            Debug.Log(apiKeys.ToString());
+            Debug.Log(FlippitApiKey);
             if(FlippitApiKey != null)apiKeys.Flippit = FlippitApiKey; // Set the Flippit API key
             if(OpenAiApiKey != null)apiKeys.OpenAI = OpenAiApiKey; // Set the OpenAI API key
             if(AWSApiKey != null)apiKeys.AWSKey = AWSApiKey; // Set the AWS API key
