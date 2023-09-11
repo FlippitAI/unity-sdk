@@ -557,8 +557,10 @@ namespace Flippit
             var key = device ?? "";
 #if USE_WEBGL
             WebGLMicrophone.MicrophoneWebGL_End(key);
+            Debug.Log(key);
 #else   
             Microphone.End(device);
+            Debug.Log(device.ToString());
 #endif
             if(clip != null) 
             {
