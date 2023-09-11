@@ -1,3 +1,7 @@
+#if UNITY_WEBGL && !UNITY_EDITOR
+#define USE_WEBGL
+#endif
+
 using Cinemachine;
 using OpenAI;
 using System;
@@ -474,7 +478,14 @@ namespace Flippit
         private void StartRecording()
         {
             isRecording = true;
+#if USE_WEBGL
+            //clip = WebGLMicrophone.MicrophoneWebGL_GetData(WebGLMicrophone.MicrophoneWebGL_Devices(), samples, samples.Length, 0);
+            clip = WebGLMicrophone.MicrophoneWebGL_GetData(WebGLMicrophone.MicrophoneWebGL_Devices(), false, recordingMaxDuration, 44100);
+            //WebGLMicrophone.MicrophoneWebGL_Start(key, loop, lengthSec, frequency, 1, UpdateClip, DeleteClip);
+            
+#else   
             clip = Microphone.Start(Microphone.devices[0], false, recordingMaxDuration, 44100);
+#endif
         }
         private async void EndRecording()
         {
