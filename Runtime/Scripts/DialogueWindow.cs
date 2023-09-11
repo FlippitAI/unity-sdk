@@ -111,6 +111,7 @@ namespace Flippit
         private static readonly Dictionary<string, ClipData> Clips = new ();
         [SerializeField]
         private string device;
+        private DialogueWindow window;
         #endregion
         WebSocketManager manager;
         EnumLists lists;
@@ -120,8 +121,7 @@ namespace Flippit
         // Start is called before the first frame update
         void Start()
         {
-            //GameObject dialogueWindowGO = GameObject.Find("DialoguePanel");
-            DialogueWindow window = this.GetComponent<DialogueWindow>();
+            window = this.GetComponent<DialogueWindow>();
             apiKeyManager = Resources.Load<ApiKeyManager>("Apikeys");
             openai= new(apiKeyManager.OpenAI);
             InputMessage = DiscussionPanel.GetComponentInChildren<TextMeshProUGUI>();
