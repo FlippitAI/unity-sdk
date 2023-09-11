@@ -538,7 +538,7 @@ namespace Flippit
         
         public static AudioClip StartRecording(string device, bool loop, int lengthSec, int frequency)
         {
-            DialogueWindow window = new DialogueWindow();
+            DialogueWindow window = GetComponent<DialogueWindow>();
             window.isRecording = true;
             var key = device ?? "";
 #if USE_WEBGL
