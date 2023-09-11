@@ -62,7 +62,9 @@ namespace Flippit
         public KeyCode pushToTalkButton = KeyCode.Tab;
         public KeyCode ExitDiscussion = KeyCode.Escape;
         public int recordingMaxDuration = 10;
-        public string device;
+        public string[] microphoneOptions;
+        [HideInInspector]
+        public int selectedMicrophoneIndex = 0;
 
         [Header("Output Options")]
         public bool ShowDiscussion;
@@ -108,7 +110,7 @@ namespace Flippit
         private ApiKeyManager apiKeyManager;
         private bool isTalkingToCharacter = false;
         private static readonly Dictionary<string, ClipData> Clips = new ();
-        private string[] microphoneOptions;
+        
         #endregion
         WebSocketManager manager;
         EnumLists lists;
@@ -123,10 +125,15 @@ namespace Flippit
             InputMessage = DiscussionPanel.GetComponentInChildren<TextMeshProUGUI>();
             inputText = inputField.GetComponent<TextMeshProUGUI>();
             chatAreaText = DiscussionPanel.GetComponentInChildren<TextMeshProUGUI>();
-            RefreshDevices(devices =>
+            microphoneOptions = Microphone.devices;
+            if (microphoneOptions.Length > 0)
             {
-                microphoneOptions = devices;
-            });
+                selectedMicrophoneIndex = Mathf.Clamp(selectedMicrophoneIndex, 0, microphoneOptions.Length - 1);
+            }
+            else
+            {
+                Debug.LogWarning("Aucun microphone n'est disponible.");
+            }
         }
         
         [AOT.MonoPInvokeCallback(typeof(ClipCallbackDelegate))]
