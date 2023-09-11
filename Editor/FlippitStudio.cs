@@ -140,7 +140,7 @@ namespace Flippit.Editor
         }
         public void OnConnect(ClickEvent evt)
         {
-            if (loginInput.value != null && passwordInput.value)
+            if (loginInput.value != null && passwordInput.value!=null)
             {
                 userlogin = loginInput.value;
                 userPass = passwordInput.value;
