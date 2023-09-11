@@ -50,11 +50,13 @@ namespace Flippit
         #region public var
         public delegate void ClipCallbackDelegate(string device);
         public static event System.Action<string[]> OnDevicesLoaded;
+        public static string[] devices { get; private set; }
+         
         [Header("reference Game Objects")]
         public GameObject ChatContainer;
         public GameObject DiscussionPanel;
         public GameObject inputField;
-        
+       
         [Header("Inputs Options")]
         public bool UseMicrophone;
         public bool displayInputFieldPanel;
@@ -140,8 +142,7 @@ namespace Flippit
             clipData.clip.SetData(samples, position);
             clipData.last = position;
         }
-        public static string[] devices { get; private set; }
-
+        
         public static void RefreshDevices(Action<string[]> Callback)
         {
 #if USE_WEBGL
