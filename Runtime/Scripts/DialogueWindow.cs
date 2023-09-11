@@ -152,6 +152,18 @@ namespace Flippit
             OnDevicesLoaded?.Invoke(devices);
 #endif
         }
+        private static async void RefreshDevicesWebGL(Action<string[]> Callback)
+        {
+            devices = await WebGLMicrophone.MicrophoneWebGL_Devices();
+            Callback(devices);
+            OnDevicesLoaded?.Invoke(devices);
+        }
+        
+        public static void RefreshDevices()
+        {
+            RefreshDevices(_ => {});
+        }
+        
         private void Update()
         {
             if (Application.internetReachability != NetworkReachability.NotReachable && UseMicrophone)
