@@ -49,7 +49,8 @@ namespace Flippit
     {
         #region public var
         public static event System.Action<string[]> OnDevicesLoaded;
-         
+        public static string[] devices { get; private set; }
+        
         [Header("reference Game Objects")]
         public GameObject ChatContainer;
         public GameObject DiscussionPanel;
