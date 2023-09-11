@@ -192,7 +192,10 @@ namespace Flippit.Editor
             string AWSApiKey = Regex.Match(SystemApiKeysResponse, @"""aws_access_key"":""([^""]+)""").Groups[1].Value;
             string AWSSecret = Regex.Match(SystemApiKeysResponse, @"""aws_secret"":""([^""]+)""").Groups[1].Value; 
 
-            if(Resources.Exists("ApiKeys"))ApiKeyManager apiKeys = Resources.Load<ApiKeyManager>("ApiKeys");
+            if(Resources.Exists("ApiKeys"))
+            {
+                ApiKeyManager apiKeys = Resources.Load<ApiKeyManager>("ApiKeys");
+            }
             else
             {
                 if (!AssetDatabase.IsValidFolder("Assets/Flippit"))
@@ -205,7 +208,7 @@ namespace Flippit.Editor
                     AssetDatabase.CreateFolder("Assets/Flippit", "Resources");
                     AssetDatabase.Refresh();
                 }
-                    apiKeys = ScriptableObject.CreateInstance<ApiKeyManager>();
+                    ApiKeyManager apiKeys = ScriptableObject.CreateInstance<ApiKeyManager>();
                     AssetDatabase.CreateAsset(apiKeys, "Assets/Flippit/Resources/ApiKeys.asset");
             }
 
