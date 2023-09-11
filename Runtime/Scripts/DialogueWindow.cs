@@ -489,7 +489,11 @@ namespace Flippit
         }
         private async void EndRecording()
         {
+#if USE_WEBGL
+
+#else   
             Microphone.End(Microphone.devices[0]);
+#endif
             byte[] data = SaveWav.Save(fileName, clip);
 
             var req = new CreateAudioTranscriptionsRequest
