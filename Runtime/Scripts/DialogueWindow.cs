@@ -467,9 +467,6 @@ namespace Flippit
                             }
                         }
                     }
-
-
-
                 }
             }
         }
@@ -479,10 +476,8 @@ namespace Flippit
         {
             isRecording = true;
 #if USE_WEBGL
-            //clip = WebGLMicrophone.MicrophoneWebGL_GetData(WebGLMicrophone.MicrophoneWebGL_Devices(), samples, samples.Length, 0);
-            clip = WebGLMicrophone.MicrophoneWebGL_GetData(WebGLMicrophone.MicrophoneWebGL_Devices(), false, recordingMaxDuration, 44100);
-            //WebGLMicrophone.MicrophoneWebGL_Start(key, loop, lengthSec, frequency, 1, UpdateClip, DeleteClip);
-            
+            clip = CreateClip(key, false, recordingMaxDuration, 44100, 1);
+            WebGLMicrophone.MicrophoneWebGL_Start(key, false, recordingMaxDuration, 44100, 1, UpdateClip, DeleteClip);
 #else   
             clip = Microphone.Start(Microphone.devices[0], false, recordingMaxDuration, 44100);
 #endif
@@ -490,7 +485,7 @@ namespace Flippit
         private async void EndRecording()
         {
 #if USE_WEBGL
-
+            WebGLMicrophone.MicrophoneWebGL_End(key);
 #else   
             Microphone.End(Microphone.devices[0]);
 #endif
