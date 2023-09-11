@@ -108,6 +108,7 @@ namespace Flippit
         private ApiKeyManager apiKeyManager;
         private bool isTalkingToCharacter = false;
         private static readonly Dictionary<string, ClipData> Clips = new ();
+        private string[] microphoneOptions;
         #endregion
         WebSocketManager manager;
         EnumLists lists;
@@ -122,7 +123,10 @@ namespace Flippit
             InputMessage = DiscussionPanel.GetComponentInChildren<TextMeshProUGUI>();
             inputText = inputField.GetComponent<TextMeshProUGUI>();
             chatAreaText = DiscussionPanel.GetComponentInChildren<TextMeshProUGUI>();
-            device = Microphone.devices.Length > 0 ? Microphone.devices[0] : null;
+            RefreshDevices(devices =>
+            {
+                microphoneOptions = devices;
+            });
         }
         
         [AOT.MonoPInvokeCallback(typeof(ClipCallbackDelegate))]
@@ -144,15 +148,15 @@ namespace Flippit
             clipData.last = position;
         }
         
-        public static void RefreshDevices(Action<string[]> Callback)
+        public static string[] RefreshDevices()
         {
-#if USE_WEBGL
-            RefreshDevicesWebGL(Callback);
-#else
+        #if USE_WEBGL
+            return RefreshDevicesWebGL();
+        #else
             devices = Microphone.devices;
-            Callback(devices);
             OnDevicesLoaded?.Invoke(devices);
-#endif
+            return devices;
+        #endif
         }
         private static async void RefreshDevicesWebGL(Action<string[]> Callback)
         {
