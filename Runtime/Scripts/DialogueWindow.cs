@@ -44,11 +44,10 @@ namespace Flippit
         public AudioClip clip;
         public int last;
     }
-
+    public delegate void ClipCallbackDelegate(string device);
     public class DialogueWindow : MonoBehaviour
     {
         #region public var
-        public delegate void ClipCallbackDelegate(string device);
         public static event System.Action<string[]> OnDevicesLoaded;
         public static string[] devices { get; private set; }
          
