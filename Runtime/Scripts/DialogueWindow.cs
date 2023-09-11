@@ -499,7 +499,18 @@ namespace Flippit
             }
         }
 
-
+        [AOT.MonoPInvokeCallback(typeof(ClipCallbackDelegate))]
+        private static void DeleteClip(string key)
+        {
+            Debug.Log($"Called Delete {key}");
+            if (!Clips.ContainsKey(key))
+            {
+                Debug.Log($"Failed to find key '{key}' for deletion");
+                return;
+            }
+            Clips.Remove(key);
+        }
+        
         private void StartRecording()
         {
             isRecording = true;
