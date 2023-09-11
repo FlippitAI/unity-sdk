@@ -110,7 +110,7 @@ namespace Flippit
         private ApiKeyManager apiKeyManager;
         private bool isTalkingToCharacter = false;
         private static readonly Dictionary<string, ClipData> Clips = new ();
-        
+        private string device;
         #endregion
         WebSocketManager manager;
         EnumLists lists;
@@ -129,6 +129,7 @@ namespace Flippit
             if (microphoneOptions.Length > 0)
             {
                 selectedMicrophoneIndex = Mathf.Clamp(selectedMicrophoneIndex, 0, microphoneOptions.Length - 1);
+                device = microphoneOptions[selectedMicrophoneIndex].ToString();
             }
             else
             {
