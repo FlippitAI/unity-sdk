@@ -49,7 +49,6 @@ namespace Flippit
     {
         #region public var
         public static event System.Action<string[]> OnDevicesLoaded;
-        public static string[] devices { get; private set; }
          
         [Header("reference Game Objects")]
         public GameObject ChatContainer;
@@ -63,7 +62,6 @@ namespace Flippit
         public KeyCode ExitDiscussion = KeyCode.Escape;
         public int recordingMaxDuration = 10;
         public string[] microphoneOptions;
-        [HideInInspector]
         public int selectedMicrophoneIndex = 0;
 
         [Header("Output Options")]
@@ -110,6 +108,7 @@ namespace Flippit
         private ApiKeyManager apiKeyManager;
         private bool isTalkingToCharacter = false;
         private static readonly Dictionary<string, ClipData> Clips = new ();
+        [SerializedField]
         private string device;
         #endregion
         WebSocketManager manager;
