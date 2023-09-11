@@ -503,5 +503,15 @@ namespace Flippit
             InputMessage.text = res.Text;
             SpeechSomething(res.Text);
         }
+        private static AudioClip CreateClip(string device, bool loop, int lengthSec, int frequency, int channels)
+        {
+            var clip = AudioClip.Create($"{device}_clip", frequency * lengthSec, channels, frequency, loop);
+            Clips[device] = new ClipData
+            {
+                clip = clip,
+            };
+            Debug.Log($"Started with {device}");
+            return clip;
+        }
     }
 }
