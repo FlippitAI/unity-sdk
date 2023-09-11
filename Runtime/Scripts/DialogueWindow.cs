@@ -559,20 +559,26 @@ namespace Flippit
 #else   
             Microphone.End(device);
 #endif
-            if(clip != null) {byte[] data = SaveWav.Save(fileName, clip);}
-            else{Debug.Log("Clip has not been recorded, Pleaze check your microphone");}
-
-            var req = new CreateAudioTranscriptionsRequest
+            if(clip != null) 
             {
-                FileData = new FileData() { Data = data, Name = "audio.wav" },
-                Model = "whisper-1",
-                Language = "en"
-            };
-
-            var res = await openai.CreateAudioTranscription(req);
-
-            InputMessage.text = res.Text;
-            SpeechSomething(res.Text);
+                byte[] data = SaveWav.Save(fileName, clip);
+            
+            
+                var req = new CreateAudioTranscriptionsRequest
+                {
+                    FileData = new FileData() { Data = data, Name = "audio.wav" },
+                    Model = "whisper-1",
+                    Language = "en"
+                };
+                var res = await openai.CreateAudioTranscription(req);
+            
+                InputMessage.text = res.Text;
+                SpeechSomething(res.Text);
+            }
+            else 
+            {
+                Debug.Log("Clip has not been recorded, Pleaze check your microphone"); 
+            }
         }
         
         private static AudioClip CreateClip(string device, bool loop, int lengthSec, int frequency, int channels)
