@@ -218,9 +218,12 @@ namespace Flippit.Editor
         }
         private void OnDisable()
         {
-            EditorPrefs.SetString("login", userlogin);
-            EditorPrefs.SetString("Password", userPass);
-            EditorPrefs.SetBool("initialized", verified);
+            if (userlogin != null && userPass != null)
+                {
+                    EditorPrefs.SetString("login", userlogin);
+                    EditorPrefs.SetString("Password", userPass);
+                    EditorPrefs.SetBool("initialized", verified);
+                }
         }
         public void OnDocumentation(ClickEvent evt)
         {
