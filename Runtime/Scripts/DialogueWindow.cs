@@ -503,6 +503,7 @@ namespace Flippit
         private void StartRecording()
         {
             isRecording = true;
+            var key = device ?? "";
 #if USE_WEBGL
             clip = CreateClip(key, false, recordingMaxDuration, 44100, 1);
             WebGLMicrophone.MicrophoneWebGL_Start(key, false, recordingMaxDuration, 44100, 1, UpdateClip, DeleteClip);
@@ -510,6 +511,7 @@ namespace Flippit
             clip = Microphone.Start(Microphone.devices[0], false, recordingMaxDuration, 44100);
 #endif
         }
+        
         private async void EndRecording()
         {
 #if USE_WEBGL
@@ -531,6 +533,7 @@ namespace Flippit
             InputMessage.text = res.Text;
             SpeechSomething(res.Text);
         }
+        
         private static AudioClip CreateClip(string device, bool loop, int lengthSec, int frequency, int channels)
         {
             var clip = AudioClip.Create($"{device}_clip", frequency * lengthSec, channels, frequency, loop);
@@ -541,13 +544,37 @@ namespace Flippit
             Debug.Log($"Started with {device}");
             return clip;
         }
-                public static int GetPosition(string device)
+        
+        public static int GetPosition(string device)
         {
             var key = device ?? "";
 #if USE_WEBGL
             return WebGLMicrophone.MicrophoneWebGL_GetPosition(key);
 #else
             return Microphone.GetPosition(device);
+#endif
+        }
+        
+        public static bool HasPermission(string device)
+        {
+#if UNITY_IOS
+        return Application.HasUserAuthorization(UserAuthorization.Microphone);
+#elif UNITY_ANDROID
+        return Permission.HasUserAuthorizedPermission(Permission.Microphone);
+#else
+            return true;
+#endif
+        }
+
+        public static void RequestPermission(string device)
+        {
+#if UNITY_IOS
+        Application.RequestUserAuthorization(UserAuthorization.Microphone);
+#elif UNITY_ANDROID
+        if (!Permission.HasUserAuthorizedPermission(Permission.Microphone))
+        {
+            Permission.RequestUserPermission(Permission.Microphone);
+        }
 #endif
         }
     }
