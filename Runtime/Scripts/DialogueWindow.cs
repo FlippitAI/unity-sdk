@@ -560,7 +560,7 @@ namespace Flippit
             Microphone.End(device);
 #endif
             if(clip != null) {byte[] data = SaveWav.Save(fileName, clip);}
-            else{Debug.Log(Clip has not been recorded, Pleaze check your microphone");}
+            else{Debug.Log("Clip has not been recorded, Pleaze check your microphone");}
 
             var req = new CreateAudioTranscriptionsRequest
             {
