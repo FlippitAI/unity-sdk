@@ -549,13 +549,13 @@ namespace Flippit
             //clip = Microphone.Start(Microphone.devices[0], false, recordingMaxDuration, 44100);
 #endif
         }
-        
-        private async void EndRecording()
+       
+        private async void EndRecording(string device)
         {
 #if USE_WEBGL
             WebGLMicrophone.MicrophoneWebGL_End(key);
 #else   
-            Microphone.End(Microphone.devices[0]);
+            Microphone.End(device);
 #endif
             byte[] data = SaveWav.Save(fileName, clip);
 
