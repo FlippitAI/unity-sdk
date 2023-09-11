@@ -523,15 +523,17 @@ namespace Flippit
             Clips.Remove(key);
         }
         
-        private void StartRecording()
+        public static AudioClip Start(string device, bool loop, int lengthSec, int frequency)
         {
             isRecording = true;
             var key = device ?? "";
 #if USE_WEBGL
-            clip = CreateClip(key, false, recordingMaxDuration, 44100, 1);
-            WebGLMicrophone.MicrophoneWebGL_Start(key, false, recordingMaxDuration, 44100, 1, UpdateClip, DeleteClip);
-#else   
-            clip = Microphone.Start(Microphone.devices[0], false, recordingMaxDuration, 44100);
+            var clip = CreateClip(key, loop, lengthSec, frequency, 1);
+            WebGLMicrophone.MicrophoneWebGL_Start(key, loop, lengthSec, frequency, 1, UpdateClip, DeleteClip);
+            return clip;
+#else
+            return Microphone.Start(device, loop, lengthSec, frequency);
+            //clip = Microphone.Start(Microphone.devices[0], false, recordingMaxDuration, 44100);
 #endif
         }
         
