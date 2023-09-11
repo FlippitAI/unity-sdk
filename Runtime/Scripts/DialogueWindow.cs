@@ -114,6 +114,25 @@ namespace Flippit
             inputText = inputField.GetComponent<TextMeshProUGUI>();
             chatAreaText = DiscussionPanel.GetComponentInChildren<TextMeshProUGUI>();
         }
+        
+        [AOT.MonoPInvokeCallback(typeof(ClipCallbackDelegate))]
+        private static void UpdateClip(string key)
+        {
+            //Debug.Log($"Received data for {key}");
+            if (!Clips.ContainsKey(key))
+            {
+                Debug.Log($"Failed to find key '{key}'");
+                return;
+            }
+            var clipData = Clips[key];
+            var position = GetPosition(key);
+            var samples = new float[clipData.clip.samples];
+#if USE_WEBGL
+            WebGLMicrophone.MicrophoneWebGL_GetData(key, samples, samples.Length, 0);
+#endif
+            clipData.clip.SetData(samples, position);
+            clipData.last = position;
+        }
         private void Update()
         {
             if (Application.internetReachability != NetworkReachability.NotReachable && UseMicrophone)
