@@ -466,7 +466,7 @@ namespace Flippit.Editor
             }
             if (!AssetDatabase.IsValidFolder("Assets/Flippit/Resources"))
             {
-                AssetDatabase.CreateFolder("Flippit", "Ressources");
+                AssetDatabase.CreateFolder("Assets/Flippit", "Resources");
             }
             if (!AssetDatabase.IsValidFolder(personalityPath))
             {
