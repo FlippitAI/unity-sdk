@@ -42,11 +42,12 @@ namespace Flippit
     public class DialogueWindow : MonoBehaviour
     {
         #region public var
+        public static event System.Action<string[]> OnDevicesLoaded;
         [Header("reference Game Objects")]
         public GameObject ChatContainer;
         public GameObject DiscussionPanel;
         public GameObject inputField;
-
+        
         [Header("Inputs Options")]
         public bool UseMicrophone;
         public bool displayInputFieldPanel;
@@ -97,6 +98,7 @@ namespace Flippit
         private OpenAIApi openai;
         private ApiKeyManager apiKeyManager;
         private bool isTalkingToCharacter = false;
+        private static readonly Dictionary<string, ClipData> Clips = new ();
         #endregion
         WebSocketManager manager;
         EnumLists lists;
