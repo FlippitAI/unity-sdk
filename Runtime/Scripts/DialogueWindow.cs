@@ -525,7 +525,7 @@ namespace Flippit
         
         public static AudioClip StartRecording(string device, bool loop, int lengthSec, int frequency)
         {
-            isRecording = true;
+             DialogueWindow.isRecording = true;
             var key = device ?? "";
 #if USE_WEBGL
             var clip = CreateClip(key, loop, lengthSec, frequency, 1);
