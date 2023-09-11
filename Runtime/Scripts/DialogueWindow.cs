@@ -48,6 +48,7 @@ namespace Flippit
     public class DialogueWindow : MonoBehaviour
     {
         #region public var
+        public delegate void ClipCallbackDelegate(string device);
         public static event System.Action<string[]> OnDevicesLoaded;
         [Header("reference Game Objects")]
         public GameObject ChatContainer;
