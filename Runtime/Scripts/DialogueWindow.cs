@@ -61,7 +61,7 @@ namespace Flippit
         public KeyCode pushToTalkButton = KeyCode.Tab;
         public KeyCode ExitDiscussion = KeyCode.Escape;
         public int recordingMaxDuration = 10;
-        public string[] microphoneOptions;
+        public string[] devices;
         public int selectedMicrophoneIndex = 0;
 
         [Header("Output Options")]
@@ -124,11 +124,11 @@ namespace Flippit
             InputMessage = DiscussionPanel.GetComponentInChildren<TextMeshProUGUI>();
             inputText = inputField.GetComponent<TextMeshProUGUI>();
             chatAreaText = DiscussionPanel.GetComponentInChildren<TextMeshProUGUI>();
-            microphoneOptions = Microphone.devices;
-            if (microphoneOptions.Length > 0)
+            devices = Microphone.devices;
+            if (devices.Length > 0)
             {
-                selectedMicrophoneIndex = Mathf.Clamp(selectedMicrophoneIndex, 0, microphoneOptions.Length - 1);
-                device = microphoneOptions[selectedMicrophoneIndex].ToString();
+                selectedMicrophoneIndex = Mathf.Clamp(selectedMicrophoneIndex, 0, devices.Length - 1);
+                device = devices[selectedMicrophoneIndex].ToString();
             }
             else
             {
