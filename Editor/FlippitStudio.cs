@@ -213,10 +213,10 @@ namespace Flippit.Editor
             }
 
             // Update the fields
-            apiKeys.Flippit = FlippitApiKey; // Set the Flippit API key
-            apiKeys.OpenAI = OpenAiApiKey; // Set the OpenAI API key
-            apiKeys.AWSKey = AWSApiKey; // Set the AWS API key
-            apiKeys.AWSSecret = AWSSecret; // Set the AWS secret
+            if(FlippitApiKey != null)apiKeys.Flippit = FlippitApiKey; // Set the Flippit API key
+            if(OpenAiApiKey != null)apiKeys.OpenAI = OpenAiApiKey; // Set the OpenAI API key
+            if(AWSApiKey != null)apiKeys.AWSKey = AWSApiKey; // Set the AWS API key
+            if(AWSSecret != null)apiKeys.AWSSecret = AWSSecret; // Set the AWS secret
 
 
             UnityEditor.EditorUtility.SetDirty(apiKeys); // Mark the asset as dirty
