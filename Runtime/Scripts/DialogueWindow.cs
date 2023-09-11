@@ -122,6 +122,7 @@ namespace Flippit
             InputMessage = DiscussionPanel.GetComponentInChildren<TextMeshProUGUI>();
             inputText = inputField.GetComponent<TextMeshProUGUI>();
             chatAreaText = DiscussionPanel.GetComponentInChildren<TextMeshProUGUI>();
+            device = Microphone.devices.Length > 0 ? Microphone.devices[0] : null;
         }
         
         [AOT.MonoPInvokeCallback(typeof(ClipCallbackDelegate))]
