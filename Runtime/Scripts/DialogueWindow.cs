@@ -148,15 +148,15 @@ namespace Flippit
             clipData.last = position;
         }
         
-        public static string[] RefreshDevices()
+        public static void RefreshDevices(Action<string[]> Callback)
         {
-        #if USE_WEBGL
-            return RefreshDevicesWebGL();
-        #else
+#if USE_WEBGL
+            RefreshDevicesWebGL(Callback);
+#else
             devices = Microphone.devices;
+            Callback(devices);
             OnDevicesLoaded?.Invoke(devices);
-            return devices;
-        #endif
+#endif
         }
         private static async void RefreshDevicesWebGL(Action<string[]> Callback)
         {
