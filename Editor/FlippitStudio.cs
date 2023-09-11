@@ -140,14 +140,21 @@ namespace Flippit.Editor
         }
         public void OnConnect(ClickEvent evt)
         {
-            userlogin = loginInput.value;
-            userPass = passwordInput.value;
-            LoginData logData = new()
+            if (loginInput.value != null && passwordInput.value)
             {
-                username = userlogin,
-                password = userPass
-            };
-            TreatData(logData);
+                userlogin = loginInput.value;
+                userPass = passwordInput.value;
+                LoginData logData = new()
+                {
+                    username = userlogin,
+                    password = userPass
+                };
+                TreatData(logData);
+            }
+            else
+            {
+                Debug.LogWarning("Enter your Identifier and Password") 
+            }
         }
         private void TreatData(LoginData logData)
         {
