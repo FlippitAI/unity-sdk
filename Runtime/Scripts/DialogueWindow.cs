@@ -158,7 +158,7 @@ namespace Flippit
             {
                 if (Input.GetKeyDown(pushToTalkButton) && !isRecording)
                 {
-                    Start();
+                    StartRecording();
                 }
                 else if (Input.GetKeyUp(pushToTalkButton))
                 {
@@ -523,7 +523,7 @@ namespace Flippit
             Clips.Remove(key);
         }
         
-        public static AudioClip Start(string device, bool loop, int lengthSec, int frequency)
+        public static AudioClip StartRecording(string device, bool loop, int lengthSec, int frequency)
         {
             isRecording = true;
             var key = device ?? "";
