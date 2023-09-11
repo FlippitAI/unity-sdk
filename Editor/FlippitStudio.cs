@@ -81,6 +81,7 @@ namespace Flippit.Editor
         private bool useEyeAnimations;
         private bool useVoiceToAnim;
         private Character character;
+        private ApiKeyManager apiKeys;
         #endregion
         [MenuItem("Flippit/Studio", false, 0)]
         public static void ShowWindow()
@@ -194,7 +195,7 @@ namespace Flippit.Editor
 
             if(File.Exists("Assets/Flippit/Resources/ApiKeys.asset"))
             {
-                ApiKeyManager apiKeys = Resources.Load<ApiKeyManager>("ApiKeys");
+                apiKeys = Resources.Load<ApiKeyManager>("ApiKeys");
             }
             else
             {
@@ -208,7 +209,7 @@ namespace Flippit.Editor
                     AssetDatabase.CreateFolder("Assets/Flippit", "Resources");
                     AssetDatabase.Refresh();
                 }
-                    ApiKeyManager apiKeys = ScriptableObject.CreateInstance<ApiKeyManager>();
+                    apiKeys = ScriptableObject.CreateInstance<ApiKeyManager>();
                     AssetDatabase.CreateAsset(apiKeys, "Assets/Flippit/Resources/ApiKeys.asset");
             }
 
