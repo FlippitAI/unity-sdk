@@ -566,8 +566,7 @@ namespace Flippit
             return clip;
 #else
             return Microphone.Start(device, loop, recordingMaxDuration, frequency);
-#endif
-            
+#endif  
         }
        
         private async void EndRecording(string device)
@@ -578,6 +577,7 @@ namespace Flippit
 #else   
             Microphone.End(device);
 #endif
+            Debug.Log(clip.ToString());
             if(clip != null) 
             {
                 byte[] data = SaveWav.Save(fileName, clip);
