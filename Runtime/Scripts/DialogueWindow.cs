@@ -559,6 +559,7 @@ namespace Flippit
         {
             window.isRecording = true;
             var key = device ?? "";
+             Debug.Log("Key : " + key + " / Device : " + device + "/ loop : " + loop + " / recordingMaxDuration : " + recordingMaxDuration + " / frequency : " + frequency);
 #if USE_WEBGL
             var clip = CreateClip(key, loop, recordingMaxDuration, frequency, 1);
             WebGLMicrophone.MicrophoneWebGL_Start(key, loop, recordingMaxDuration, frequency, 1, UpdateClip, DeleteClip);
