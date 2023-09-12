@@ -64,7 +64,7 @@ namespace Flippit.Editor
         #region private const
         private const string prefabPath = "Assets/Flippit/Resources/Prefabs";
         private const string personalityPath = "Assets/Flippit/Resources/Personalities";
-        private const string controllerPath = "Packages/com.flippit.flippitstudio/Runtime/Resources/Controllers/NPC_Anim_Controlle-clean 1.controller";
+        private const string controllerPath = "Packages/com.flippit.flippitstudio/Runtime/Resources/Controllers/NPC_Anim_Controller.controller";
         private const string playerctrlrPath = "Packages/com.flippit.flippitstudio/Runtime/Resources/Controllers/PlayerController.controller";
         private const string DialogueUI = "Packages/com.flippit.flippitstudio/Runtime/Resources/Prefabs/DialoguePanel.prefab";
         private const string CMVCamPath = "Packages/com.flippit.flippitstudio/Runtime/Resources/Prefabs/CMvcam1.prefab";
