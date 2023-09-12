@@ -180,6 +180,8 @@ namespace Flippit
                     IsRecording(device);
                     if (MicrophoneOptions.Length > 0 && selectedMicrophoneIndex <= MicrophoneOptions.Length)
                     {
+                        if (selectedMicrophoneIndex > MicrophoneOptions.Length) selectedMicrophoneIndex = MicrophoneOptions.Length;
+                        if(selectedMicrophoneIndex <0 ) selectedMicrophoneIndex =0;
                         device = MicrophoneOptions[selectedMicrophoneIndex];
                     }
                     else
