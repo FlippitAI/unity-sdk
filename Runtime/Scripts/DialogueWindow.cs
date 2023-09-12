@@ -439,7 +439,7 @@ namespace Flippit
             {
                 Debug.Log("IaActive GameObject not assigned. Make sure it is assigned in the Unity Editor.");
             }
-            Debutg.Log("Animation name = " + animName);
+            Debug.Log("Animation name = " + animName);
             if (animName == "Talking" || animName == "Walk" || animName == "Jogging" || animName == "Grab")
             {
                 animator.SetBool("Talking", true);
