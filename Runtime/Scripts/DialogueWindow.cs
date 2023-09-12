@@ -564,8 +564,8 @@ namespace Flippit
             WebGLMicrophone.MicrophoneWebGL_Start(key, loop, recordingMaxDuration, frequency, 1, UpdateClip, DeleteClip);
             return clip;
 #else
-            return clip = Microphone.Start(device, loop, recordingMaxDuration, frequency);
-            //clip = Microphone.Start(device, false, recordingMaxDuration, 44100);
+            var clip = Microphone.Start(device, loop, recordingMaxDuration, frequency);
+            return clip;
 #endif
             
         }
