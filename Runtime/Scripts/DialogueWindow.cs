@@ -127,15 +127,6 @@ namespace Flippit
             chatAreaText = DiscussionPanel.GetComponentInChildren<TextMeshProUGUI>();
             RefreshDevices();
             MicrophoneOptions = devices;
-            if (MicrophoneOptions.Length > 0)
-            {
-                //selectedMicrophoneIndex = Mathf.Clamp(selectedMicrophoneIndex, 0, MicrophoneOptions.Length - 1);
-                device = MicrophoneOptions[selectedMicrophoneIndex].ToString();
-            }
-            else
-            {
-                Debug.LogWarning("Aucun microphone n'est disponible.");
-            }
         }
         
         [AOT.MonoPInvokeCallback(typeof(ClipCallbackDelegate))]
@@ -186,6 +177,14 @@ namespace Flippit
                 if (Input.GetKeyDown(pushToTalkButton) && !isRecording)
                 {
                     isRecording = true;
+                    if (MicrophoneOptions.Length > 0 && selectedMicrophoneIndex <= MicrophoneOptions.Length)
+                    {
+                        device = MicrophoneOptions[selectedMicrophoneIndex];
+                    }
+                    else
+                    {
+                        Debug.LogWarning("Aucun microphone n'est disponible.");
+                    }
                     audioSource.clip = StartRecording(device, false, recordingMaxDuration, 44100);
                     audioSource.Play();
                 }
