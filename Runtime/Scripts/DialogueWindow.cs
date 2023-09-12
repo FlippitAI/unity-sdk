@@ -125,6 +125,9 @@ namespace Flippit
             InputMessage = DiscussionPanel.GetComponentInChildren<TextMeshProUGUI>();
             inputText = inputField.GetComponent<TextMeshProUGUI>();
             chatAreaText = DiscussionPanel.GetComponentInChildren<TextMeshProUGUI>();
+            RefreshDevices();
+            MicrophoneOptions = devices;
+            /*
 #if USE_WEBGL
             RefreshDevicesWebGL(Callback);
 #else
@@ -138,7 +141,7 @@ namespace Flippit
             else
             {
                 Debug.LogWarning("Aucun microphone n'est disponible.");
-            }
+            }*/
         }
         
         [AOT.MonoPInvokeCallback(typeof(ClipCallbackDelegate))]
