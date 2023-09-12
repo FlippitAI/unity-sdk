@@ -129,7 +129,8 @@ namespace Flippit
         // Your setViseme function implementation
         void setViseme(string viseme, float value)
         {
-            if (int blendShapeIndex = skinnedMeshRenderer.sharedMesh.GetBlendShapeIndex(viseme) >= 0)
+            int blendShapeIndex = skinnedMeshRenderer.sharedMesh.GetBlendShapeIndex(viseme);
+            if ( blendShapeIndex >= 0)
             {
                 skinnedMeshRenderer.SetBlendShapeWeight(blendShapeIndex, value);
             }
