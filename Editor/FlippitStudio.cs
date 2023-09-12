@@ -66,7 +66,7 @@ namespace Flippit.Editor
         private const string prefabPath = "Assets/Flippit/Resources/Prefabs";
         private const string thumbnailsPath = "Thumbnails/";
         private const string prefabsPath = "Assets/Flippit/Resources/Prefabs/";
-        private const string controllerPath = "Packages/com.flippit.flippitstudio/Runtime/Resources/Controllers/NPC_Anim_Controlle-clean 1.controller";
+        private const string controllerPath = "Packages/com.flippit.flippitstudio/Runtime/Resources/Controllers/NPC_Anim_Controller.controller";
         #endregion
         #region private
         private string userlogin;
