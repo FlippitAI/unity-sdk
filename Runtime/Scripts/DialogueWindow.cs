@@ -109,9 +109,7 @@ namespace Flippit
         private ApiKeyManager apiKeyManager;
         private bool isTalkingToCharacter = false;
         private static readonly Dictionary<string, ClipData> Clips = new ();
-        [SerializeField]
         private string device;
-        private static DialogueWindow window;
         #endregion
         WebSocketManager manager;
         EnumLists lists;
@@ -121,7 +119,6 @@ namespace Flippit
         // Start is called before the first frame update
         void Start()
         {
-            //window = this.GetComponent<DialogueWindow>();
             apiKeyManager = Resources.Load<ApiKeyManager>("Apikeys");
             openai= new(apiKeyManager.OpenAI);
             InputMessage = DiscussionPanel.GetComponentInChildren<TextMeshProUGUI>();
