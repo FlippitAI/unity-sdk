@@ -575,15 +575,12 @@ namespace Flippit
             var key = device ?? "";
 #if USE_WEBGL
             WebGLMicrophone.MicrophoneWebGL_End(key);
-            Debug.Log(key);
 #else   
             Microphone.End(device);
-            Debug.Log(device);
 #endif
             if(clip != null) 
             {
                 byte[] data = SaveWav.Save(fileName, clip);
-            
             
                 var req = new CreateAudioTranscriptionsRequest
                 {
