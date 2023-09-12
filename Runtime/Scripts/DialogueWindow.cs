@@ -555,17 +555,17 @@ namespace Flippit
             Clips.Remove(key);
         }
         
-        public static AudioClip StartRecording(string device, bool loop, int lengthSec, int frequency)
+        public static AudioClip StartRecording(string device, bool loop, int recordingMaxDuration, int frequency)
         {
             window.isRecording = true;
             var key = device ?? "";
 #if USE_WEBGL
-            var clip = CreateClip(key, loop, lengthSec, frequency, 1);
-            WebGLMicrophone.MicrophoneWebGL_Start(key, loop, lengthSec, frequency, 1, UpdateClip, DeleteClip);
+            var clip = CreateClip(key, loop, recordingMaxDuration, frequency, 1);
+            WebGLMicrophone.MicrophoneWebGL_Start(key, loop, recordingMaxDuration, frequency, 1, UpdateClip, DeleteClip);
             return clip;
 #else
-            return Microphone.Start(Microphone.devices[0], loop, lengthSec, frequency);
-            //clip = Microphone.Start(Microphone.devices[0], false, recordingMaxDuration, 44100);
+            return Microphone.Start(device, loop, recordingMaxDuration, frequency);
+            //clip = Microphone.Start(device, false, recordingMaxDuration, 44100);
 #endif
         }
        
@@ -576,8 +576,8 @@ namespace Flippit
             WebGLMicrophone.MicrophoneWebGL_End(key);
             Debug.Log(key);
 #else   
-            Microphone.End(Microphone.devices[0]);
-            Debug.Log(device.ToString());
+            Microphone.End(device);
+            Debug.Log(device);
 #endif
             if(clip != null) 
             {
