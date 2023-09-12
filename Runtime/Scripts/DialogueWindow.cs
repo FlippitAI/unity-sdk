@@ -177,6 +177,7 @@ namespace Flippit
                 if (Input.GetKeyDown(pushToTalkButton) && !isRecording)
                 {
                     isRecording = true;
+                    IsRecording(device);
                     if (MicrophoneOptions.Length > 0 && selectedMicrophoneIndex <= MicrophoneOptions.Length)
                     {
                         device = MicrophoneOptions[selectedMicrophoneIndex];
@@ -615,6 +616,16 @@ namespace Flippit
 #else
             return Microphone.GetPosition(device);
 #endif
+        }
+        
+        public static bool IsRecording(string device)
+        {
+            var key = device ?? "";
+#if USE_WEBGL
+            return WebGLMicrophone.MicrophoneWebGL_IsRecording(key);
+#else
+            return Microphone.IsRecording(device);
+#endif            
         }
         
         public static bool HasPermission(string device)
