@@ -121,7 +121,7 @@ namespace Flippit
         // Start is called before the first frame update
         void Start()
         {
-            window = this.GetComponent<DialogueWindow>();
+            //window = this.GetComponent<DialogueWindow>();
             apiKeyManager = Resources.Load<ApiKeyManager>("Apikeys");
             openai= new(apiKeyManager.OpenAI);
             InputMessage = DiscussionPanel.GetComponentInChildren<TextMeshProUGUI>();
@@ -190,6 +190,7 @@ namespace Flippit
             {
                 if (Input.GetKeyDown(pushToTalkButton) && !isRecording)
                 {
+                    isRecording = true;
                     StartRecording(device, false, recordingMaxDuration, 44100);
                 }
                 else if (Input.GetKeyUp(pushToTalkButton))
@@ -557,7 +558,6 @@ namespace Flippit
         
         public static AudioClip StartRecording(string device, bool loop, int recordingMaxDuration, int frequency)
         {
-            window.isRecording = true;
             var key = device ?? "";
              Debug.Log("Key : " + key + " / Device : " + device + "/ loop : " + loop + " / recordingMaxDuration : " + recordingMaxDuration + " / frequency : " + frequency);
 #if USE_WEBGL
