@@ -190,12 +190,14 @@ namespace Flippit
                 {
                     isRecording = true;
                     StartRecording(device, false, recordingMaxDuration, 44100);
+                    audioSource.Play();
                 }
                 else if (Input.GetKeyUp(pushToTalkButton))
                 {
                     time = 0;
                     isRecording = false;
                     EndRecording(device);
+                    audioSource.Stop();
                     Debug.Log("End of recording");
                 }
             }
@@ -556,7 +558,6 @@ namespace Flippit
         
         public static AudioClip StartRecording(string device, bool loop, int recordingMaxDuration, int frequency)
         {
-            
             var key = device ?? "";
              Debug.Log("Key : " + key + " / Device : " + device + "/ loop : " + loop + " / recordingMaxDuration : " + recordingMaxDuration + " / frequency : " + frequency);
 #if USE_WEBGL
@@ -564,11 +565,8 @@ namespace Flippit
             WebGLMicrophone.MicrophoneWebGL_Start(key, loop, recordingMaxDuration, frequency, 1, UpdateClip, DeleteClip);
             return clip;
 #else
-            audioSource.clip = Microphone.Start(device, true, recordingMaxDuration, frequency);
-            audioSource.Play();
-            //return clip = Microphone.Start(device, loop, recordingMaxDuration, frequency);
+            return clip = Microphone.Start(device, loop, recordingMaxDuration, frequency);
             //clip = Microphone.Start(device, false, recordingMaxDuration, 44100);
-            return;
 #endif
             
         }
