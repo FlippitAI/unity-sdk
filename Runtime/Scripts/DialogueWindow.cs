@@ -559,7 +559,6 @@ namespace Flippit
         public static AudioClip StartRecording(string device, bool loop, int recordingMaxDuration, int frequency)
         {
             var key = device ?? "";
-             Debug.Log("Key : " + key + " / Device : " + device + "/ loop : " + loop + " / recordingMaxDuration : " + recordingMaxDuration + " / frequency : " + frequency);
 #if USE_WEBGL
             var clip = CreateClip(key, loop, recordingMaxDuration, frequency, 1);
             WebGLMicrophone.MicrophoneWebGL_Start(key, loop, recordingMaxDuration, frequency, 1, UpdateClip, DeleteClip);
@@ -577,7 +576,6 @@ namespace Flippit
 #else   
             Microphone.End(device);
 #endif
-            Debug.Log(clip.ToString());
             if(clip != null) 
             {
                 byte[] data = SaveWav.Save(fileName, clip);
