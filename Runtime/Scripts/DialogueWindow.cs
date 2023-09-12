@@ -176,20 +176,20 @@ namespace Flippit
             {
                 if (Input.GetKeyDown(pushToTalkButton) && !isRecording)
                 {
-                    isRecording = true;
-                    IsRecording(device);
                     if (MicrophoneOptions.Length > 0 && selectedMicrophoneIndex <= MicrophoneOptions.Length)
                     {
                         if (selectedMicrophoneIndex > MicrophoneOptions.Length) selectedMicrophoneIndex = MicrophoneOptions.Length;
                         if(selectedMicrophoneIndex <0 ) selectedMicrophoneIndex =0;
                         device = MicrophoneOptions[selectedMicrophoneIndex];
+                        isRecording = true;
+                        IsRecording(device);
+                        audioSource.clip = StartRecording(device, false, recordingMaxDuration, 44100);
+                        audioSource.Play();
                     }
                     else
                     {
                         Debug.LogWarning("Aucun microphone n'est disponible.");
                     }
-                    audioSource.clip = StartRecording(device, false, recordingMaxDuration, 44100);
-                    audioSource.Play();
                 }
                 else if (Input.GetKeyUp(pushToTalkButton))
                 {
