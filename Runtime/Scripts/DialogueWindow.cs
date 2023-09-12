@@ -182,8 +182,9 @@ namespace Flippit
                         if(selectedMicrophoneIndex <0 ) selectedMicrophoneIndex =0;
                         device = MicrophoneOptions[selectedMicrophoneIndex];
                         isRecording = true;
+                        clip = StartRecording(device, false, recordingMaxDuration, 44100);
+                        audioSource.clip = clip;
                         IsRecording(device);
-                        audioSource.clip = StartRecording(device, false, recordingMaxDuration, 44100);
                         audioSource.Play();
                     }
                     else
@@ -564,8 +565,7 @@ namespace Flippit
             WebGLMicrophone.MicrophoneWebGL_Start(key, loop, recordingMaxDuration, frequency, 1, UpdateClip, DeleteClip);
             return clip;
 #else
-            var clip = Microphone.Start(device, loop, recordingMaxDuration, frequency);
-            return clip;
+            return Microphone.Start(device, loop, recordingMaxDuration, frequency);
 #endif
             
         }
