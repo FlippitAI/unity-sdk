@@ -226,7 +226,6 @@ namespace Flippit
                 };
                 var res = await openai.CreateAudioTranscription(req);
 
-                InputMessage.text = res.Text;
                 SpeechSomething(res.Text);
             }
             else
@@ -321,13 +320,23 @@ namespace Flippit
         }
         public void SpeechSomething(string speech)
         {
-            discussion = "";
             firstSentence = true;
             if (speech.Length > 1 && IaPersona != null)
             {
                 IaPersona.prompt = speech;
                 CharacterInfos promptMessage = new() { action = "chat", prompt = IaPersona.prompt };
                 manager.SendWebSocketMessage(JsonUtility.ToJson(promptMessage));
+
+                dialoguePlayerObject = Instantiate(DialoguePlayer);
+                playerText = dialoguePlayerObject.GetComponentInChildren<TextMeshProUGUI>();
+                dialoguePlayerObject.transform.SetParent(DiscussionContent.transform, false);
+                if (playerText != null)
+                {
+                    playerText.text = "";
+                    StartIncrementing(inputText.text);
+                }
+                inputField.GetComponent<TMP_InputField>().text = "";
+                verticalScrollBar.value = 0;
             }
         }
 
@@ -542,12 +551,12 @@ namespace Flippit
             int channels = 1;
 
             AudioClip audioClip = AudioClip.Create("ReceivedAudio", audioData.Length / (sizeof(float) * channels), channels, frequency, false);
-            float[] audioDataFloat = ReadAudioData(audioData, audioData.Length);
-            audioClip.SetData(audioDataFloat, 0);
+            //float[] audioDataFloat = ReadAudioData(audioData, audioData.Length);
+            //audioClip.SetData(audioDataFloat, 0);
 
             return audioClip;
         }
-        public static float[] ReadAudioData(byte[] data, int length)
+        /*public static float[] ReadAudioData(byte[] data, int length)
         {
             float[] audioData = new float[length / 2];
             for (int i = 0; i < length / 2; i++)
@@ -557,7 +566,7 @@ namespace Flippit
             }
 
             return audioData;
-        }
+        }*/
         public void PlayAnimation(string animName, string objectName = null)
         {
             animName = animName.Replace("'", "");
