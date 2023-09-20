@@ -1,6 +1,6 @@
 {
   "name": "com.flippit.flippitstudio",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "displayName": "Flippit Studio",
   "description": "This plugin allows you to quickly and easily convert any NPC Character to Smart NPC with ai personality",
   "unity": "2021.3",

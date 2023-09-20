@@ -8,10 +8,6 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using UnityEngine;
 
-#if USE_WEBGL
-using System.Runtime.InteropServices;
-#endif
-
 namespace Flippit
 {
     public static class WebGLMicrophone 

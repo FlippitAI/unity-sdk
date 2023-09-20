@@ -44,7 +44,6 @@ namespace Flippit.Editor
                 }
             }
 
-
             camera.clearFlags = CameraClearFlags.SolidColor;
             camera.backgroundColor = Color.white;
             camera.cullingMask = 1 << 1;
@@ -53,14 +52,9 @@ namespace Flippit.Editor
             Animator animator = gameObject.GetComponentInChildren<Animator>();
             if (animator != null)
             {
-                // Mettez l'animation en pause à une position spécifique
-                animator.Play("Locomotion", 0, 0f); // Remplacez "YourAnimationStateName" par le nom de l'état d'animation souhaité
-
-                // Vous pouvez également régler d'autres paramètres de l'Animator selon vos besoins
-                animator.speed = 0f; // Pour mettre l'animation en pause complète
-                //animator.enabled = false; // Pour désactiver complètement l'Animator
+                animator.Play("Locomotion", 0, 0f);
+                animator.speed = 0f; 
             }
-
 
             camera.Render();
 
@@ -73,7 +67,6 @@ namespace Flippit.Editor
             RenderTexture.active = null;
             camera.targetTexture = null;
 
-            // Détruire la caméra et le rendertexture après avoir récupéré le thumbnail
             Object.DestroyImmediate(camera.gameObject);
             Object.DestroyImmediate(renderTexture);
             foreach (SkinnedMeshRenderer renderer in skinnedRenderers)

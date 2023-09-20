@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Text;
 using System;
 using UnityEditor;
+using System.Text.RegularExpressions;
 
 namespace Flippit
 {
@@ -28,15 +29,15 @@ namespace Flippit
         public string audio_bytes;
         public List<Viseme> viseme_bytes;
     }
-    
+
     public class WebSocketManager : MonoBehaviour
     {
         private WebSocket socket;
         private string apiKey;
         private readonly string urlWebsocket = "wss://ozmcki0ooj.execute-api.eu-west-1.amazonaws.com/production?Authorizer=";
         private readonly string urlCharacterId = "&characterId=";
-        private string characterId = ""; 
-        
+        private string characterId = "";
+
         private string lastState = "";
         private string actualState = "";
         [HideInInspector]
@@ -44,7 +45,7 @@ namespace Flippit
         DialogueWindow dialSc;
         private ApiKeyManager apiKeyManager;
 
-        public void StartWebSocket(string characterId) 
+        public void StartWebSocket(string characterId)
         {
             this.characterId = characterId;
             Start();
@@ -58,15 +59,12 @@ namespace Flippit
             {
                 apiKey = apiKeyManager.Flippit;
                 dialSc = GetComponent<DialogueWindow>();
-
                 Dictionary<string, string> headers = new()
                 {
                     { "Origin", "Unity" },
                 };
-
                 socket = new WebSocket(url: urlWebsocket + apiKey + urlCharacterId + characterId, headers: headers);
                 Open();
-
             }
             else
             {
@@ -97,40 +95,44 @@ namespace Flippit
                     if (message.Contains("animation_key"))
                     {
                         ChatChunkMessage newChunk = JsonUtility.FromJson<ChatChunkMessage>(message);
-
                         string[] animationSplit = newChunk.value.Split(':');
                         string animationName = animationSplit[0].Trim();
-
+                       
                         string objectName = null;
                         if (animationSplit.Length > 1)
                         {
                             objectName = animationSplit[1].Trim();
                         }
 
-                        GetComponent<DialogueWindow>().PlayAnimation(animationName, objectName);
+                        dialSc.PlayAnimation(animationName, objectName);
                     }
                     else if (message.Contains("chat_chunk"))
                     {
                         ChatChunkMessage newChunk = JsonUtility.FromJson<ChatChunkMessage>(message);
-                        GetComponent<DialogueWindow>().ReceiveMessage(newChunk.value);
+                        dialSc.ReceiveMessage(newChunk.value);
                     }
                     else if (message.Contains("audio"))
                     {
-                        AudioMessage audioMessage = JsonUtility.FromJson<AudioMessage>(message);
-                        //GetComponent<DialogueWindow>().ReceiveAudio(audioMessage.audio_bytes); // SEND THE ENCODED AUDIO RECEIVED BY FLIPPIT
-                        GetComponent<DialogueWindow>().ReceiveVisemes(audioMessage.viseme_bytes); // SEND THE VISEMES RECEIVED BY FLIPPIT
-
+                        var json = JsonUtility.FromJson<AudioMessage>(message);
+                        string audioDataString = json.audio_bytes;
+                        byte[] audioData = Convert.FromBase64String(audioDataString);
+                        AudioClip audioClip = dialSc.ConvertToAudioClip(audioData);
+                    }
+                    else if (message.Contains("terminator"))
+                    {
+                        ChatChunkMessage newChunk = JsonUtility.FromJson<ChatChunkMessage>(message);
+                        dialSc.TerminateResponse(newChunk.value);
                     }
                 };
             }
             await socket.Connect();
         }
-
+        
         void Update()
         {
-            #if !UNITY_WEBGL || UNITY_EDITOR
+#if !UNITY_WEBGL || UNITY_EDITOR
             if (socket.State == WebSocketState.Open && socket != null) socket.DispatchMessageQueue();
-            #endif
+#endif
             if (lastState != actualState)
             {
                 actualState = socket.State.ToString();

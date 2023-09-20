@@ -42,7 +42,8 @@ namespace Flippit
             {"i", "viseme_I"},
             {"o", "viseme_O"},
             {"O", "viseme_O"},
-            {"u", "viseme_U"}
+            {"u", "viseme_U"},
+            {"J", "viseme_I"}
         };
 
         void Start()

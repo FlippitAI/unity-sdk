@@ -28,6 +28,8 @@ using ReadyPlayerMe.Core.Editor;
 using static Flippit.EnumLists;
 using UnityEngine.AI;
 using System.Dynamic;
+using UnityEngine.SocialPlatforms;
+using UnityEngine.TextCore.Text;
 
 namespace Flippit.Editor
 {
@@ -61,12 +63,10 @@ namespace Flippit.Editor
         private const string siteUrl = "https://www.flippit.ai/";
         private const string DiscordSupport = "https://discord.gg/MPMxDgKVrm";
         private const string Documentation = "https://flippit.notion.site/Unity-SDK-732f20e3837245cfbdb5b85d0636fa3b";
-        private const string mainUrl = "https://studio-api.flippit.ai";
         private const string personalityPath = "Assets/Flippit/Resources/Personalities";
         private const string prefabPath = "Assets/Flippit/Resources/Prefabs";
         private const string thumbnailsPath = "Thumbnails/";
         private const string prefabsPath = "Assets/Flippit/Resources/Prefabs/";
-        private const string controllerPath = "Packages/com.flippit.flippitstudio/Runtime/Resources/Controllers/NPC_Anim_Controller.controller";
         #endregion
         #region private
         private string userlogin;
@@ -75,12 +75,7 @@ namespace Flippit.Editor
         private bool verified;
         private bool isLoadingLibrary;
         private float maxWidth;
-        private GameObject prefab;
         private CharacterConverter converter;
-        private AvatarLoaderSettings avatarLoaderSettings;
-        private bool useEyeAnimations;
-        private bool useVoiceToAnim;
-        private Character character;
         private ApiKeyManager apiKeys;
         #endregion
         [MenuItem("Flippit/Studio", false, 0)]
@@ -180,7 +175,7 @@ namespace Flippit.Editor
             else
             {
                 // Handle request failure
-                ConfirmationMessage("Verify your login and password");
+                Debug.LogWarning("Verify your login and password");
             }
         }
         private void SetAPIKeys()
@@ -209,7 +204,7 @@ namespace Flippit.Editor
                     AssetDatabase.CreateFolder("Assets/Flippit", "Resources");
                     AssetDatabase.Refresh();
                 }
-                    apiKeys = ScriptableObject.CreateInstance<ApiKeyManager>();
+                    apiKeys = CreateInstance<ApiKeyManager>();
                     AssetDatabase.CreateAsset(apiKeys, "Assets/Flippit/Resources/ApiKeys.asset");
             }
 
@@ -250,40 +245,14 @@ namespace Flippit.Editor
                 isLoadingLibrary = true;
                 connexionPanel.style.display = DisplayStyle.None;
                 libraryPanel.style.display = DisplayStyle.Flex;
-                DrawLocalLibrary(All);
+                LoadStudioLibrary(All);
             }
         }
-        public void DrawLocalLibrary(string All)
-        {
-
-            Texture2D[] thumbnails = Resources.LoadAll<Texture2D>(thumbnailsPath);
-            if (thumbnails != null && thumbnails.Length > 0)
-            {
-                VisualElement rowContainer = null;
-                foreach (Texture2D t2D in thumbnails)
-                {
-                    if (rowContainer == null || rowContainer.childCount >= GetMaxElementsPerRow())
-                    {
-                        rowContainer = new VisualElement();
-                        rowContainer.style.flexDirection = FlexDirection.Row;
-                        rowContainer.style.alignItems = Align.Center;
-                        rowContainer.style.justifyContent = Justify.FlexStart;
-                        ScrollViewContainer.Add(rowContainer);
-                    }
-                    CreateNPCPanel(t2D, rowContainer, "", null);
-                }
-                LoadStudioLibrary(thumbnails, rowContainer, All);
-            }
-            else
-            {
-                VisualElement rowContainer = null;
-                LoadStudioLibrary(thumbnails, rowContainer, All);
-            }
-            Repaint();
-        }
-        private void LoadStudioLibrary(Texture2D[] thumbnails, VisualElement rowContainer, string All)
+       
+        private void LoadStudioLibrary(string All)
         {
             List<CharacterWrapper> characterWrappers = JsonConvert.DeserializeObject<List<CharacterWrapper>>(All);
+            
             if (characterWrappers.Count == 0)
             {
                 VisualElement textpanel = new()
@@ -309,6 +278,11 @@ namespace Flippit.Editor
             }
             else
             {
+                Texture2D[] thumbnails = Resources.LoadAll<Texture2D>(thumbnailsPath);
+
+                float totalWidth = position.width - 4;
+                int maxElementsPerRow = Mathf.FloorToInt(totalWidth / 150);
+                VisualElement rowContainer = null;
                 foreach (CharacterWrapper characterWrapper in characterWrappers)
                 {
                     Character character = characterWrapper.character;
@@ -316,30 +290,41 @@ namespace Flippit.Editor
                     string glbUrl = character.asset_file_path;
                     bool isCharacterInThumbnails = thumbnails.Any(t => t.name == characterName);
 
+                    if (rowContainer == null || rowContainer.childCount >= maxElementsPerRow)
+                    {
+                        rowContainer = new VisualElement();
+                        rowContainer.style.flexDirection = FlexDirection.Row;
+                        rowContainer.style.alignItems = Align.Center;
+                        rowContainer.style.justifyContent = Justify.FlexStart;
+                        ScrollViewContainer.Add(rowContainer);
+                    }
                     if (!isCharacterInThumbnails)
                     {
-                        if (rowContainer == null || rowContainer.childCount >= GetMaxElementsPerRow())
-                        {
-                            rowContainer = new VisualElement();
-                            rowContainer.style.flexDirection = FlexDirection.Row;
-                            rowContainer.style.alignItems = Align.Center;
-                            rowContainer.style.justifyContent = Justify.FlexStart;
-                            ScrollViewContainer.Add(rowContainer);
-                        }
+                        
                         Texture2D UnknowProfile = Resources.Load<Texture2D>("default");
                         UnknowProfile.name = characterName;
                         CreateNPCPanel(UnknowProfile, rowContainer, glbUrl, character);
                     }
+                    else
+                    {
+                        
+                        foreach (Texture2D t2D in thumbnails)
+                        {
+                            if (rowContainer == null || rowContainer.childCount >= maxElementsPerRow)
+                            {
+                                rowContainer = new VisualElement();
+                                rowContainer.style.flexDirection = FlexDirection.Row;
+                                rowContainer.style.alignItems = Align.Center;
+                                rowContainer.style.justifyContent = Justify.FlexStart;
+                                ScrollViewContainer.Add(rowContainer);
+                            }
+                            CreateNPCPanel(t2D, rowContainer, "", character);
+                        }
+                    }
                 }
             }
         }
-        private int GetMaxElementsPerRow()
-        {
-            maxWidth = position.width - 4;
-
-            int maxElements = Mathf.FloorToInt(maxWidth / 150);
-            return maxElements;
-        }
+       
         void CreateNPCPanel(Texture2D texture, VisualElement rowContainer, string glbUrl, Character character)
         {
             VisualElement elementBG = new()
@@ -412,36 +397,12 @@ namespace Flippit.Editor
                     display = DisplayStyle.Flex
                 }
             };
+            
             imageElement.clickable.clicked += () =>
             {
                 string prefabPath = prefabsPath + texture.name + ".prefab";
-                if (File.Exists(prefabPath))
-                {
-                    InstanciateNpc(texture.name);
-                }
-                else
-                {
-                    this.character = character;
-                    if (avatarLoaderSettings == null)
-                    {
-                        avatarLoaderSettings = AvatarLoaderSettings.LoadSettings();
-                    }
-                    var avatarLoader = new AvatarObjectLoader();
-                    avatarLoader.SaveInProjectFolder = true;
-                    avatarLoader.OnFailed += Failed;
-                    avatarLoader.OnCompleted += Completed;
-                    avatarLoader.OperationCompleted += OnOperationCompleted;
-                    avatarLoader.AvatarConfig = avatarLoaderSettings.AvatarConfig;
-                    if (avatarLoaderSettings != null)
-                    {
-                        avatarLoader.AvatarConfig = avatarLoaderSettings.AvatarConfig;
-                        if (avatarLoaderSettings.GLTFDeferAgent != null)
-                        {
-                            avatarLoader.GLTFDeferAgent = avatarLoaderSettings.GLTFDeferAgent;
-                        }
-                    }
-                    avatarLoader.LoadAvatar(glbUrl);
-                }
+                PersonalityWindow window = new(texture, glbUrl, character);
+                window.ShowWindow();
             };
             elementBG.Add(imageElement);
             Label NPCName = new()
@@ -574,10 +535,192 @@ namespace Flippit.Editor
                 AssetDatabase.DeleteAsset(personalityPath + "/" + NPCName.text + ".asset");
                 AssetDatabase.DeleteAsset("Assets/Flippit/Resources/Thumbnails/" + NPCName.text + ".png");
                 AssetDatabase.Refresh();
-                ConfirmationMessage(NPCName.text + " has been deleted.");
+                Debug.LogWarning(NPCName.text + " has been deleted.");
                 RefreshLibrary();
             };
             CharacterOptions.Add(Delete);
+        }
+        
+        public void RefreshLibrary()
+        {
+            isLoadingLibrary = false;
+            ScrollViewContainer.Clear();
+            string allCharacters = ApiManager.GetRequest("api/v1/characters", EditorPrefs.GetString("AccessToken"), EditorPrefs.GetString("RefreshToken"));
+            LoadLibraryContent(allCharacters);
+        }
+        
+    }
+    public class PersonalityWindow : EditorWindow
+    {
+        #region UIElements
+        Button documentation;
+        Button discord;
+        Button webSite;
+        Button CreateCharacter;
+        Button AddPersonality;
+        #endregion
+        #region const
+        private const string siteUrl = "https://www.flippit.ai/";
+        private const string DiscordSupport = "https://discord.gg/MPMxDgKVrm";
+        private const string Documentation = "https://flippit.notion.site/Unity-SDK-732f20e3837245cfbdb5b85d0636fa3b";
+        private const string personalityPath = "Assets/Flippit/Resources/Personalities";
+        private const string prefabPath = "Assets/Flippit/Resources/Prefabs";
+        private const string prefabsPath = "Assets/Flippit/Resources/Prefabs/";
+        private const string controllerPath = "Packages/com.flippit.flippitstudio/Runtime/Resources/Controllers/NPC_Anim_Controller.controller";
+
+        #endregion
+        #region private
+        private Character character;
+        private Texture2D texture;
+        private string glbUrl;
+        private AvatarLoaderSettings avatarLoaderSettings;
+        private bool useEyeAnimations;
+        private bool useVoiceToAnim;
+        private GameObject prefab;
+        #endregion
+
+        public PersonalityWindow(Texture2D texture, string glbUrl, Character character)
+        {
+            this.texture = texture;
+            this.glbUrl = glbUrl;
+            this.character = character;
+        }
+        private static PersonalityWindow currentWindow;
+        public void ShowWindow()
+        {
+            if (currentWindow != null)
+            {
+                currentWindow.Close();
+            }
+            PersonalityWindow window = GetWindow<PersonalityWindow>();
+            window.texture = texture;
+            window.glbUrl = glbUrl;
+            window.character = character;
+            window.titleContent = new GUIContent(character.name);
+            currentWindow = window;
+        }
+        public void CreateGUI()
+        {
+            VisualElement root = rootVisualElement;
+            var visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Packages/com.flippit.flippitstudio/Editor/Styles/PersonalityImportWindow.uxml");
+            VisualElement labelFromUXML = visualTree.Instantiate();
+            root.Add(labelFromUXML);
+            var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Packages/com.flippit.flippitstudio/Editor/Styles/FlippitStudio.uss");
+            documentation = root.Q("Documentation") as Button;
+            discord = root.Q("Discord") as Button;
+            webSite = root.Q("Website") as Button;
+            CreateCharacter = root.Q("CreateCharacter") as Button;
+            AddPersonality = root.Q("AddPersonality") as Button;
+            documentation.RegisterCallback<ClickEvent>(OnDocumentation);
+            discord.RegisterCallback<ClickEvent>(OnDiscord);
+            webSite.RegisterCallback<ClickEvent>(OnWebSite);
+            if (string.IsNullOrEmpty(glbUrl))
+            {
+                CreateCharacter.SetEnabled(false);
+            }
+            else
+            {
+                CreateCharacter.SetEnabled(true);
+            }
+            CreateCharacter.RegisterCallback<ClickEvent>(OnCreateCharacter);
+            AddPersonality.RegisterCallback<ClickEvent>(evt=> OnAddPersonality(evt,character));
+        }
+        public void OnDocumentation(ClickEvent evt)
+        {
+            Application.OpenURL(Documentation);
+        }
+        public void OnDiscord(ClickEvent evt)
+        {
+            Application.OpenURL(DiscordSupport);
+        }
+        public void OnWebSite(ClickEvent evt)
+        {
+            Application.OpenURL(siteUrl);
+        }
+        public void OnCreateCharacter(ClickEvent evt)
+        {
+            string prefabPath = prefabsPath + texture.name + ".prefab";
+            if (File.Exists(prefabPath))
+            {
+                InstanciateNpc(texture.name);
+            }
+            else
+            {
+                if (avatarLoaderSettings == null)
+                {
+                    avatarLoaderSettings = AvatarLoaderSettings.LoadSettings();
+                }
+                var avatarLoader = new AvatarObjectLoader
+                {
+                    SaveInProjectFolder = true
+                };
+                avatarLoader.OnFailed += Failed;
+                avatarLoader.OnCompleted += Completed;
+                avatarLoader.OperationCompleted += OnOperationCompleted;
+                avatarLoader.AvatarConfig = avatarLoaderSettings.AvatarConfig;
+                if (avatarLoaderSettings != null)
+                {
+                    avatarLoader.AvatarConfig = avatarLoaderSettings.AvatarConfig;
+                    if (avatarLoaderSettings.GLTFDeferAgent != null)
+                    {
+                        avatarLoader.GLTFDeferAgent = avatarLoaderSettings.GLTFDeferAgent;
+                    }
+                }
+
+                avatarLoader.LoadAvatar(glbUrl);
+            }
+        }
+        public void OnAddPersonality(ClickEvent evt, Character character)
+        {
+            if (Selection.activeGameObject != null)
+            {
+                GameObject selectedObject = Selection.activeGameObject;
+                if (selectedObject.name == "Player"||selectedObject.CompareTag("Player")) Debug.LogWarning("You selected the Player Character. Pleaze, Unpack it, Untag it or rename it if you are sure.");
+                else
+                {
+                    if (selectedObject.TryGetComponent<IACharacter>(out var iaCharacter))
+                    {
+                        if (character == null) Debug.Log("character est null");
+                        IaPersonality loadedPersonality = AssetDatabase.LoadAssetAtPath<IaPersonality>("Assets/Flippit/Resources/Personalities/" + character.name + ".asset");
+                        if (loadedPersonality != null)
+                        {
+                            iaCharacter.personality = loadedPersonality;
+                            Debug.Log("Personality Set to Character.");
+                        }
+                        else
+                        {
+                            IaPersonality perso = CreateInstance<IaPersonality>();
+                            iaCharacter.personality = perso;
+                            perso.ownerId = character.owner_id;
+                            perso.characterId = character.character_id;
+                            perso.characterName = character.name;
+                            perso.backstory = character.backstory;
+                            EnumLists list = new();
+                            string[] voicesStr = list.VoicesID;
+                            perso.voice = (Voices)GetIndex(voicesStr, character.voice_id);
+                            string[] personStr = list.personalitiesID;
+                            perso.personality = (Personality)GetIndex(personStr, character.personality_id);
+                            string[] ageStr = list.AgeID;
+                            perso.characterAge = (Age)GetIndex(ageStr, character.age_id);
+                            perso.catchPhrases = character.catch_phrases;
+                            perso.hobbies = character.hobbies;
+                            perso.primaryGoal = character.primary_goal;
+                            perso.role = character.role;
+                            perso.assetFilePath = character.asset_file_path;
+                            AssetDatabase.CreateAsset(perso, personalityPath + "/" + character.name + ".asset");
+                            Debug.Log("New Personality Downloaded and Added to Character.");
+                        }
+                    }
+                    else
+                    {
+                        ConvertToNPC(character);
+                    }
+                }
+            }
+            else
+            {
+                Debug.LogWarning("No Character selected. Please select the character on which you would like to add personality.");
+            }
         }
         private void InstanciateNpc(string NpcName)
         {
@@ -585,8 +728,6 @@ namespace Flippit.Editor
             if (npcPrefab != null)
             {
                 Instantiate(npcPrefab);
-                //GameObject instanciedPrefab = PrefabUtility.InstantiatePrefab(npcPrefab) as GameObject;
-
                 ConfirmationMessage(npcPrefab.name + " has been created");
             }
             else
@@ -595,9 +736,13 @@ namespace Flippit.Editor
             }
 
         }
-        private void Failed(object sender, FailureEventArgs args)
+        public void Failed(object sender, FailureEventArgs args)
         {
             ConfirmationMessage($"{args.Type} - {args.Message} - {args.Url}");
+        }
+        public void ConfirmationMessage(string message)
+        {
+            Debug.Log(message);
         }
         private void OnOperationCompleted(object sender, IOperation<AvatarContext> e)
         {
@@ -617,28 +762,6 @@ namespace Flippit.Editor
             DestroyImmediate(args.Avatar, true);
             Selection.activeGameObject = avatar;
             ConvertToNPC(character);
-        }
-
-        class CharacterWrapper
-        {
-            public Character character { get; set; }
-        }
-        class Character
-        {
-            public string character_id { get; set; }
-            public string owner_id { get; set; }
-            public string name { get; set; }
-            public string backstory { get; set; }
-            public string personality_id { get; set; }
-            public string voice_id { get; set; }
-            public string role { get; set; }
-            public string age_id { get; set; }
-            public string hobbies { get; set; }
-            public string mood_id { get; set; }
-            public string catch_phrases { get; set; }
-            public string primary_goal { get; set; }
-            public string urls { get; set; }
-            public string asset_file_path { get; set; }
         }
         void ConvertToNPC(Character character)
         {
@@ -682,11 +805,8 @@ namespace Flippit.Editor
                 #region set Script parameters
                 IACharacter iaSc = emptyGameObject.AddComponent<IACharacter>();
                 #endregion
-
                 iaSc.Avatar = selectedObject;
-                Debug.Log(iaSc.Avatar);
                 iaSc.Detector = Detector;
-
                 #region Set personality
                 IaPersonality perso = CreateInstance<IaPersonality>();
                 iaSc.personality = perso;
@@ -738,13 +858,11 @@ namespace Flippit.Editor
                 ThumbnailGenerator.GenerateThumbnail(newPrefabInstance, character.name, 128, 128);
                 AssetDatabase.Refresh();
                 #endregion
-
-                ConfirmationMessage(character.name + " has been Created, Check Your Prefab Folder.");
-                RefreshLibrary();
+                Debug.Log(newPrefabInstance.name + " has been Created, Check Your Prefab Folder.");
             }
             else
             {
-                ConfirmationMessage("Please, select the Ia Character First.");
+                Debug.LogWarning("Please, select the Ia Character First.");
             }
         }
         private int GetIndex(string[] array, string chain)
@@ -755,16 +873,27 @@ namespace Flippit.Editor
             }
             return -1;
         }
-        public void RefreshLibrary()
-        {
-            isLoadingLibrary = false;
-            ScrollViewContainer.Clear();
-            string allCharacters = ApiManager.GetRequest("api/v1/characters", EditorPrefs.GetString("AccessToken"), EditorPrefs.GetString("RefreshToken"));
-            LoadLibraryContent(allCharacters);
-        }
-        public void ConfirmationMessage(string message)
-        {
-            Debug.Log(message);
-        }
+        
+    }
+    public class CharacterWrapper
+    {
+        public Character character { get; set; }
+    }
+    public class Character
+    {
+        public string character_id { get; set; }
+        public string owner_id { get; set; }
+        public string name { get; set; }
+        public string backstory { get; set; }
+        public string personality_id { get; set; }
+        public string voice_id { get; set; }
+        public string role { get; set; }
+        public string age_id { get; set; }
+        public string hobbies { get; set; }
+        public string mood_id { get; set; }
+        public string catch_phrases { get; set; }
+        public string primary_goal { get; set; }
+        public string urls { get; set; }
+        public string asset_file_path { get; set; }
     }
 }

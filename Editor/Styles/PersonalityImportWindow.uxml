@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:Template name="Header" src="project://database/Packages/com.flippit.flippitstudio/Editor/Styles/Header.uxml?fileID=9197481963319205126&amp;guid=c2fd130b0f6dcc241ba9758b935968a8&amp;type=3#Header" />
+    <ui:Instance template="Header" name="Header" />
+    <ui:VisualElement style="align-items: center; max-width: 470px; min-height: 100px; max-height: 110px; justify-content: space-around;">
+        <ui:Button text="Load Character from Flippit Studio" display-tooltip-when-elided="true" name="CreateCharacter" style="max-width: none; justify-content: flex-start; align-items: stretch; min-width: 170px; min-height: 40px; background-color: rgb(255, 154, 56); color: rgb(22, 21, 22);" />
+        <ui:Button text="Add To Existing Character" display-tooltip-when-elided="true" name="AddPersonality" style="min-width: 170px; min-height: 40px; background-color: rgb(255, 154, 56); -unity-background-image-tint-color: rgb(22, 21, 22); color: rgb(22, 21, 22);" />
+    </ui:VisualElement>
+</ui:UXML>
