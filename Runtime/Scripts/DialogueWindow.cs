@@ -560,20 +560,19 @@ namespace Flippit
         }
         public void PlayAnimation(string animName, string objectName = null)
         {
+            animName = animName.Replace("'", "");
             Animator animator = IaActive.GetComponentInChildren<Animator>();
             if (IaActive == null)
             {
-                Debug.Log("IaActive GameObject not assigned. Make sure it is assigned in the Unity Editor.");
+                Debug.LogWarning("IaActive GameObject not assigned. Make sure it is assigned in the Unity Editor.");
             }
             
             if (animName == "Talking" || animName == "Walk" || animName == "Jogging" || animName == "Grab")
             {
-                Debug.Log("Animation = Talking ou Walk ou Jogging ou Grab" + animName);
                 animator.SetBool("Talking", true);
             }
             else
             {
-                Debug.Log("Animation différente = " + animName);
                 animator.SetTrigger(animName);
                 animator.SetBool("Talking", true);
             }
