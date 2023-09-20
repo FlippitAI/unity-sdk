@@ -210,9 +210,9 @@ namespace Flippit
             isRecording = false;
             Debug.Log("End of recording");
             audioRecorder.EndRecording(device);
-            await ConvertClipTpTextAsync(clip);
+            await ConvertClipToTextAsync(clip);
         }
-        async Task ConvertClipTpTextAsync(AudioClip clip)
+        async Task ConvertClipToTextAsync(AudioClip clip)
         {
             if (clip != null)
             {
@@ -312,7 +312,6 @@ namespace Flippit
 
             isIncrementing = false;
         }
-
         public void StopIncrementing()
         {
             StopCoroutine(IncrementText());
@@ -345,14 +344,12 @@ namespace Flippit
             // Reset variables and components
             if (iaSc != null) iaSc.Discussion = discussion;
             discussion = string.Empty;
-            Debug.Log("est-ce que tu passe par la ?");
             sentences.Clear();
             currentSentenceIndex = 0;
             firstSentence = true;
             isRecording = false;
             time = 0;
             clip = null;
-            InputMessage.text = string.Empty;
             if (IaActive != null)
             {
                 Animator animator = IaActive.GetComponentInChildren<Animator>();
