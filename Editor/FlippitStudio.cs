@@ -41,9 +41,9 @@ namespace Flippit.Editor
     public class LoginResponse
     {
         public string access_token;
-        public string api_key
+        public string Api_key
         {
-            get { return api_key; }
+            get { return Api_key; }
         }
     }
     public class FlippitStudio : EditorWindow
@@ -285,9 +285,9 @@ namespace Flippit.Editor
                 VisualElement rowContainer = null;
                 foreach (CharacterWrapper characterWrapper in characterWrappers)
                 {
-                    Character character = characterWrapper.character;
-                    string characterName = character.name;
-                    string glbUrl = character.asset_file_path;
+                    Character character = characterWrapper.Character;
+                    string characterName = character.Name;
+                    string glbUrl = character.Asset_file_path;
                     bool isCharacterInThumbnails = thumbnails.Any(t => t.name == characterName);
 
                     if (rowContainer == null || rowContainer.childCount >= maxElementsPerRow)
@@ -574,8 +574,8 @@ namespace Flippit.Editor
         private Texture2D texture;
         private string glbUrl;
         private AvatarLoaderSettings avatarLoaderSettings;
-        private bool useEyeAnimations;
-        private bool useVoiceToAnim;
+        private readonly bool useEyeAnimations;
+        private readonly bool useVoiceToAnim;
         private GameObject prefab;
         #endregion
 
@@ -596,7 +596,7 @@ namespace Flippit.Editor
             window.texture = texture;
             window.glbUrl = glbUrl;
             window.character = character;
-            window.titleContent = new GUIContent(character.name);
+            window.titleContent = new GUIContent(character.Name);
             currentWindow = window;
         }
         public void CreateGUI()
@@ -672,6 +672,11 @@ namespace Flippit.Editor
         }
         public void OnAddPersonality(ClickEvent evt, Character character)
         {
+            if (evt is null)
+            {
+                throw new ArgumentNullException(nameof(evt));
+            }
+
             if (Selection.activeGameObject != null)
             {
                 GameObject selectedObject = Selection.activeGameObject;
@@ -681,7 +686,7 @@ namespace Flippit.Editor
                     if (selectedObject.TryGetComponent<IACharacter>(out var iaCharacter))
                     {
                         if (character == null) Debug.Log("character est null");
-                        IaPersonality loadedPersonality = AssetDatabase.LoadAssetAtPath<IaPersonality>("Assets/Flippit/Resources/Personalities/" + character.name + ".asset");
+                        IaPersonality loadedPersonality = AssetDatabase.LoadAssetAtPath<IaPersonality>("Assets/Flippit/Resources/Personalities/" + character.Name + ".asset");
                         if (loadedPersonality != null)
                         {
                             iaCharacter.personality = loadedPersonality;
@@ -691,23 +696,23 @@ namespace Flippit.Editor
                         {
                             IaPersonality perso = CreateInstance<IaPersonality>();
                             iaCharacter.personality = perso;
-                            perso.ownerId = character.owner_id;
-                            perso.characterId = character.character_id;
-                            perso.characterName = character.name;
-                            perso.backstory = character.backstory;
+                            perso.ownerId = character.Owner_id;
+                            perso.characterId = character.Character_id;
+                            perso.characterName = character.Name;
+                            perso.backstory = character.Backstory;
                             EnumLists list = new();
                             string[] voicesStr = list.VoicesID;
-                            perso.voice = (Voices)GetIndex(voicesStr, character.voice_id);
+                            perso.voice = (Voices)GetIndex(voicesStr, character.Voice_id);
                             string[] personStr = list.personalitiesID;
-                            perso.personality = (Personality)GetIndex(personStr, character.personality_id);
+                            perso.personality = (Personality)GetIndex(personStr, character.Personality_id);
                             string[] ageStr = list.AgeID;
-                            perso.characterAge = (Age)GetIndex(ageStr, character.age_id);
-                            perso.catchPhrases = character.catch_phrases;
-                            perso.hobbies = character.hobbies;
-                            perso.primaryGoal = character.primary_goal;
-                            perso.role = character.role;
-                            perso.assetFilePath = character.asset_file_path;
-                            AssetDatabase.CreateAsset(perso, personalityPath + "/" + character.name + ".asset");
+                            perso.characterAge = (Age)GetIndex(ageStr, character.Age_id);
+                            perso.catchPhrases = character.Catch_phrases;
+                            perso.hobbies = character.Hobbies;
+                            perso.primaryGoal = character.Primary_goal;
+                            perso.role = character.Role;
+                            perso.assetFilePath = character.Asset_file_path;
+                            AssetDatabase.CreateAsset(perso, personalityPath + "/" + character.Name + ".asset");
                             Debug.Log("New Personality Downloaded and Added to Character.");
                         }
                     }
@@ -770,7 +775,7 @@ namespace Flippit.Editor
                 GameObject selectedObject = Selection.activeGameObject;
                 GameObject emptyGameObject = new()
                 {
-                    name = character.name,
+                    name = character.Name,
                     tag = "Flippit/NPC"
                 };
 
@@ -810,28 +815,24 @@ namespace Flippit.Editor
                 #region Set personality
                 IaPersonality perso = CreateInstance<IaPersonality>();
                 iaSc.personality = perso;
-                perso.ownerId = character.owner_id;
-                perso.characterId = character.character_id;
-                perso.characterName = character.name;
-                perso.backstory = character.backstory;
+                perso.ownerId = character.Owner_id;
+                perso.characterId = character.Character_id;
+                perso.characterName = character.Name;
+                perso.backstory = character.Backstory;
                 EnumLists list = new();
                 string[] voicesStr = list.VoicesID;
-                perso.voice = (Voices)GetIndex(voicesStr, character.voice_id);
+                perso.voice = (Voices)GetIndex(voicesStr, character.Voice_id);
                 string[] personStr = list.personalitiesID;
-                perso.personality = (Personality)GetIndex(personStr, character.personality_id);
+                perso.personality = (Personality)GetIndex(personStr, character.Personality_id);
                 string[] ageStr = list.AgeID;
-                perso.characterAge = (Age)GetIndex(ageStr, character.age_id);
-                perso.catchPhrases = character.catch_phrases;
-                perso.hobbies = character.hobbies;
-                perso.primaryGoal = character.primary_goal;
-                perso.role = character.role;
-                perso.assetFilePath = character.asset_file_path;
+                perso.characterAge = (Age)GetIndex(ageStr, character.Age_id);
+                perso.catchPhrases = character.Catch_phrases;
+                perso.hobbies = character.Hobbies;
+                perso.primaryGoal = character.Primary_goal;
+                perso.role = character.Role;
+                perso.assetFilePath = character.Asset_file_path;
                 #endregion
 
-                #region TextToSpeech
-                var TTS = emptyGameObject.AddComponent<TTS>();
-                TTS.audioSource = emptyGameObject.AddComponent<AudioSource>();
-                #endregion
                 #region store asset data
 
                 if (!AssetDatabase.IsValidFolder("assets/Flippit"))
@@ -850,12 +851,12 @@ namespace Flippit.Editor
                 {
                     AssetDatabase.CreateFolder("Assets/Flippit/Resources", "Prefabs");
                 }
-                AssetDatabase.CreateAsset(perso, personalityPath + "/" + character.name + ".asset");
-                prefab = PrefabUtility.SaveAsPrefabAsset(emptyGameObject, prefabPath + "/" + character.name + ".prefab");
+                AssetDatabase.CreateAsset(perso, personalityPath + "/" + character.Name + ".asset");
+                prefab = PrefabUtility.SaveAsPrefabAsset(emptyGameObject, prefabPath + "/" + character.Name + ".prefab");
                 AssetDatabase.SaveAssets();
                 DestroyImmediate(emptyGameObject);
                 GameObject newPrefabInstance = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
-                ThumbnailGenerator.GenerateThumbnail(newPrefabInstance, character.name, 128, 128);
+                ThumbnailGenerator.GenerateThumbnail(newPrefabInstance, character.Name, 128, 128);
                 AssetDatabase.Refresh();
                 #endregion
                 Debug.Log(newPrefabInstance.name + " has been Created, Check Your Prefab Folder.");
@@ -877,23 +878,23 @@ namespace Flippit.Editor
     }
     public class CharacterWrapper
     {
-        public Character character { get; set; }
+        public Character Character { get; set; }
     }
     public class Character
     {
-        public string character_id { get; set; }
-        public string owner_id { get; set; }
-        public string name { get; set; }
-        public string backstory { get; set; }
-        public string personality_id { get; set; }
-        public string voice_id { get; set; }
-        public string role { get; set; }
-        public string age_id { get; set; }
-        public string hobbies { get; set; }
-        public string mood_id { get; set; }
-        public string catch_phrases { get; set; }
-        public string primary_goal { get; set; }
-        public string urls { get; set; }
-        public string asset_file_path { get; set; }
+        public string Character_id { get; set; }
+        public string Owner_id { get; set; }
+        public string Name { get; set; }
+        public string Backstory { get; set; }
+        public string Personality_id { get; set; }
+        public string Voice_id { get; set; }
+        public string Role { get; set; }
+        public string Age_id { get; set; }
+        public string Hobbies { get; set; }
+        public string Mood_id { get; set; }
+        public string Catch_phrases { get; set; }
+        public string Primary_goal { get; set; }
+        public string Urls { get; set; }
+        public string Asset_file_path { get; set; }
     }
 }

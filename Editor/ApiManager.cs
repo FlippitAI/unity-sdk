@@ -6,7 +6,7 @@ namespace Flippit
 {
     public class ApiManager
     {
-        private const string BaseURL = "https://studio-api.flippit.ai";
+        private const string BaseURL = "https://studio-api.flippit.ai";//"https://staging-studio-api.flippit.ai"
         private const string ContentTypeHeader = "application/json";
 
         public static string GetRequest(string endpoint, string accessToken = null, string refreshToken = null)

@@ -23,13 +23,11 @@ namespace Flippit
 			// Make sure directory exists if user is saving to sub dir.
 			Directory.CreateDirectory(Path.GetDirectoryName(filepath));
 
-			using (var memoryStream = CreateEmpty(filepath))
-			{
-				ConvertAndWrite(memoryStream, clip);
-				WriteHeader(memoryStream, clip);
-				return memoryStream.GetBuffer();
-			}
-		}
+            using var memoryStream = CreateEmpty();
+            ConvertAndWrite(memoryStream, clip);
+            WriteHeader(memoryStream, clip);
+            return memoryStream.GetBuffer();
+        }
 
         [Obsolete]
         public static AudioClip TrimSilence(AudioClip clip, float min)
@@ -79,10 +77,10 @@ namespace Flippit
 			return clip;
 		}
 
-		static MemoryStream CreateEmpty(string filepath)
+		static MemoryStream CreateEmpty()
 		{
 			var memoryStream = new MemoryStream();
-			byte emptyByte = new byte();
+			byte emptyByte = new();
 
 			for (int i = 0; i < HEADER_SIZE; i++) //preparing the header
 			{
@@ -111,10 +109,10 @@ namespace Flippit
 			for (int i = 0; i < samples.Length; i++)
 			{
 				intData[i] = (short)(samples[i] * rescaleFactor);
-				Byte[] byteArr = new Byte[2];
-				byteArr = BitConverter.GetBytes(intData[i]);
-				byteArr.CopyTo(bytesData, i * 2);
-			}
+                //(new Byte[2]).CopyTo(bytesData, i * 2);
+                byte[] byteArr = BitConverter.GetBytes(intData[i]);
+                byteArr.CopyTo(bytesData, i * 2);
+            }
 
 			memoryStream.Write(bytesData, 0, bytesData.Length);
 		}

@@ -224,10 +224,6 @@ namespace Flippit.Editor
                     Debug.Log(dataCharacter);
                     ApiManager.PostRequest("api/v1/characters/update", dataCharacter, tokenAccess, tokenRefresh);
                     #endregion
-                    #region TextToSpeech
-                    var TTS = emptyGameObject.AddComponent<TTS>();
-                    TTS.audioSource = emptyGameObject.AddComponent<AudioSource>();
-                    #endregion
                     #region store asset data
                     CreateFolders();
                     AssetDatabase.CreateAsset(perso, personalityPath + "/" + characName.value + ".asset");
@@ -406,8 +402,7 @@ namespace Flippit.Editor
             Camera MainCamera = Camera.main;
             if (MainCamera != null)
             {
-                CinemachineBrain brain = MainCamera.gameObject.GetComponent<CinemachineBrain>();
-                if (brain == null)
+                if (!MainCamera.gameObject.TryGetComponent<CinemachineBrain>(out _))
                 {
                     MainCamera.gameObject.AddComponent<CinemachineBrain>();
                 }

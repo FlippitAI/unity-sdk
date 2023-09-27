@@ -5,6 +5,9 @@ using System.Text;
 using System;
 using UnityEditor;
 using System.Text.RegularExpressions;
+using System.Collections;
+using System.IO;
+using System.Net;
 
 namespace Flippit
 {
@@ -34,7 +37,7 @@ namespace Flippit
     {
         private WebSocket socket;
         private string apiKey;
-        private readonly string urlWebsocket = "wss://ozmcki0ooj.execute-api.eu-west-1.amazonaws.com/production?Authorizer=";
+        private readonly string urlWebsocket = "wss://31ygdxeij1.execute-api.eu-west-1.amazonaws.com/production?Authorizer=";// "wss://rlsasiw8xc.execute-api.eu-west-1.amazonaws.com/staging/?Authorizer=";
         private readonly string urlCharacterId = "&characterId=";
         private string characterId = "";
 
@@ -44,7 +47,6 @@ namespace Flippit
         public string characterInfos;
         DialogueWindow dialSc;
         private ApiKeyManager apiKeyManager;
-
         public void StartWebSocket(string characterId)
         {
             this.characterId = characterId;
@@ -114,9 +116,8 @@ namespace Flippit
                     else if (message.Contains("audio"))
                     {
                         var json = JsonUtility.FromJson<AudioMessage>(message);
-                        string audioDataString = json.audio_bytes;
-                        byte[] audioData = Convert.FromBase64String(audioDataString);
-                        AudioClip audioClip = dialSc.ConvertToAudioClip(audioData);
+                        byte[] decodedAudioBytes = Convert.FromBase64String(json.audio_bytes);
+                        dialSc.WriteIntoFile(decodedAudioBytes);
                     }
                     else if (message.Contains("terminator"))
                     {
@@ -127,7 +128,6 @@ namespace Flippit
             }
             await socket.Connect();
         }
-        
         void Update()
         {
 #if !UNITY_WEBGL || UNITY_EDITOR
@@ -156,7 +156,7 @@ namespace Flippit
             set;
         }
 
-        public void closeWebsocket()
+        public void CloseWebsocket()
         {
             if (socket.State == WebSocketState.Open && socket != null) socket.Close();
         }

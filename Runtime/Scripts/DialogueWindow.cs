@@ -1,13 +1,15 @@
-#if UNITY_WEBGL && !UNITY_EDITOR
-#define USE_WEBGL
-#endif
-
 using Cinemachine;
 using OpenAI;
+using PlasticPipe.PlasticProtocol.Messages;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Runtime.InteropServices.ComTypes;
 using System.Security.Cryptography;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using TMPro;
@@ -19,9 +21,13 @@ using UnityEngine.UI;
 using UnityEngine.UIElements;
 using static Flippit.EnumLists;
 
-
 namespace Flippit
 {
+    public class AudioInfo
+    {
+        public int SampleRate { get; set; }
+        public int Channels { get; set; }
+    }
     public class CharacterInfos
     {
         public string ownerId;
@@ -40,8 +46,9 @@ namespace Flippit
         public string voiceId;
         public string ageID;
         public string prompt;
+        //public string audio_format;// a retirer si pas staging
     }
-
+    
     public class ClipData
     {
         public AudioClip clip;
@@ -69,7 +76,6 @@ namespace Flippit
 
         [Header("Output Options")]
         public bool ShowDiscussion;
-        public float windowMaxWidth = 300f, windowMaxHeight = 200f;
         public bool useVoices;
 
         [Header("Camera Options")]
@@ -91,43 +97,41 @@ namespace Flippit
         #endregion
         #region private var
         private TMP_Text inputText;
-        private TextMeshProUGUI chatAreaText;//  <--- peut etre source d'erreur
-        private float currentTime = 0;
+        private readonly float currentTime = 0;
         private IACharacter iaSc;
         private GameObject playerGO;
         private CinemachineVirtualCamera VCam;
         private float elapsedTime;
         private string speechSentence;
-        private readonly List<string> sentences = new();
-        private int currentSentenceIndex = 0;
-        private bool firstSentence;
-        private CanvasGroup dialogueCanvasGroup;
-        private TextMeshProUGUI InputMessage;
         private bool isRecording;
         private AudioClip clip;
         private float time;
-        private readonly string fileName = "recording.wav";
         private OpenAIApi openai;
         private ApiKeyManager apiKeyManager;
         private bool isTalkingToCharacter = false;
-        
+        private bool isIncrementing;
         private string device;
         #endregion
         private WebSocketManager manager;
         private AudioRecorder audioRecorder;
-        EnumLists lists;
-        public string[] Phrases;
         private GameObject DialogueNPC;
         private GameObject DialoguePlayer;
-        const string DialogueNPCPath = "Packages/com.flippit.flippitstudio/Runtime/Resources/Prefabs/Dialogue NPC.prefab";
-        const string DialoguePlayerPath = "Packages/com.flippit.flippitstudio/Runtime/Resources/Prefabs/Dialogue Player.prefab";
-        public List<List<Viseme>> visemeSets = new();
+        const string DialogueNPCPath = "Packages/com.flippit.flippitstudio/Runtime/Resources/Prefabs/DialogueNPC.prefab";
+        const string DialoguePlayerPath = "Packages/com.flippit.flippitstudio/Runtime/Resources/Prefabs/DialoguePlayer.prefab";
+        
         private GameObject dialogueNpcObject;
+        [HideInInspector]
         public TextMeshProUGUI playerText;
         private string targetText;
-        private float textSpeed = 0.05f; 
-        private bool isIncrementing = false;
+        private readonly float textSpeed = 0.05f; 
         private GameObject dialoguePlayerObject;
+
+        public List<List<Viseme>> visemeSets = new();
+        private readonly List<string> sentences = new();
+        private readonly List<string> files = new();
+        private List <GameObject> conversationObjects;
+        private int previousFilePathCount = 0;
+        private bool isPlayingAudio = false;
 
         // Start is called before the first frame update
         void Start()
@@ -135,23 +139,23 @@ namespace Flippit
             audioRecorder = new AudioRecorder();
             apiKeyManager = Resources.Load<ApiKeyManager>("Apikeys");
             openai = new(apiKeyManager.OpenAI);
-            //InputMessage = DiscussionContent.GetComponentInChildren<TextMeshProUGUI>();
             inputText = inputField.GetComponent<TMP_InputField>().textComponent;
-            //chatAreaText = DiscussionContent.GetComponentInChildren<TextMeshProUGUI>();
             audioRecorder.StartRefresh(devices =>
             {
                 MicrophoneOptions = devices;
             });
-            DialogueNPC = AssetDatabase.LoadAssetAtPath<GameObject>(DialogueNPCPath);
-            DialoguePlayer = AssetDatabase.LoadAssetAtPath<GameObject>(DialoguePlayerPath);
+            DialogueNPC = PrefabUtility.LoadPrefabContents(DialogueNPCPath);
+            DialoguePlayer = PrefabUtility.LoadPrefabContents(DialoguePlayerPath);
             if(verticalScrollBar == null)
             {
                 verticalScrollBar = GameObject.Find("Scrollbar Vertical").GetComponent<Scrollbar>();
             }
+
         }
 
         private void Update()
         {
+            DiscussionContent.SetActive(ShowDiscussion);
             if (Application.internetReachability != NetworkReachability.NotReachable && UseMicrophone)
             {
                 if (Input.GetKeyDown(pushToTalkButton) && !isRecording)
@@ -173,6 +177,34 @@ namespace Flippit
             {
                 UpdateRecordingTime();
             }
+            if (files.Count > 0 && files.Count != previousFilePathCount)
+            {
+                if (!isPlayingAudio)
+                {
+                    StartCoroutine(PlayAudioClips());
+                }
+                previousFilePathCount = files.Count;
+            }
+        }
+        private void OnEnable()
+        {
+            ChatContainer.SetActive(displayInputFieldPanel);
+            inputField.SetActive(displayInputFieldPanel);
+            DiscussionContent.SetActive(ShowDiscussion);
+            conversationObjects ??= new List<GameObject>();
+            VCam = FindObjectOfType<CinemachineVirtualCamera>();
+            iaSc = IaActive.GetComponent<IACharacter>();
+            playerGO = GameObject.FindGameObjectWithTag("Player");
+            discussion = iaSc.Discussion;
+
+            PositionVCam(true);
+
+            if (manager == null)
+            {
+                manager = GetComponent<WebSocketManager>();
+            }
+
+            manager.StartWebSocket(IaPersona.characterId);
         }
         private void StartRecordingIfPossible()
         {
@@ -216,7 +248,7 @@ namespace Flippit
         {
             if (clip != null)
             {
-                byte[] data = SaveWav.Save(fileName, clip);
+                byte[] data = SaveWav.Save("RecordedPrompt", clip);
 
                 var req = new CreateAudioTranscriptionsRequest
                 {
@@ -241,56 +273,41 @@ namespace Flippit
                 StopRecordingIfActive();
             }
         }
-        private void OnEnable()
-        {
-            ChatContainer.SetActive(displayInputFieldPanel);
-            inputField.SetActive(displayInputFieldPanel);
-            DiscussionContent.SetActive(ShowDiscussion);
-
-            VCam = FindObjectOfType<CinemachineVirtualCamera>();
-            iaSc = IaActive.GetComponent<IACharacter>();
-            playerGO = GameObject.FindGameObjectWithTag("Player");
-            discussion = iaSc.Discussion;
-
-            PositionVCam(true);
-            dialogueCanvasGroup = DiscussionContent.GetComponent<CanvasGroup>();
-
-            if (manager == null)
-            {
-                manager = GetComponent<WebSocketManager>();
-            }
-
-            manager.StartWebSocket(IaPersona.characterId);
-        }
-
+        
         public void SaySomething()
         {
-            firstSentence = true;
             if (inputText.text.Length > 1 && IaPersona != null)
             {
                 IaPersona.prompt = inputText.text;
                 CharacterInfos promptMessage = new() { action = "chat", prompt = inputText.text };
 
                 manager.SendWebSocketMessage(JsonUtility.ToJson(promptMessage));
-
-                dialoguePlayerObject = Instantiate(DialoguePlayer);
-                playerText = dialoguePlayerObject.GetComponentInChildren<TextMeshProUGUI>();
-                dialoguePlayerObject.transform.SetParent(DiscussionContent.transform, false);
-                if (playerText != null)
+                if (ShowDiscussion)
                 {
-                    playerText.text = "";
-                    StartIncrementing(inputText.text);
+                    dialoguePlayerObject = Instantiate(DialoguePlayer);
+                    conversationObjects.Add(dialoguePlayerObject);
+                    playerText = dialoguePlayerObject.GetComponentInChildren<TextMeshProUGUI>();
+                    dialoguePlayerObject.transform.SetParent(DiscussionContent.transform, false);
+                    if (playerText != null)
+                    {
+                        playerText.text = "";
+                        StartIncrementing(inputText.text);
+                    }
                 }
                 inputField.GetComponent<TMP_InputField>().text = "";
-                verticalScrollBar.value = 0;
             }
+            verticalScrollBar.value = 0;
         }
         public string StartIncrementing(string newText)
         {
-            targetText = newText;
-            isIncrementing = true;
+            if(!isIncrementing)
+            {
+                targetText = newText;
+                isIncrementing = true;
 
-            StartCoroutine(IncrementText());
+                StartCoroutine(IncrementText());
+            }
+            
             return newText;
         }
         private IEnumerator IncrementText()
@@ -319,37 +336,41 @@ namespace Flippit
         }
         public void SpeechSomething(string speech)
         {
-            firstSentence = true;
             if (speech.Length > 1 && IaPersona != null)
             {
                 IaPersona.prompt = speech;
                 CharacterInfos promptMessage = new() { action = "chat", prompt = IaPersona.prompt };
                 manager.SendWebSocketMessage(JsonUtility.ToJson(promptMessage));
-
-                dialoguePlayerObject = Instantiate(DialoguePlayer);
-                playerText = dialoguePlayerObject.GetComponentInChildren<TextMeshProUGUI>();
-                dialoguePlayerObject.transform.SetParent(DiscussionContent.transform, false);
-                if (playerText != null)
+                if (ShowDiscussion)
                 {
-                    playerText.text = "";
-                    StartIncrementing(inputText.text);
+                    dialoguePlayerObject = Instantiate(DialoguePlayer);
+                    conversationObjects.Add(dialoguePlayerObject);
+                    playerText = dialoguePlayerObject.GetComponentInChildren<TextMeshProUGUI>();
+                    dialoguePlayerObject.transform.SetParent(DiscussionContent.transform, false);
+                    if (playerText != null)
+                    {
+                        playerText.text = "";
+                        StartIncrementing(speech);
+                    }
+                    inputField.GetComponent<TMP_InputField>().text = "";
                 }
-                inputField.GetComponent<TMP_InputField>().text = "";
-                verticalScrollBar.value = 0;
             }
+            verticalScrollBar.value = 0;
         }
 
         public void FinishDiscussion()
         {
-            // Reset variables and components
-            if (iaSc != null) iaSc.Discussion = discussion;
+            if (iaSc != null) { iaSc.Discussion = discussion; }
             discussion = string.Empty;
             sentences.Clear();
-            currentSentenceIndex = 0;
-            firstSentence = true;
+            if(files.Count > 0)
+            {
+                StartCoroutine(CleanUpFolder());
+            }
             isRecording = false;
             time = 0;
             clip = null;
+            
             if (IaActive != null)
             {
                 Animator animator = IaActive.GetComponentInChildren<Animator>();
@@ -361,99 +382,92 @@ namespace Flippit
             IaActive = null;
             IaPersona = null;
             if (playerGO != null) playerGO.GetComponent<Player>().CloseDialogueBox();
-            PositionVCam(false);
-            manager.closeWebsocket();
-            manager = null;
-
-        }
-
-        public void ReceiveMessage(string message)
-        {
-            if (dialogueNpcObject == null)
+            if (conversationObjects.Count > 0)
             {
-                dialogueNpcObject = Instantiate(DialogueNPC);
-                LayoutElement layout = dialogueNpcObject.GetComponent<LayoutElement>();
-                dialogueNpcObject.transform.SetParent(DiscussionContent.transform, false);
-                TextMeshProUGUI dialogueText = dialogueNpcObject.GetComponentInChildren<TextMeshProUGUI>();
-                if (dialogueText != null)
+                for (int i = conversationObjects.Count - 1; i >= 0; i--)
                 {
-                    dialogueText.text = discussion;
-                    float prefHeight = dialogueText.preferredHeight;
-                    layout.preferredHeight = prefHeight;
+                    GameObject obj = conversationObjects[i];
+                    Destroy(obj);
+                }
+                conversationObjects.Clear(); 
+            }
+            
+            PositionVCam(false);
+            manager.CloseWebsocket();
+            manager = null;
+        }
+        IEnumerator CleanUpFolder()
+        {
+            int currentIndex = 0;
+            while (currentIndex < files.Count)
+            {
+                using UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(files[currentIndex], AudioType.MPEG);
+                var op = www.SendWebRequest();
+
+                while (!op.isDone)
+                {
+                    yield return null;
+                }
+
+                if (www.result == UnityWebRequest.Result.Success)
+                {
+                    File.Delete(files[currentIndex]);
+                    files.RemoveAt(currentIndex);
+                    currentIndex++;
                 }
             }
-            else
+        }
+        public void ReceiveMessage(string message)
+        {
+            if (ShowDiscussion)
             {
-                TextMeshProUGUI dialogueText = dialogueNpcObject.GetComponentInChildren<TextMeshProUGUI>();
-                LayoutElement layout = dialogueNpcObject.GetComponent<LayoutElement>();
-                if (dialogueText != null)
+                if (dialogueNpcObject == null)
                 {
-                    dialogueText.text = discussion;
-                    float prefHeight = dialogueText.preferredHeight;
-                    layout.preferredHeight = prefHeight;
-                    verticalScrollBar.value = 0;
+                    dialogueNpcObject = Instantiate(DialogueNPC);
+                    conversationObjects.Add(dialogueNpcObject);
+                    LayoutElement layout = dialogueNpcObject.GetComponent<LayoutElement>();
+                    dialogueNpcObject.transform.SetParent(DiscussionContent.transform, false);
+                    TextMeshProUGUI dialogueText = dialogueNpcObject.GetComponentInChildren<TextMeshProUGUI>();
+                    if (dialogueText != null)
+                    {
+                        dialogueText.text = discussion;
+                        float prefHeight = dialogueText.preferredHeight;
+                        layout.preferredHeight = prefHeight;
+                    }
                 }
+                else
+                {
+                    TextMeshProUGUI dialogueText = dialogueNpcObject.GetComponentInChildren<TextMeshProUGUI>();
+                    LayoutElement layout = dialogueNpcObject.GetComponent<LayoutElement>();
+                    if (dialogueText != null)
+                    {
+                        dialogueText.text = discussion;
+                        float prefHeight = dialogueText.preferredHeight;
+                        layout.preferredHeight = prefHeight;
+                        verticalScrollBar.value = 0;
+                    }
+                } 
             }
             discussion += message;
 
             speechSentence += message;
-            
+
             if (Regex.IsMatch(speechSentence, @"[!.?]"))
             {
-                sentences.Add(speechSentence);
-                Phrases=sentences.ToArray();
-                speechSentence = "";
-                /*if (useVoices)
-                {
-                    /*if (firstSentence)
-                    {
-                        firstSentence = false;
-                        ReadSentences();
-                    }
-                }
                 
-                if (ShowDiscussion)
-                {
-                    TextMeshProUGUI textComponent = DiscussionContent.GetComponentInChildren<TextMeshProUGUI>();
-                    textComponent.text = discussion;
-                    Vector2 preferredSize = textComponent.GetPreferredValues();
-                    float maxWidth = windowMaxWidth;
-                    float maxHeight = windowMaxHeight;
-                    Vector2 newSize = new(Mathf.Min(preferredSize.x, maxWidth), Mathf.Min(preferredSize.y, maxHeight));
-                    DiscussionContent.GetComponent<RectTransform>().sizeDelta = newSize;
-                }
-
-                else
-                {
-                    chatAreaText.text = discussion;
-                }
-            }
-            else
-            {
-                if (UseMicrophone)
-                {
-                    TextMeshProUGUI textComponent = DiscussionContent.GetComponentInChildren<TextMeshProUGUI>();
-                    textComponent.text = discussion;
-                    Vector2 preferredSize = textComponent.GetPreferredValues();
-                    float maxWidth = 300f;
-                    float maxHeight = 200f;
-                    Vector2 newSize = new(Mathf.Min(preferredSize.x, maxWidth), Mathf.Min(preferredSize.y, maxHeight));
-                    DiscussionContent.GetComponent<RectTransform>().sizeDelta = newSize;
-                }
-                else
-                {
-                    chatAreaText.text = discussion;
-                }*/
+                sentences.Add(speechSentence);
+                speechSentence = "";
             }
         }
         public void TerminateResponse(string message)
         {
-            if(message == "DONE")
+            if (message == "DONE")
             {
                 dialogueNpcObject = null;
                 discussion = null;
                 Animator animator = IaActive.GetComponentInChildren<Animator>();
                 animator.SetBool("Talking", false);
+                sentences.Clear();
             }
         }
 
@@ -512,58 +526,91 @@ namespace Flippit
         {
             visemeSets.Add(visemesSentence);
         }
-        
-        
-        public void ReadSentences(byte[] audioData)
+        public void ReadSentences()
         {
+            StartCoroutine(PlayAudioClips());
+        }
+        private IEnumerator PlayAudioClips()
+        {
+            int currentIndex = 0;
+            using UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(files[currentIndex], AudioType.MPEG);
+            var op = www.SendWebRequest();
 
-            AudioClip audioClip = ConvertToAudioClip(audioData);
-            IaActive.GetComponent<AudioSource>().clip = audioClip;
-
-            if (currentSentenceIndex >= 0 && currentSentenceIndex < sentences.Count)
+            while (!op.isDone)
             {
-                string sentenceToRead = sentences[currentSentenceIndex];
-                int index = (int)IaPersona.voice;
-                if (index == 0)
+                yield return null;
+            }
+
+            if (www.result == UnityWebRequest.Result.Success)
+            {
+                AudioClip audioClip = DownloadHandlerAudioClip.GetContent(www);
+
+                if (audioClip != null)
                 {
-                    index = 1;
+                    if (IaActive.TryGetComponent<AudioSource>(out var audioSource))
+                    {
+                        isPlayingAudio = true;
+                            
+                        audioSource.clip = audioClip;
+                        float pitch = audioSource.pitch;
+                        float waitDelay = audioClip.length / pitch;
+                        audioSource.Play();
+                        yield return new WaitForSeconds(waitDelay);
+                    }
                 }
-                lists = new EnumLists();
-                string voiceID = lists.voiceNames[index];
-                Task speechTask = IaActive.GetComponent<TTS>().SpeechMe(sentenceToRead, voiceID, visemeSets[0]);
-                //await speechTask;
-                visemeSets.RemoveAt(0);
-                currentSentenceIndex++;
-                //ReadSentences();
+                else
+                {
+                    Debug.LogError("Erreur lors de la conversion en AudioClip.");
+                }
+                   
+                isPlayingAudio = false;
+                File.Delete(files[currentIndex]);
+                files.RemoveAt(currentIndex);
+                currentIndex++;
+            }
+        }
+        
+        public void WriteIntoFile(byte[] audioData)
+        {
+            if (audioData != null && audioData.Length > 0)
+            {
+                string fileName = GenerateUniqueFileName();
+                string filePath = Path.Combine(Application.persistentDataPath, fileName);
+                while (files.Contains(filePath))
+                {
+                    fileName = GenerateUniqueFileName(); 
+                    filePath = Path.Combine(Application.persistentDataPath, fileName);
+                }
+                files.Add(filePath);
+                using MemoryStream memoryStream = new(audioData);
+                using FileStream filestream = new(filePath, FileMode.Create);
+                byte[] buffer = new byte[8 * 1024];
+                int bytesRead;
+                while ((bytesRead = memoryStream.Read(buffer, offset: 0, count: buffer.Length)) > 0)
+                {
+                    filestream.Write(buffer, offset: 0, count: bytesRead);
+                }
             }
             else
             {
-                Animator animator = IaActive.GetComponentInChildren<Animator>();
-                animator.SetBool("Talking", false);
+                Debug.LogError("Error decoding audio data.");
             }
         }
-        public AudioClip ConvertToAudioClip(byte[] audioData)
+         
+        private string GenerateUniqueFileName()
         {
-            int frequency = 44100;
-            int channels = 1;
+            string baseFileName = "Vocal";
+            string fileExtension = ".mp3";
+            int fileNumber = 1;
 
-            AudioClip audioClip = AudioClip.Create("ReceivedAudio", audioData.Length / (sizeof(float) * channels), channels, frequency, false);
-            //float[] audioDataFloat = ReadAudioData(audioData, audioData.Length);
-            //audioClip.SetData(audioDataFloat, 0);
-
-            return audioClip;
-        }
-        /*public static float[] ReadAudioData(byte[] data, int length)
-        {
-            float[] audioData = new float[length / 2];
-            for (int i = 0; i < length / 2; i++)
+            while (File.Exists(Path.Combine(Application.persistentDataPath, $"{baseFileName}{fileNumber}{fileExtension}")))
             {
-                audioData[i] = data[i * 2] / 32768.0f;
-                audioData[i + length / 2] = data[i * 2 + 1] / 32768.0f;
+                fileNumber++;
             }
 
-            return audioData;
-        }*/
+            return $"{baseFileName}{fileNumber}{fileExtension}";
+        }
+
         public void PlayAnimation(string animName, string objectName = null)
         {
             animName = animName.Replace("'", "");
@@ -593,7 +640,6 @@ namespace Flippit
         {
             while (animator.GetBool("Talking"))
             {
-                // Wait for Talking to be set to false (from external piece of code)
                 yield return new WaitForSeconds(0.5f);
             }
 
@@ -632,17 +678,15 @@ namespace Flippit
 
                     if (animName == "Grab")
                     {
-                        Vector3 handOffset = new Vector3(0f, 1.0f, 1.0f); 
+                        Vector3 handOffset = new(0f, 1.0f, 1.0f); 
 
                         if (unityObject != null)
                         {
-                            Vector3 objectOriginalPosition = unityObject.transform.position;
+                            //Vector3 objectOriginalPosition = unityObject.transform.position;
 
                             Vector3 handPosition = IaActive.transform.position + IaActive.transform.TransformDirection(handOffset);
-                            Vector3 objectOffset = objectOriginalPosition - handPosition;
-
-                            unityObject.transform.position = handPosition;
-                            unityObject.transform.rotation = IaActive.transform.rotation;
+                            //Vector3 objectOffset = objectOriginalPosition - handPosition;
+                            unityObject.transform.SetPositionAndRotation(handPosition, IaActive.transform.rotation);
 
                             yield return new WaitForSeconds(10.0f);
 
@@ -659,8 +703,7 @@ namespace Flippit
                             // }
 
                             // Release the object on the ground
-                            RaycastHit hit;
-                            if (Physics.Raycast(unityObject.transform.position, Vector3.down, out hit))
+                            if (Physics.Raycast(unityObject.transform.position, Vector3.down, out RaycastHit hit))
                             {
                                 unityObject.transform.position = hit.point;
                             }
@@ -669,162 +712,9 @@ namespace Flippit
                 }
             }
         }
-    }
-    
-    public class AudioRecorder 
-    {
-        public bool isRecording;
-        private static readonly Dictionary<string, ClipData> Clips = new();
-        public static string[] devices { get; private set; }
-        public static event Action<string[]> OnDevicesLoaded;
-
-        public void StartRefresh(Action<string[]> onDevicesLoaded)
+        private void OnApplicationQuit()
         {
-#if USE_WEBGL
-        RefreshDevicesWebGL(onDevicesLoaded);
-#else
-            RefreshDevices(onDevicesLoaded);
-#endif
-        }
-
-        [AOT.MonoPInvokeCallback(typeof(ClipCallbackDelegate))]
-        private static void UpdateClip(string key)
-        {
-            //Debug.Log($"Received data for {key}");
-            if (!Clips.ContainsKey(key))
-            {
-                Debug.Log($"Failed to find key '{key}'");
-                return;
-            }
-            var clipData = Clips[key];
-            var position = GetPosition(key);
-            var samples = new float[clipData.clip.samples];
-#if USE_WEBGL
-            WebGLMicrophone.MicrophoneWebGL_GetData(key, samples, samples.Length, 0);
-#endif
-            clipData.clip.SetData(samples, position);
-            clipData.last = position;
-        }
-
-        private void RefreshDevices(Action<string[]> onDevicesLoaded)
-        {
-#if USE_WEBGL
-            RefreshDevicesWebGL(onDevicesLoaded);
-#else
-            devices = Microphone.devices;
-            onDevicesLoaded(devices);
-            OnDevicesLoaded?.Invoke(devices);
-#endif
-        }
-        private async void RefreshDevicesWebGL(Action<string[]> onDevicesLoaded)
-        {
-            devices = await WebGLMicrophone.MicrophoneWebGL_Devices();
-            onDevicesLoaded(devices);
-            OnDevicesLoaded?.Invoke(devices);
-        }
-
-
-        public Task<AudioClip> StartRecordingAsync(string device, bool loop, int recordingMaxDuration, int frequency)
-        {
-            if (isRecording)
-            {
-                Debug.LogWarning("Recording is already in progress.");
-                return Task.FromResult<AudioClip>(null);
-            }
-            isRecording = true;
-            var key = device ?? "";
-#if USE_WEBGL
-            var recordingClip = CreateClip(key, loop, recordingMaxDuration, frequency, 1);
-            WebGLMicrophone.MicrophoneWebGL_Start(key, loop, recordingMaxDuration, frequency, 1, UpdateClip, DeleteClip);
-            return Task.FromResult(recordingClip);
-#else
-            return Task.FromResult(Microphone.Start(device, loop, recordingMaxDuration, frequency));
-#endif
-            
-        }
-
-        public void EndRecording(string device)
-        {
-            isRecording = false;
-            var key = device ?? "";
-#if USE_WEBGL
-            WebGLMicrophone.MicrophoneWebGL_End(key);
-#else
-            Microphone.End(device);
-#endif
-        }
-
-        private async Task<string> TranscribeAudioAsync(byte[] audioBytes)
-        {
-            await Task.Delay(TimeSpan.FromSeconds(5)); // Simulate transcription delay
-            string placeholderTranscription = "This is a placeholder transcription.";
-
-            return placeholderTranscription;
-        }
-        private static AudioClip CreateClip(string device, bool loop, int lengthSec, int frequency, int channels)
-        {
-            var clip = AudioClip.Create($"{device}_clip", frequency * lengthSec, channels, frequency, loop);
-            Clips[device] = new ClipData
-            {
-                clip = clip,
-            };
-            Debug.Log($"Started with {device}");
-            return clip;
-        }
-
-        public static int GetPosition(string device)
-        {
-            var key = device ?? "";
-#if USE_WEBGL
-            return WebGLMicrophone.MicrophoneWebGL_GetPosition(key);
-#else
-            return Microphone.GetPosition(device);
-#endif
-        }
-
-        public static bool IsRecording(string device)
-        {
-            var key = device ?? "";
-#if USE_WEBGL
-            return WebGLMicrophone.MicrophoneWebGL_IsRecording(key);
-#else
-            return Microphone.IsRecording(device);
-#endif
-        }
-
-        public static bool HasPermission(string device)
-        {
-#if UNITY_IOS
-        return Application.HasUserAuthorization(UserAuthorization.Microphone);
-#elif UNITY_ANDROID
-        return Permission.HasUserAuthorizedPermission(Permission.Microphone);
-#else
-            return true;
-#endif
-        }
-
-        public static void RequestPermission(string device)
-        {
-#if UNITY_IOS
-        Application.RequestUserAuthorization(UserAuthorization.Microphone);
-#elif UNITY_ANDROID
-        if (!Permission.HasUserAuthorizedPermission(Permission.Microphone))
-        {
-            Permission.RequestUserPermission(Permission.Microphone);
-        }
-#endif
-        }
-
-        [AOT.MonoPInvokeCallback(typeof(ClipCallbackDelegate))]
-        private static void DeleteClip(string key)
-        {
-            Debug.Log($"Called Delete {key}");
-            if (!Clips.ContainsKey(key))
-            {
-                Debug.Log($"Failed to find key '{key}' for deletion");
-                return;
-            }
-            Clips.Remove(key);
+            StartCoroutine(CleanUpFolder());
         }
     }
 }
