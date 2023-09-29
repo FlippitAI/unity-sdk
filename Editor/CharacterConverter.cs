@@ -80,11 +80,11 @@ namespace Flippit.Editor
         private GameObject prefab;
         #endregion
 
-        [MenuItem("Flippit/Character Converter", false, 1)]
+        [MenuItem("Flippit/Convert to Player", false, 1)]
         public static void ShowConverterWindow()
         {
             CharacterConverter wnd = GetWindow<CharacterConverter>();
-            wnd.titleContent = new GUIContent("Character Converter");
+            wnd.titleContent = new GUIContent("Convert to Player");
         }
 
         public void CreateGUI()
@@ -96,7 +96,7 @@ namespace Flippit.Editor
             root.Add(labelFromUXML);
             var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Packages/com.flippit.flippitstudio/Editor/Styles/FlippitStudio.uss");
 
-            convertToIa = root.Q("ConvertNpc") as Button;
+            //convertToIa = root.Q("ConvertNpc") as Button;
             convertToPlayer = root.Q("ConvertPlayer") as Button;
             documentation = root.Q("Documentation") as Button;
             discord = root.Q("Discord") as Button;
@@ -111,7 +111,7 @@ namespace Flippit.Editor
             age = root.Q("Age") as DropdownField;
             hobbies = root.Q("Hobbies") as TextField;
 
-            convertToIa.RegisterCallback<ClickEvent>(OnConvertToNPC);
+            //convertToIa.RegisterCallback<ClickEvent>(OnConvertToNPC);
             convertToPlayer.RegisterCallback<ClickEvent>(OnConvertToPlayer);
             documentation.RegisterCallback<ClickEvent>(OnDocumentation);
             discord.RegisterCallback<ClickEvent>(OnDiscord);

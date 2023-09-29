@@ -115,9 +115,10 @@ namespace Flippit
                     }
                     else if (message.Contains("audio"))
                     {
-                        var json = JsonUtility.FromJson<AudioMessage>(message);
-                        byte[] decodedAudioBytes = Convert.FromBase64String(json.audio_bytes);
+                        AudioMessage audioMessage = JsonUtility.FromJson<AudioMessage>(message);
+                        byte[] decodedAudioBytes = Convert.FromBase64String(audioMessage.audio_bytes);
                         dialSc.WriteIntoFile(decodedAudioBytes);
+                        GetComponent<DialogueWindow>().ReceiveVisemes(audioMessage.viseme_bytes);
                     }
                     else if (message.Contains("terminator"))
                     {

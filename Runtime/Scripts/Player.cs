@@ -19,11 +19,11 @@ namespace Flippit
         [HideInInspector]
         public bool isRunning;
         public float rotateSpeed = 100f;
+        public bool InteractionDialogue = false;
         #endregion
         #region
         private Rigidbody rb;
         private Animator animatorComp;
-        private bool InteractionDialogue = false;
         private Vector3 moveDirection;
         private float movementSpeed;
         #endregion

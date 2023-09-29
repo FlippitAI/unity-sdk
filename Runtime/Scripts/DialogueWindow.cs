@@ -132,7 +132,7 @@ namespace Flippit
         private List <GameObject> conversationObjects;
         private int previousFilePathCount = 0;
         private bool isPlayingAudio = false;
-
+        private int currentSentenceIndex = 0;
         // Start is called before the first frame update
         void Start()
         {
@@ -177,20 +177,25 @@ namespace Flippit
             {
                 UpdateRecordingTime();
             }
-            if (files.Count > 0 && files.Count != previousFilePathCount)
+
+            if (useVoices)
             {
-                if (!isPlayingAudio)
+                if (files.Count > 0 && files.Count != previousFilePathCount)
                 {
-                    StartCoroutine(PlayAudioClips());
+                    if (!isPlayingAudio)
+                    {
+                        StartCoroutine(PlayAudioClips());
+                    }
+                    previousFilePathCount = files.Count;
                 }
-                previousFilePathCount = files.Count;
             }
         }
         private void OnEnable()
         {
             ChatContainer.SetActive(displayInputFieldPanel);
             inputField.SetActive(displayInputFieldPanel);
-            DiscussionContent.SetActive(ShowDiscussion);
+            
+            DiscussionPanel(ShowDiscussion);
             conversationObjects ??= new List<GameObject>();
             VCam = FindObjectOfType<CinemachineVirtualCamera>();
             iaSc = IaActive.GetComponent<IACharacter>();
@@ -205,6 +210,13 @@ namespace Flippit
             }
 
             manager.StartWebSocket(IaPersona.characterId);
+        }
+        void DiscussionPanel(bool ShowDiscussion)
+        {
+            DiscussionContent.SetActive(ShowDiscussion);
+            gameObject.GetComponent<UnityEngine.UI.Image>().enabled= ShowDiscussion;
+            Transform DialogueGlobal = gameObject.transform.Find("Dialogue Global");
+            DialogueGlobal.GetComponent<UnityEngine.UI.Image>().enabled = ShowDiscussion;
         }
         private void StartRecordingIfPossible()
         {
@@ -363,7 +375,8 @@ namespace Flippit
             if (iaSc != null) { iaSc.Discussion = discussion; }
             discussion = string.Empty;
             sentences.Clear();
-            if(files.Count > 0)
+            currentSentenceIndex = 0;
+            if (files.Count > 0)
             {
                 StartCoroutine(CleanUpFolder());
             }
@@ -419,6 +432,7 @@ namespace Flippit
         }
         public void ReceiveMessage(string message)
         {
+            IaActive.GetComponent<IACharacter>().isTalking = true;
             if (ShowDiscussion)
             {
                 if (dialogueNpcObject == null)
@@ -454,10 +468,10 @@ namespace Flippit
 
             if (Regex.IsMatch(speechSentence, @"[!.?]"))
             {
-                
                 sentences.Add(speechSentence);
                 speechSentence = "";
             }
+            PlayVisemes();
         }
         public void TerminateResponse(string message)
         {
@@ -525,10 +539,29 @@ namespace Flippit
         public void ReceiveVisemes(List<Viseme> visemesSentence)
         {
             visemeSets.Add(visemesSentence);
+            IaActive.GetComponent<IACharacter>().SetVisemes(visemeSets[0]);
         }
-        public void ReadSentences()
+        
+        async void PlayVisemes()
         {
-            StartCoroutine(PlayAudioClips());
+            if (currentSentenceIndex >= 0 && currentSentenceIndex < sentences.Count)
+            {
+                if (clip != null)
+                {
+                    Task speechTask = IaActive.GetComponent<IACharacter>().SpeechMe(visemeSets[0]);
+                    await speechTask;
+                }
+                visemeSets.RemoveAt(0);
+                Debug.Log("Reste "+visemeSets.Count+" Visemes dans la série");
+                currentSentenceIndex++;
+                PlayVisemes();
+            }
+            else
+            {
+                Animator animator = IaActive.GetComponentInChildren<Animator>();
+                animator.SetBool("Talking", false);
+                IaActive.GetComponent<IACharacter>().ResetVisemes();
+            }
         }
         private IEnumerator PlayAudioClips()
         {
@@ -550,7 +583,7 @@ namespace Flippit
                     if (IaActive.TryGetComponent<AudioSource>(out var audioSource))
                     {
                         isPlayingAudio = true;
-                            
+                        IaActive.GetComponent<IACharacter>().clip = audioClip;
                         audioSource.clip = audioClip;
                         float pitch = audioSource.pitch;
                         float waitDelay = audioClip.length / pitch;
