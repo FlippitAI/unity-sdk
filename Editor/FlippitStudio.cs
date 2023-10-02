@@ -72,9 +72,8 @@ namespace Flippit.Editor
         private string userlogin;
         private string userPass;
         private bool initialized = false;
-        private bool verified;
+        private readonly bool verified;
         private bool isLoadingLibrary;
-        private float maxWidth;
         private CharacterConverter converter;
         private ApiKeyManager apiKeys;
         #endregion
@@ -808,6 +807,7 @@ namespace Flippit.Editor
                 emptyGameObject.AddComponent<NavMeshAgent>();
                 #endregion
                 #region set Script parameters
+                emptyGameObject.AddComponent<AudioSource>();
                 IACharacter iaSc = emptyGameObject.AddComponent<IACharacter>();
                 #endregion
                 iaSc.Avatar = selectedObject;
