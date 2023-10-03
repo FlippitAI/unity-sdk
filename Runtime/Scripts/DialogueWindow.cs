@@ -566,7 +566,12 @@ namespace Flippit
         private IEnumerator PlayAudioClips()
         {
             int currentIndex = 0;
-            using UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(files[currentIndex], AudioType.MPEG);
+            string filePath = files[currentIndex];
+#if UNITY_STANDALONE_OSX
+filePath = filePath.Replace("\\", "/");
+#endif
+
+            using UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(filePath, AudioType.MPEG);
             var op = www.SendWebRequest();
 
             while (!op.isDone)
@@ -580,6 +585,7 @@ namespace Flippit
 
                 if (audioClip != null)
                 {
+                    Debug.Break();
                     if (IaActive.TryGetComponent<AudioSource>(out var audioSource))
                     {
                         isPlayingAudio = true;
