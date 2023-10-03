@@ -76,6 +76,10 @@ namespace Flippit.Editor
         private bool isLoadingLibrary;
         private CharacterConverter converter;
         private ApiKeyManager apiKeys;
+        private GameObject dialogueNPC;
+        private GameObject dialoguePlayer;
+        private const string dialogueNPCPath = "Packages/com.flippit.flippitstudio/Runtime/Resources/Prefabs/DialogueNPC.prefab";
+        private const string dialoguePlayerPath = "Packages/com.flippit.flippitstudio/Runtime/Resources/Prefabs/DialoguePlayer.prefab";
         #endregion
         [MenuItem("Flippit/Studio", false, 0)]
         public static void ShowWindow()
@@ -212,8 +216,8 @@ namespace Flippit.Editor
             if(AWSApiKey != null)apiKeys.AWSKey = AWSApiKey; // Set the AWS API key
             if(AWSSecret != null)apiKeys.AWSSecret = AWSSecret; // Set the AWS secret
 
-            UnityEditor.EditorUtility.SetDirty(apiKeys); // Mark the asset as dirty
-            UnityEditor.AssetDatabase.SaveAssets(); // Save the changes
+            EditorUtility.SetDirty(apiKeys); // Mark the asset as dirty
+            AssetDatabase.SaveAssets(); // Save the changes
 
         }
         private void OnDisable()
@@ -245,6 +249,18 @@ namespace Flippit.Editor
                 connexionPanel.style.display = DisplayStyle.None;
                 libraryPanel.style.display = DisplayStyle.Flex;
                 LoadStudioLibrary(All);
+            }
+            if (!File.Exists("Assets/Flippit/Resources/Prefabs/DialogueNPC.prefab"))
+            {
+                dialogueNPC = PrefabUtility.LoadPrefabContents(dialogueNPCPath);
+                PrefabUtility.SaveAsPrefabAsset(dialogueNPC, "Assets/Flippit/Resources/Prefabs/DialogueNPC.prefab");
+                PrefabUtility.UnloadPrefabContents(dialogueNPC);
+            }
+            if (!File.Exists("Assets/Flippit/Resources/Prefabs/DialoguePlayer.prefab"))
+            {
+                dialoguePlayer = PrefabUtility.LoadPrefabContents(dialoguePlayerPath);
+                PrefabUtility.SaveAsPrefabAsset(dialoguePlayer, "Assets/Flippit/Resources/Prefabs/DialoguePlayer.prefab");
+                PrefabUtility.UnloadPrefabContents(dialoguePlayer);
             }
         }
        

@@ -1,6 +1,5 @@
 using Cinemachine;
 using OpenAI;
-using PlasticPipe.PlasticProtocol.Messages;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -114,10 +113,10 @@ namespace Flippit
         #endregion
         private WebSocketManager manager;
         private AudioRecorder audioRecorder;
-        private GameObject DialogueNPC;
-        private GameObject DialoguePlayer;
-        const string DialogueNPCPath = "Packages/com.flippit.flippitstudio/Runtime/Resources/Prefabs/DialogueNPC.prefab";
-        const string DialoguePlayerPath = "Packages/com.flippit.flippitstudio/Runtime/Resources/Prefabs/DialoguePlayer.prefab";
+        private GameObject dialogueNPC;
+        private GameObject dialoguePlayer;
+        const string dialogueNPCPath = "Prefabs/DialogueNPC";
+        const string dialoguePlayerPath = "Prefabs/DialoguePlayer";
         
         private GameObject dialogueNpcObject;
         [HideInInspector]
@@ -144,9 +143,10 @@ namespace Flippit
             {
                 MicrophoneOptions = devices;
             });
-            DialogueNPC = PrefabUtility.LoadPrefabContents(DialogueNPCPath);
-            DialoguePlayer = PrefabUtility.LoadPrefabContents(DialoguePlayerPath);
-            if(verticalScrollBar == null)
+            dialogueNPC = Resources.Load<GameObject>(dialogueNPCPath);
+            dialoguePlayer = Resources.Load<GameObject>(dialoguePlayerPath);
+            Debug.Log("prefabs --> " + dialoguePlayer + " / " + dialogueNPC);
+            if (verticalScrollBar == null)
             {
                 verticalScrollBar = GameObject.Find("Scrollbar Vertical").GetComponent<Scrollbar>();
             }
@@ -296,7 +296,7 @@ namespace Flippit
                 manager.SendWebSocketMessage(JsonUtility.ToJson(promptMessage));
                 if (ShowDiscussion)
                 {
-                    dialoguePlayerObject = Instantiate(DialoguePlayer);
+                    dialoguePlayerObject = Instantiate(dialoguePlayer);
                     conversationObjects.Add(dialoguePlayerObject);
                     playerText = dialoguePlayerObject.GetComponentInChildren<TextMeshProUGUI>();
                     dialoguePlayerObject.transform.SetParent(DiscussionContent.transform, false);
@@ -355,7 +355,7 @@ namespace Flippit
                 manager.SendWebSocketMessage(JsonUtility.ToJson(promptMessage));
                 if (ShowDiscussion)
                 {
-                    dialoguePlayerObject = Instantiate(DialoguePlayer);
+                    dialoguePlayerObject = Instantiate(dialoguePlayer);
                     conversationObjects.Add(dialoguePlayerObject);
                     playerText = dialoguePlayerObject.GetComponentInChildren<TextMeshProUGUI>();
                     dialoguePlayerObject.transform.SetParent(DiscussionContent.transform, false);
@@ -437,7 +437,7 @@ namespace Flippit
             {
                 if (dialogueNpcObject == null)
                 {
-                    dialogueNpcObject = Instantiate(DialogueNPC);
+                    dialogueNpcObject = Instantiate(dialogueNPC);
                     conversationObjects.Add(dialogueNpcObject);
                     LayoutElement layout = dialogueNpcObject.GetComponent<LayoutElement>();
                     dialogueNpcObject.transform.SetParent(DiscussionContent.transform, false);
