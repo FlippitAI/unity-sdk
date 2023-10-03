@@ -567,11 +567,13 @@ namespace Flippit
         {
             int currentIndex = 0;
             string filePath = files[currentIndex];
-#if UNITY_STANDALONE_OSX
-filePath = filePath.Replace("\\", "/");
-#endif
+            Uri fileUri = new(filePath);
 
-            using UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(filePath, AudioType.MPEG);
+            Debug.Log("URI du fichier : " + fileUri.ToString());
+
+            Debug.Log("Chemin absolu du fichier : " + fileUri.LocalPath);
+
+            using UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(fileUri, AudioType.MPEG);
             var op = www.SendWebRequest();
 
             while (!op.isDone)
