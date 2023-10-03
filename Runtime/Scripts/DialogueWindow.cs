@@ -567,13 +567,13 @@ namespace Flippit
         {
             int currentIndex = 0;
             string filePath = files[currentIndex];
+
+#if UNITY_STANDALONE_OSX
             Uri fileUri = new(filePath);
-
-            Debug.Log("URI du fichier : " + fileUri.ToString());
-
-            Debug.Log("Chemin absolu du fichier : " + fileUri.LocalPath);
-
             using UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(fileUri, AudioType.MPEG);
+#else
+            using UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(filePath, AudioType.MPEG);
+#endif
             var op = www.SendWebRequest();
 
             while (!op.isDone)
@@ -587,7 +587,6 @@ namespace Flippit
 
                 if (audioClip != null)
                 {
-                    Debug.Break();
                     if (IaActive.TryGetComponent<AudioSource>(out var audioSource))
                     {
                         isPlayingAudio = true;
