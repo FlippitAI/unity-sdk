@@ -72,7 +72,7 @@ namespace Flippit
         public async Task SpeechMe( List<Viseme> visemes)
         {
             visemesList = visemes;
-            await Task.Delay((int)(clip.length * 1000));
+            await Task.Delay((int)(clip.length * 1000 / sourceAudio.pitch));
         }
         private void OnTriggerEnter(Collider other)
         {
@@ -133,10 +133,7 @@ namespace Flippit
                 skinnedMeshRenderer.SetBlendShapeWeight(blendShapeIndex, value);
             }
         }
-        public void SetVisemes(List<Viseme> visemeData)
-        {
-            visemesList = visemeData;
-        }
+        
         public void ResetVisemes()
         {
             foreach (var viseme in visemesList)

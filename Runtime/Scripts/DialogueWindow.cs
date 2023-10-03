@@ -471,7 +471,6 @@ namespace Flippit
                 sentences.Add(speechSentence);
                 speechSentence = "";
             }
-            PlayVisemes();
         }
         public void TerminateResponse(string message)
         {
@@ -539,7 +538,7 @@ namespace Flippit
         public void ReceiveVisemes(List<Viseme> visemesSentence)
         {
             visemeSets.Add(visemesSentence);
-            IaActive.GetComponent<IACharacter>().SetVisemes(visemeSets[0]);
+            IaActive.GetComponent<IACharacter>().visemesList.AddRange(visemesSentence);
         }
         
         async void PlayVisemes()
@@ -552,9 +551,7 @@ namespace Flippit
                     await speechTask;
                 }
                 visemeSets.RemoveAt(0);
-                Debug.Log("Reste "+visemeSets.Count+" Visemes dans la série");
                 currentSentenceIndex++;
-                PlayVisemes();
             }
             else
             {
@@ -583,18 +580,19 @@ namespace Flippit
 
             if (www.result == UnityWebRequest.Result.Success)
             {
-                AudioClip audioClip = DownloadHandlerAudioClip.GetContent(www);
+                clip = DownloadHandlerAudioClip.GetContent(www);
 
-                if (audioClip != null)
+                if (clip != null)
                 {
                     if (IaActive.TryGetComponent<AudioSource>(out var audioSource))
                     {
                         isPlayingAudio = true;
-                        IaActive.GetComponent<IACharacter>().clip = audioClip;
-                        audioSource.clip = audioClip;
+                        IaActive.GetComponent<IACharacter>().clip = clip;
+                        audioSource.clip = clip;
                         float pitch = audioSource.pitch;
-                        float waitDelay = audioClip.length / pitch;
+                        float waitDelay = clip.length / pitch;
                         audioSource.Play();
+                        PlayVisemes();
                         yield return new WaitForSeconds(waitDelay);
                     }
                 }
@@ -607,7 +605,13 @@ namespace Flippit
                 File.Delete(files[currentIndex]);
                 files.RemoveAt(currentIndex);
                 currentIndex++;
+                if (!isPlayingAudio && currentIndex > files.Count)
+                {
+                    IaActive.GetComponent<IACharacter>().ResetVisemes();
+                    IaActive.GetComponent<IACharacter>().visemesList.Clear();
+                }
             }
+            
         }
         
         public void WriteIntoFile(byte[] audioData)
