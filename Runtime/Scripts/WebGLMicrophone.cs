@@ -3,6 +3,7 @@
 #endif
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -53,6 +54,7 @@ namespace Flippit
         public static async Task<string[]> MicrophoneWebGL_Devices()
         {
             var jsonTask = await FetchAsync();
+            UnityEngine.Debug.Log(jsonTask.ToString());
             return jsonTask.Split('|');
         }
 

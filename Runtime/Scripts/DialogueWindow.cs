@@ -1,3 +1,8 @@
+#if UNITY_WEBGL && !UNITY_EDITOR
+#define USE_WEBGL
+#endif
+
+using Amazon.Runtime.Internal.Endpoints.StandardLibrary;
 using Cinemachine;
 using OpenAI;
 using System;
@@ -6,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
 using System.Security.Cryptography;
 using System.Text;
@@ -18,6 +24,7 @@ using UnityEngine.AI;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 using UnityEngine.UIElements;
+using UnityEngine.XR;
 using static Flippit.EnumLists;
 
 namespace Flippit
@@ -130,29 +137,30 @@ namespace Flippit
         private readonly List<string> files = new();
         private List <GameObject> conversationObjects;
         private int previousFilePathCount = 0;
+        private int previousClipsCount = 0;
         private bool isPlayingAudio = false;
         private int currentSentenceIndex = 0;
+        public UnityWebRequest www;
+        public List<AudioClip> audioClips = new();
+        private string fileName;
+        private string filePath;
         // Start is called before the first frame update
+
         void Start()
         {
             audioRecorder = new AudioRecorder();
             apiKeyManager = Resources.Load<ApiKeyManager>("Apikeys");
             openai = new(apiKeyManager.OpenAI);
             inputText = inputField.GetComponent<TMP_InputField>().textComponent;
-            audioRecorder.StartRefresh(devices =>
-            {
-                MicrophoneOptions = devices;
-            });
             dialogueNPC = Resources.Load<GameObject>(dialogueNPCPath);
             dialoguePlayer = Resources.Load<GameObject>(dialoguePlayerPath);
-            Debug.Log("prefabs --> " + dialoguePlayer + " / " + dialogueNPC);
             if (verticalScrollBar == null)
             {
                 verticalScrollBar = GameObject.Find("Scrollbar Vertical").GetComponent<Scrollbar>();
             }
-
+            RefreshMicros();
         }
-
+       
         private void Update()
         {
             DiscussionContent.SetActive(ShowDiscussion);
@@ -180,6 +188,17 @@ namespace Flippit
 
             if (useVoices)
             {
+#if USE_WEBGL
+                if(audioClips.Count > 0 && audioClips.Count != previousClipsCount)
+                {
+                Debug.Log("clips --> " +audioClips.Count);
+                if (!isPlayingAudio)
+                    {
+                        StartCoroutine(PlayWebGLClips());
+                    }
+                    previousClipsCount = audioClips.Count;
+                }
+#else
                 if (files.Count > 0 && files.Count != previousFilePathCount)
                 {
                     if (!isPlayingAudio)
@@ -188,8 +207,10 @@ namespace Flippit
                     }
                     previousFilePathCount = files.Count;
                 }
+#endif
             }
         }
+        
         private void OnEnable()
         {
             ChatContainer.SetActive(displayInputFieldPanel);
@@ -218,21 +239,28 @@ namespace Flippit
             Transform DialogueGlobal = gameObject.transform.Find("Dialogue Global");
             DialogueGlobal.GetComponent<UnityEngine.UI.Image>().enabled = ShowDiscussion;
         }
+        
         private void StartRecordingIfPossible()
         {
             if (MicrophoneOptions.Length > 0 && selectedMicrophoneIndex <= MicrophoneOptions.Length)
             {
-                if (selectedMicrophoneIndex > MicrophoneOptions.Length) selectedMicrophoneIndex = MicrophoneOptions.Length;
-                if (selectedMicrophoneIndex < 0) selectedMicrophoneIndex = 0;
                 device = MicrophoneOptions[selectedMicrophoneIndex];
                 isRecording = true;
-                
+#if USE_WEBGL
+                if (AudioRecorder.IsRecording(device))
+                {
+                    audioRecorder.EndRecording(device);
+                }
+                else
+                {
+                    clip = AudioRecorder.Start(device, false, recordingMaxDuration, 44100);
+                }
+#else
                 audioRecorder.StartRecordingAsync(device, false, recordingMaxDuration, 44100)
                     .ContinueWith(task =>
                     {
                         if (task.IsCompleted && !task.IsFaulted)
                         {
-                            Debug.Log("enregistrement en cours");
                             clip = task.Result;
                             audioRecorder.isRecording = true;
                         }
@@ -241,13 +269,20 @@ namespace Flippit
                             Debug.LogWarning("Erreur lors du démarrage de l'enregistrement audio.");
                         }
                     });
+#endif
             }
             else
             {
                 Debug.LogWarning("Aucun microphone n'est disponible.");
             }
         }
-
+        public void RefreshMicros()
+        {
+            audioRecorder.StartRefresh(devices =>
+            {
+                MicrophoneOptions = devices;
+            });
+        }
         private async void StopRecordingIfActive()
         {
             time = 0;
@@ -256,6 +291,7 @@ namespace Flippit
             audioRecorder.EndRecording(device);
             await ConvertClipToTextAsync(clip);
         }
+        
         async Task ConvertClipToTextAsync(AudioClip clip)
         {
             if (clip != null)
@@ -274,7 +310,7 @@ namespace Flippit
             }
             else
             {
-                Debug.Log("Clip has not been recorded, Pleaze check your microphone");
+                Debug.Log("Clip has not been recorded, Pleaze check your microphone, clip is null");
             }
         }
         private void UpdateRecordingTime()
@@ -560,17 +596,52 @@ namespace Flippit
                 IaActive.GetComponent<IACharacter>().ResetVisemes();
             }
         }
+        private IEnumerator PlayWebGLClips()
+        {
+            int currentIndex = 0;
+            Debug.Log("lit le clip " + audioClips[currentIndex]);
+            clip = audioClips[currentIndex];
+            if (clip != null)
+            {
+                Debug.Log("Clip pas Null");
+                if (IaActive.TryGetComponent<AudioSource>(out var audioSource))
+                {
+                    isPlayingAudio = true;
+                    IaActive.GetComponent<IACharacter>().clip = clip;
+                    audioSource.clip = clip;
+                    float pitch = audioSource.pitch;
+                    float waitDelay = clip.length / pitch;
+                    audioSource.Play();
+                    Debug.Log("censé être en lecture");
+                    PlayVisemes();
+                    yield return new WaitForSeconds(waitDelay);
+                }
+            }
+            else
+            {
+                Debug.LogError("Erreur lors de la conversion en AudioClip.");
+            }
+            isPlayingAudio = false;
+            File.Delete(files[currentIndex]);
+            files.RemoveAt(currentIndex);
+            currentIndex++;
+            if (!isPlayingAudio && currentIndex > files.Count)
+            {
+                IaActive.GetComponent<IACharacter>().ResetVisemes();
+                IaActive.GetComponent<IACharacter>().visemesList.Clear();
+            }
+        }
         private IEnumerator PlayAudioClips()
         {
             int currentIndex = 0;
-            string filePath = files[currentIndex];
+            filePath = files[currentIndex];
 
 #if UNITY_STANDALONE_OSX
             Uri fileUri = new(filePath);
-            using UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(fileUri, AudioType.MPEG);
+            www = UnityWebRequestMultimedia.GetAudioClip(fileUri, AudioType.MPEG);
 #else
-            using UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(filePath, AudioType.MPEG);
-#endif
+            www = UnityWebRequestMultimedia.GetAudioClip(filePath, AudioType.MPEG);
+
             var op = www.SendWebRequest();
 
             while (!op.isDone)
@@ -611,20 +682,30 @@ namespace Flippit
                     IaActive.GetComponent<IACharacter>().visemesList.Clear();
                 }
             }
-            
+#endif
         }
-        
+
         public void WriteIntoFile(byte[] audioData)
         {
+            Debug.Log("Taile de AudioData -> " + audioData.Length);
             if (audioData != null && audioData.Length > 0)
             {
-                string fileName = GenerateUniqueFileName();
+
+#if USE_WEBGL
+                //CreateAudioClip(audioData);
+#else
+                fileName = GenerateUniqueFileName();
                 string filePath = Path.Combine(Application.persistentDataPath, fileName);
+
+                Debug.Log("Write File at --> " + filePath);
                 while (files.Contains(filePath))
                 {
-                    fileName = GenerateUniqueFileName(); 
+                    Debug.Log("File contain (regenerate name) --> " + filePath);
+                    fileName = GenerateUniqueFileName();
+
                     filePath = Path.Combine(Application.persistentDataPath, fileName);
                 }
+
                 files.Add(filePath);
                 using MemoryStream memoryStream = new(audioData);
                 using FileStream filestream = new(filePath, FileMode.Create);
@@ -634,13 +715,39 @@ namespace Flippit
                 {
                     filestream.Write(buffer, offset: 0, count: bytesRead);
                 }
+#endif
             }
             else
             {
-                Debug.LogError("Error decoding audio data.");
+                Debug.LogError("Mes couilles sur ton nez t'auras l'air d'un dindon! Error decoding audio data.");
             }
         }
-         
+
+        private void CreateAudioClip(byte[] audioData)
+        {
+            filePath = Path.Combine(Application.persistentDataPath, "audio_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".wav");
+            Debug.Log("Fichier --> "+ filePath);
+            
+            AudioConverter.ConvertToWav(audioData, filePath, 44100, 16, 1);
+            if(File.Exists(filePath)) StartCoroutine(LoadAudioClip());
+            
+        }
+        IEnumerator LoadAudioClip()
+        {
+            using UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip("file://"+filePath, AudioType.WAV);
+            yield return www.SendWebRequest();
+
+            if (www.result == UnityWebRequest.Result.ConnectionError)
+            {
+                Debug.LogError("Failed to load audio clip: " + www.error);
+            }
+            else
+            {
+                Debug.Log(UnityWebRequest.Result.Success+"prochaine etape Get WWW");
+                AudioClip audioClip = DownloadHandlerAudioClip.GetContent(www);
+                audioClips.Add(audioClip);
+            }
+        }
         private string GenerateUniqueFileName()
         {
             string baseFileName = "Vocal";

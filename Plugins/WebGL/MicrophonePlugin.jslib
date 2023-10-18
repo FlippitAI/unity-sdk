@@ -1,10 +1,11 @@
-var leastSquaresWebGLMicrophone = {
-  // Initialize variables
-  $MicrophoneWebGL: {
-    audioContext: null,
-    devices: {},
-  },
-  
+var MicrophonePlugin = 
+{
+	$MicrophoneWebGL: 
+    {
+	audioContext: null,
+	devices: {},
+	},
+
   MicrophoneWebGL_FetchMicrophoneDevices: async function (resolve, reject) {
  
       function getPtrFromString(str) {
@@ -21,8 +22,7 @@ var leastSquaresWebGLMicrophone = {
          dynCall_vi(resolve, buffer);
      }).catch(error => {
          var buffer = getPtrFromString(error.toString());
-         console.log('pre sent err');
-         console.log(error);
+         console.log('Error fetching microphone devices:', error);
          dynCall_vi(resolve, buffer);
      });
   },
@@ -156,10 +156,12 @@ var leastSquaresWebGLMicrophone = {
     device.mediaRecorder.start(chunkTime);
   },
 
-  MicrophoneWebGL_GetData: function(deviceNamePtr, samples, samplesLength, offset) {
+  MicrophoneWebGL_GetData: function(deviceNamePtr, samples, samplesLength, offset) 
+  {
     let deviceName = UTF8ToString(deviceNamePtr);
     let device = MicrophoneWebGL.devices[deviceName];
-    if (device == null) {
+    if (device == null) 
+    {
       console.warn("Device has not started recording yet")
       return null;
     }
@@ -220,7 +222,9 @@ var leastSquaresWebGLMicrophone = {
         let deviceName = UTF8ToString(deviceNamePtr);
         return false;
     },
+  
+
 };
 
-autoAddDeps(leastSquaresWebGLMicrophone, '$MicrophoneWebGL');
-mergeInto(LibraryManager.library, leastSquaresWebGLMicrophone);
+autoAddDeps(MicrophonePlugin, '$MicrophoneWebGL');
+mergeInto(LibraryManager.library, MicrophonePlugin);
