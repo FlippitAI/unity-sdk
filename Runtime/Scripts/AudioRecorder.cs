@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System;
 using UnityEngine;
 using System.Linq;
+using UnityEngine.Android;
 
 namespace Flippit
 {
